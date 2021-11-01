@@ -1,0 +1,80 @@
+//
+//  CityAttractionTableViewCell.m
+//  Wuyoda
+//
+//  Created by 赵祥 on 2021/9/22.
+//
+
+#import "CityAttractionTableViewCell.h"
+
+@interface CityAttractionTableViewCell ()
+
+@property (nonatomic , retain)UIImageView *imgV;
+
+@property (nonatomic , retain)UILabel *nameLab;
+
+@property (nonatomic , retain)UILabel *introLab;
+
+@end
+
+@implementation CityAttractionTableViewCell
+
+-(instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier{
+    self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
+    if (self) {
+        [self createUI];
+    }
+    return self;
+}
+
+-(void)createUI{
+    self.imgV = [[UIImageView alloc]init];
+    self.imgV.backgroundColor = [ColorManager RandomColor];
+    self.imgV.layer.cornerRadius = kWidth(5);
+    [self.contentView addSubview:self.imgV];
+    [self.imgV mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_offset(kWidth(16));
+        make.centerY.equalTo(self.contentView);
+        make.width.height.mas_offset(kWidth(80));
+    }];
+    
+    self.nameLab = [[UILabel alloc]init];
+    self.nameLab.text = @"逢甲夜市";
+    self.nameLab.textColor = [ColorManager Color333333];
+    self.nameLab.font = kBoldFont(14);
+    [self.contentView addSubview:self.nameLab];
+    [self.nameLab mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(self.imgV.mas_right).mas_offset(kWidth(16));
+        make.top.equalTo(self.imgV);
+    }];
+    
+    self.introLab = [[UILabel alloc]init];
+    self.introLab.text = @"湿地面积不大，包含潮溪、沼泽、沙滩、碎石、泥滩等丰富且复杂的湿地生态。生物物种差异度极高，是各种底栖生物、鱼贝类、鸟类、水禽类栖息的最佳场所。高美湿地是著名的观...";
+    self.introLab.textColor = [ColorManager Color333333];
+    self.introLab.font = kFont(12);
+    self.introLab.numberOfLines = 4;
+    self.introLab.lineBreakMode = NSLineBreakByCharWrapping;
+    [self addSubview:self.introLab];
+    [self.introLab mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(self.imgV.mas_right).mas_offset(kWidth(16));
+        make.right.mas_offset(-20);
+        make.top.equalTo(self.nameLab.mas_bottom).mas_offset(kWidth(8));
+    }];
+}
+
+-(void)setImgName:(NSString *)imgName{
+    [self.imgV setImage:kGetImage(imgName)];
+}
+
+- (void)awakeFromNib {
+    [super awakeFromNib];
+    // Initialization code
+}
+
+- (void)setSelected:(BOOL)selected animated:(BOOL)animated {
+    [super setSelected:selected animated:animated];
+
+    // Configure the view for the selected state
+}
+
+@end

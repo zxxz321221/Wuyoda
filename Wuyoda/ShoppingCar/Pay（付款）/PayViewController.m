@@ -1,0 +1,109 @@
+//
+//  PayViewController.m
+//  Wuyoda
+//
+//  Created by 赵祥 on 2021/9/28.
+//
+
+#import "PayViewController.h"
+#import "PaySuccessViewController.h"
+
+@interface PayViewController ()
+
+@end
+
+@implementation PayViewController
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    // Do any additional setup after loading the view.
+    
+    FJNormalNavView *nav = [[FJNormalNavView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kHeight_NavBar) controller:self titleStr:@"确认付款"];
+    [self.view addSubview:nav];
+    
+    UIView *topV = [[UIView alloc]initWithFrame:CGRectMake(0, kHeight_NavBar, kScreenWidth, kWidth(148))];
+    [self.view addSubview:topV];
+    
+    UILabel *topTitleLab = [[UILabel alloc]init];
+    topTitleLab.text = @"付款金额";
+    topTitleLab.textColor = [ColorManager BlackColor];
+    topTitleLab.font = kFont(14);
+    [topV addSubview:topTitleLab];
+    [topTitleLab mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.top.mas_offset(kWidth(15));
+    }];
+    
+    UILabel *priceLab = [[UILabel alloc]init];
+    priceLab.text = @"￥349";
+    priceLab.textColor = [ColorManager BlackColor];
+    priceLab.font = kFont(36);
+    [topV addSubview:priceLab];
+    [priceLab mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.equalTo(topV);
+        make.top.mas_offset(kWidth(46));
+    }];
+    
+    
+    UIView *payTypeView = [[UIView alloc]initWithFrame:CGRectMake(0, kWidth(158)+kHeight_NavBar, kScreenWidth, kWidth(52))];
+    [self.view addSubview:payTypeView];
+    
+    UILabel *payTitleTypeLab = [[UILabel alloc]init];
+    payTitleTypeLab.text = @"付款方式";
+    payTitleTypeLab.textColor = [ColorManager Color333333];
+    payTitleTypeLab.font = kFont(14);
+    [payTypeView addSubview:payTitleTypeLab];
+    [payTitleTypeLab mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_offset(kWidth(24));
+        make.centerY.equalTo(payTypeView);
+    }];
+    
+    UIImageView *arrowImgV = [[UIImageView alloc]initWithImage:kGetImage(@"")];
+    [payTypeView addSubview:arrowImgV];
+    [arrowImgV mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.right.mas_offset(kWidth(-24));
+        make.centerY.equalTo(payTypeView);
+        make.width.height.mas_offset(kWidth(12));
+    }];
+    
+    UILabel *payTypeLab = [[UILabel alloc]init];
+    payTypeLab.text = @"信用卡";
+    payTypeLab.textColor = [ColorManager ColorD7D7D7];
+    payTypeLab.font = kFont(14);
+    [payTypeView addSubview:payTypeLab];
+    [payTypeLab mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.right.equalTo(arrowImgV.mas_left).mas_offset(kWidth(-8));
+        make.centerY.equalTo(payTypeView);
+    }];
+    
+    UIButton *payBtn = [[UIButton alloc]init];
+    [payBtn setTitle:@"保存" forState:UIControlStateNormal];
+    [payBtn setTitleColor:[ColorManager WhiteColor] forState:UIControlStateNormal];
+    payBtn.titleLabel.font = kFont(14);
+    payBtn.backgroundColor = [ColorManager MainColor];
+    payBtn.layer.cornerRadius = kWidth(21);
+    [payBtn addTarget:self action:@selector(payClicked) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:payBtn];
+    [payBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.equalTo(self.view);
+        make.top.equalTo(payTypeView.mas_bottom).mas_offset(kWidth(63));
+        make.width.mas_offset(kWidth(350));
+        make.height.mas_offset(kWidth(42));
+    }];
+}
+
+-(void)payClicked{
+    PaySuccessViewController *vc = [[PaySuccessViewController alloc]init];
+    [self.navigationController pushViewController:vc animated:YES];
+}
+
+/*
+#pragma mark - Navigation
+
+// In a storyboard-based application, you will often want to do a little preparation before navigation
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    // Get the new view controller using [segue destinationViewController].
+    // Pass the selected object to the new view controller.
+}
+*/
+
+@end

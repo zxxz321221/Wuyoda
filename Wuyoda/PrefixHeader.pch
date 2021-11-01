@@ -1,0 +1,147 @@
+//
+//  PrefixHeader.pch
+//  JiaHeOil
+//
+//  Created by 樊静 on 2020/11/16.
+//
+
+#ifndef PrefixHeader_pch
+#define PrefixHeader_pch
+
+#define kColorAlpha(r,g,b,a)  [UIColor colorWithRed:r/255.0f green:g/255.0f blue:b/255.0f alpha:a]
+#define kColor(r,g,b) kColorAlpha(r,g,b,1.0f)
+
+// 状态栏 导航栏 tabbar 安全区的高度
+#define kHeight_StatusBar [CommonManager getStatusBarHight]
+#define kHeight_NavBar (kHeight_StatusBar + 44.0)
+#define kHeight_TabBar (kHeight_StatusBar > 20.0 ? 83.0 : 49.0)
+#define kHeight_SafeArea (kHeight_StatusBar > 20.0 ? 34.0 : 0)
+
+/** 屏幕的宽高 */
+#define kScreenWidth  ([[UIScreen mainScreen] bounds].size.width)
+#define kScreenHeight ([[UIScreen mainScreen] bounds].size.height)
+
+#define kWidth(w)  w * (kScreenWidth / 375.0)
+
+// 字体大小
+#define kFont(x) [UIFont systemFontOfSize:kWidth(x)]
+#define kBoldFont(x) [UIFont boldSystemFontOfSize:kWidth(x)]
+
+//LOG
+#ifdef DEBUG
+#define DLog( s, ... ) NSLog( @"<%@:(%d)> %@", [[NSString stringWithUTF8String:__FILE__] lastPathComponent], __LINE__, [NSString stringWithFormat:(s), ##__VA_ARGS__] )
+#else
+#define DLog( s, ... )
+#endif
+
+//图片相关
+#define kGetImage(imageName) [UIImage imageNamed:[NSString stringWithFormat:@"%@",imageName]]
+//占位图
+#define kGetPlaceHolderImageSquare kGetImage(@"占位图-正方形")
+#define kGetPlaceHolderImageRectangle kGetImage(@"占位图-矩形")
+#define kGetHeadPlaceHolderSmallImage kGetImage(@"占位图-小矩形")// 商品占位图  小矩形
+#define kGetHeadPlaceHolderImage kGetImage(@"default_avatar")// 头像占位
+
+#define kStringEmpty(str) (str==nil||[str isEqualToString:@""])
+#define kNSKeyedArchPathUserList [[NSHomeDirectory() stringByAppendingPathComponent:@"Documents"]      stringByAppendingPathComponent:@"UserDetailInfoList.arch"]
+
+// 微信相关
+#define WXPatient_App_ID @"wxea5e44cedff4f795"
+#define WXPatient_App_Secret @"722f913770c1613d39e3fce49a6a9e1b"
+#define WX_ACCESS_TOKEN @"access_token"
+#define WX_OPEN_ID @"openid"
+#define WX_REFRESH_TOKEN @"refresh_token"
+#define WX_UNION_ID @"unionid"
+#define WX_BASE_URL @"https://api.weixin.qq.com/sns"
+#define WX_USER_HEADER @"user_header"
+#define WX_USER_NICKNAME @"user_nickName"
+#define WXPatient_App_NIVERSAL_LINK @"https://HuoJian.HuoZhiShop/"
+
+//环信相关key
+#define ImServiceKey @"kefuchannelimid_258000"
+#define EasemobKey @"1419201104092678#kefuchannelapp87209"
+#define EaseTenantId @"87209"
+
+//微博
+#define kWeiBoAppKey   @"2325619070"
+#define kRedirectURI   @"http://open.weibo.com/apps/2325619070/privilege/oauth"
+
+//qq
+#define kQQAppKey  @"101916112"
+
+//阿里根据身份证照片获取信息
+#define AliAppCode @"67214259f3eb4fec93ce44848b76902e"
+
+#define QMWeakSelf \
+__weak typeof(self) self_weak_ = self;
+
+#define QMStrongSelf \
+_Pragma("clang diagnostic push") \
+_Pragma("clang diagnostic ignored \"-Wshadow\"") \
+__strong typeof(self) self = self_weak_;\
+_Pragma("clang diagnostic pop")
+
+// 应用在AppStore上的appleid
+//#define AppID @"1492896975"
+
+//WEB页 URL
+#define WEBHTTP HTTP //web前缀 
+#define USERDELEGATE [NSString stringWithFormat:@"%@fwxy.html",WEBHTTP]//服务协议
+#define PRIVACYPOLICY [NSString stringWithFormat:@"%@ysty.html",WEBHTTP]//隐私条款
+#define PlaformPRIVACY [NSString stringWithFormat:@"%@ptfwxy.html",WEBHTTP]//平台服务协议
+#define VIPPRIVACY [NSString stringWithFormat:@"%@hyfwxy.html",WEBHTTP]//会员服务协议
+#define Position [NSString stringWithFormat:@"%@wzqxsysm.html",WEBHTTP]//位置权限使用说明
+#define Album [NSString stringWithFormat:@"%@xcqxsysm.html",WEBHTTP]//相册权限使用说明
+#define Camera [NSString stringWithFormat:@"%@xjqxsysm.html",WEBHTTP]//相机权限使用说明
+#define Microphone [NSString stringWithFormat:@"%@mkfqxsysm.html",WEBHTTP]//麦克风权限使用说明
+#define HUOZHIEXPLAIN [NSString stringWithFormat:@"%@scoreInfo.html",WEBHTTP] //我的获值页面下方
+#define VIPEXPLAIN [NSString stringWithFormat:@"%@memberExplain.html",WEBHTTP] //会员说明
+#define GoodsInfo [NSString stringWithFormat:@"%@info.html?id=",WEBHTTP] //商品详情
+#define AFTEREXPLAIN [NSString stringWithFormat:@"%@shsm.html",WEBHTTP] //售后说明
+
+//#endif
+//引用公用文件
+//三方
+#import "FJNetPort.h"
+#import "FJNetTool.h"
+#import "LCTools.h"
+#import "FJBaseNavigationController.h"
+#import "FJTabBarViewController.h"
+#import "FJWebViewController.h"
+#import "BaseModel.h"
+#import "FJNormalNavView.h"
+#import "AFNetworking.h"
+#import "MBProgressHUD.h"
+#import "KKExtensions.h"
+#import "ColorManager.h"
+#import "MJRefresh.h"
+#import "SVProgressHUD.h"
+#import "UILabel+FixScreenFont.h"
+#import "UIButton+FixScreenFont.h"
+#import "NSString+FJPredicate.h"
+#import "NSLayoutConstraint+BSIBDesignable.h"
+#import "BOUTimerManager.h"
+#import "UIImage+Addition.h"
+#import "SDImageCache.h"
+#import "UIImageView+WebCache.h"
+#import "SDCycleScrollView.h"
+#import "SDWebImageDownloader.h"
+#import "UITabBar+badge.h"
+//#import "FJShareManger.h"
+#import <Masonry.h>
+//项目中
+#import "LoginViewController.h"
+#import "RegisterModel.h"
+#import "UserInfoModel.h"
+#import "CommonManager.h"
+#import "MYLabel.h"
+#import "UIImage+Blur.h"
+#import "UIImage+ImageEffects.h"
+
+
+
+#define HEX_COLOR(hex)              [UIColor nb_colorWithHex:hex alpha:1.0]
+#define HEX_ALPHA_COLOR(hex,a)      [UIColor nb_colorWithHex:hex alpha:a]
+#define RGBA_COLOR(r,g,b,a) [UIColor colorWithRed:r/255.0 green:g/255.0 blue:b/255.0 alpha:a]
+
+#endif /* PrefixHeader_pch */

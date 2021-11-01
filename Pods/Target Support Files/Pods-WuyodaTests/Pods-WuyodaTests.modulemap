@@ -1,0 +1,6 @@
+framework module Pods_WuyodaTests {
+  umbrella header "Pods-WuyodaTests-umbrella.h"
+
+  export *
+  module * { export * }
+}
