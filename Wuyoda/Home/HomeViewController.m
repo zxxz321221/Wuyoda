@@ -13,6 +13,7 @@
 #import "HomeSearchCityViewController.h"
 #import "PreferentialGoodListViewController.h"
 #import <CoreLocation/CoreLocation.h>
+#import "HomeModel.h"
 
 @interface HomeViewController ()<UITableViewDelegate,UITableViewDataSource,UIScrollViewDelegate,SpecailProductTypeSelectDelegate,CLLocationManagerDelegate>
 
@@ -28,6 +29,9 @@
 @property (nonatomic , strong) CLLocationManager* locationManager;
 @property (nonatomic , copy) NSString *currentCity;
 
+@property (nonatomic , retain)NSMutableArray *cityArr;
+@property (nonatomic , retain)NSMutableArray *specialShopArr;
+
 @end
 
 @implementation HomeViewController
@@ -39,19 +43,7 @@
 
 -(void)viewDidAppear:(BOOL)animated{
     [super viewDidAppear:animated];
-//    RegisterModel *registerModel = [RegisterModel getUserInfoModel];
-//    if (!registerModel) {
-//        registerModel = [[RegisterModel alloc]init];
-//    }
-//    if (!registerModel.user_token.length) {
-//        [FJNetTool postWithParams:@{} url:Login_GetToken loading:YES success:^(id responseObject){
-//            NSString *token = [[NSString alloc]initWithData:responseObject encoding:NSUTF8StringEncoding];
-//            registerModel.user_token = token;
-//            [RegisterModel saveUserInfoModel:registerModel];
-//        } failure:^(NSError *error) {
-//            
-//        }];
-//    }
+    
 //    if (![UserInfoModel getUserInfoModel].token) {
 //        LoginViewController *VC = [[LoginViewController alloc] init];
 //        FJBaseNavigationController *nav = [[FJBaseNavigationController alloc]initWithRootViewController:VC];
@@ -61,9 +53,54 @@
     
 }
 
+-(void)getTokenFromServer{
+    RegisterModel *registerModel = [RegisterModel getUserInfoModel];
+    if (!registerModel) {
+        registerModel = [[RegisterModel alloc]init];
+    }
+    if (!registerModel.user_token.length) {
+        [FJNetTool postWithParams:@{} url:Login_GetToken loading:YES success:^(id responseObject){
+            NSString *token = [[NSString alloc]initWithData:responseObject encoding:NSUTF8StringEncoding];
+            registerModel.user_token = token;
+            [RegisterModel saveUserInfoModel:registerModel];
+            [self getDataFromServer];
+        } failure:^(NSError *error) {
+
+        }];
+    }else{
+        [self getDataFromServer];
+    }
+}
+
+-(void)getDataFromServer{
+    [FJNetTool postWithParams:@{@"token":[RegisterModel getUserInfoModel].user_token} url:Index_index loading:YES success:^(id responseObject) {
+        
+        BaseModel *model = [BaseModel mj_objectWithKeyValues:responseObject];
+        if ([model.code isEqualToString:CODE0]) {
+            self.cityArr = [[HomeCityModel mj_objectArrayWithKeyValuesArray:responseObject[@"data"][@"recity"]] mutableCopy];
+            NSDictionary *shopDic = responseObject[@"data"][@"shop"];
+            self.specialTypeArr = [[shopDic allKeys] mutableCopy];
+            for (int i = 0; i<self.specialTypeArr.count; i++) {
+                NSString *key = [self.specialTypeArr objectAtIndex:i];
+                NSMutableArray *modelArr = [HomeShopModel mj_objectArrayWithKeyValuesArray:shopDic[key]];
+                
+                [self.specialShopArr addObject:modelArr];;
+                
+            }
+            [self.tableView reloadData];
+        }else{
+            [self.view showHUDWithText:model.msg withYOffSet:0];
+        }
+            
+    } failure:^(NSError *error) {
+            
+    }];
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    [self getTokenFromServer];
     
     self.tableView = [[UITableView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kScreenHeight-kHeight_TabBar) style:UITableViewStyleGrouped];
     self.tableView.delegate = self;
@@ -85,7 +122,8 @@
     [self locate];
     
     self.sectionArr = [[NSMutableArray alloc]initWithObjects:@{@"title":@"短途盛夏特惠",@"sub":@"台湾名产贴心推荐，低至7折"},@{@"title":@"两蒋文化商品",@"sub":@"文创商品直接销售机会难得"},@{@"title":@"你可能也想去",@"sub":@"发现更多出行灵感"}, nil];
-    self.specialTypeArr = [[NSMutableArray alloc]initWithObjects:@"台北市",@"莺歌",@"马祖",@"阿里山",@"基隆",@"台南市",@"高雄市",@"澎湖", nil];
+    self.specialShopArr = [[NSMutableArray alloc]init];
+//    self.specialTypeArr = [[NSMutableArray alloc]initWithObjects:@"台北市",@"莺歌",@"马祖",@"阿里山",@"基隆",@"台南市",@"高雄市",@"澎湖", nil];
 }
 
 - (void)locate {
@@ -179,6 +217,10 @@
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         cell.typeIndex = self.specialTypeIndex;
         cell.typeArr = self.specialTypeArr;
+        if (self.specialShopArr.count) {
+            cell.shopArr = [self.specialShopArr objectAtIndex:self.specialTypeIndex];
+        }
+        
         cell.delegate = self;
         
         return cell;
@@ -198,6 +240,7 @@
             cell = [[HomeAttractionsTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:NSStringFromClass([HomeAttractionsTableViewCell class])];
         }
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        cell.cityArr = self.cityArr;
         
         return cell;
     }

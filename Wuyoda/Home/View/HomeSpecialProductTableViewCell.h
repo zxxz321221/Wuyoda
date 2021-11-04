@@ -23,6 +23,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic , weak)id <SpecailProductTypeSelectDelegate>delegate;
 
+@property (nonatomic , retain)NSArray *shopArr;
+
 @end
 
 NS_ASSUME_NONNULL_END

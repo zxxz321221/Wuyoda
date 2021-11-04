@@ -50,4 +50,10 @@
     [self.imgV setImage:kGetImage(imgName)];
 }
 
+-(void)setModel:(HomeCityModel *)model{
+    _model = model;
+    self.titleLab.text = model.city;
+    [self.imgV sd_setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@",HTTP,model.cover]]];
+}
+
 @end

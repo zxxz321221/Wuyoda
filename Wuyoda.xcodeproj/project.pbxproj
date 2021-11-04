@@ -247,6 +247,7 @@
 		F1D668AC273127F300E4A7F0 /* SVProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = F1D668A6273127F300E4A7F0 /* SVProgressHUD.m */; };
 		F1D668AD273127F300E4A7F0 /* SVIndefiniteAnimatedView.m in Sources */ = {isa = PBXBuildFile; fileRef = F1D668A7273127F300E4A7F0 /* SVIndefiniteAnimatedView.m */; };
 		F1D668AE273127F300E4A7F0 /* SVProgressHUD.bundle in Resources */ = {isa = PBXBuildFile; fileRef = F1D668A8273127F300E4A7F0 /* SVProgressHUD.bundle */; };
+		F1D668D22733CC5C00E4A7F0 /* HomeModel.m in Sources */ = {isa = PBXBuildFile; fileRef = F1D668D12733CC5C00E4A7F0 /* HomeModel.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -748,6 +749,8 @@
 		F1D668A7273127F300E4A7F0 /* SVIndefiniteAnimatedView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SVIndefiniteAnimatedView.m; sourceTree = "<group>"; };
 		F1D668A8273127F300E4A7F0 /* SVProgressHUD.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = SVProgressHUD.bundle; sourceTree = "<group>"; };
 		F1D668A9273127F300E4A7F0 /* SVProgressAnimatedView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SVProgressAnimatedView.h; sourceTree = "<group>"; };
+		F1D668D02733CC5C00E4A7F0 /* HomeModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HomeModel.h; sourceTree = "<group>"; };
+		F1D668D12733CC5C00E4A7F0 /* HomeModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HomeModel.m; sourceTree = "<group>"; };
 		FC003996F5EAB782201DF619 /* Pods_Wuyoda.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Wuyoda.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -1665,6 +1668,7 @@
 		F186EE3626E9D294004E4DB6 /* Home */ = {
 			isa = PBXGroup;
 			children = (
+				F1D668CF2733CC3100E4A7F0 /* Model */,
 				F124237F26F57E5D005B20C6 /* Attractions（出行） */,
 				F124237B26F48106005B20C6 /* Preferential（特惠商品） */,
 				F124236A26F42D2E005B20C6 /* TWProductList（台湾名品） */,
@@ -1810,6 +1814,15 @@
 				F1D668A9273127F300E4A7F0 /* SVProgressAnimatedView.h */,
 			);
 			path = SVProgressHUD;
+			sourceTree = "<group>";
+		};
+		F1D668CF2733CC3100E4A7F0 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				F1D668D02733CC5C00E4A7F0 /* HomeModel.h */,
+				F1D668D12733CC5C00E4A7F0 /* HomeModel.m */,
+			);
+			path = Model;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -2069,6 +2082,7 @@
 				F186EDC726E9AEE0004E4DB6 /* NSString+Tool.m in Sources */,
 				F124232B26F03F7E005B20C6 /* HomeCultureProductTableViewCell.m in Sources */,
 				F191831926FDCAC000446003 /* ShoppingCarBottomView.m in Sources */,
+				F1D668D22733CC5C00E4A7F0 /* HomeModel.m in Sources */,
 				F152F0A12716B6D800C3C411 /* GoodEvaluateScoreTableViewCell.m in Sources */,
 				F186ECD526E9AA3F004E4DB6 /* ViewController.m in Sources */,
 				F191306A270163D2008525B4 /* OrderInfoTableViewCell.m in Sources */,

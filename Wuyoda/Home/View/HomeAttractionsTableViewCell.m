@@ -47,6 +47,7 @@
     HomeAttractionsCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass([HomeAttractionsCollectionViewCell class]) forIndexPath:indexPath];
     
     cell.imgName = [NSString stringWithFormat:@"home_attractions%ld",indexPath.row+1];
+    cell.model = [self.cityArr objectAtIndex:indexPath.row];
     
     return cell;
 }
@@ -56,7 +57,7 @@
 }
 
 -(NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section{
-    return 3;
+    return self.cityArr.count;
 }
 
 -(void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
@@ -76,6 +77,11 @@
     [super setSelected:selected animated:animated];
 
     // Configure the view for the selected state
+}
+
+-(void)setCityArr:(NSMutableArray *)cityArr{
+    _cityArr = cityArr;
+    [self.collectionV reloadData];
 }
 
 @end

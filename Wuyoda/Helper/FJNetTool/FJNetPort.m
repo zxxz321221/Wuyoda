@@ -20,4 +20,7 @@ NSString *const Login_GetToken = @"mobile/Login/getToken";
 // 登录
 NSString *const Login_Login_index = @"mobile/Login/login_index";
 
+// 首页
+NSString *const Index_index = @"mobile/Index/index";
+
 

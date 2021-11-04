@@ -11,6 +11,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface HomeAttractionsTableViewCell : UITableViewCell
 
+@property (nonatomic , retain)NSMutableArray *cityArr;
+
 @end
 
 NS_ASSUME_NONNULL_END

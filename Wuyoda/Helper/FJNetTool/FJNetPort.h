@@ -18,4 +18,7 @@ extern NSString *const Login_GetToken;
 // 登录
 extern NSString *const Login_Login_index;
 
+// 首页
+extern NSString *const Index_index;
+
 

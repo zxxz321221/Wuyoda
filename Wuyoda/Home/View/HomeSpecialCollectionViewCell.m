@@ -116,4 +116,13 @@
     [self.imgV setImage:kGetImage(imgName)];
 }
 
+-(void)setModel:(HomeShopModel *)model{
+    _model = model;
+    [self.imgV sd_setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@",HTTP,model.goods_file1]]];
+    self.titleLab.text = model.goods_name;
+    self.priceLab.text = model.goods_sale_price;
+    self.oldPriceLab.text = model.goods_sale_price_org;
+    self.addressLab.text = model.belong_city;
+}
+
 @end

@@ -52,7 +52,8 @@
 -(__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
     HomeSpecialCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass([HomeSpecialCollectionViewCell class]) forIndexPath:indexPath];
     
-    cell.imgName = [NSString stringWithFormat:@"home_special_good%ld",indexPath.row+1];
+    //cell.imgName = [NSString stringWithFormat:@"home_special_good%ld",indexPath.row+1];
+    cell.model = [self.shopArr objectAtIndex:indexPath.row];
     
     return cell;
 }
@@ -62,7 +63,7 @@
 }
 
 -(NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section{
-    return 4;
+    return self.shopArr.count;
 }
 
 -(void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
@@ -109,6 +110,10 @@
     }
 }
 
+-(void)setShopArr:(NSArray *)shopArr{
+    _shopArr = shopArr;
+    [self.collectionV reloadData];
+}
 
 
 - (void)awakeFromNib {
