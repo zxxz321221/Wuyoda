@@ -11,7 +11,6 @@ pod 'SDWebImage'
   pod 'YYModel'
   pod 'AFNetworking'
   pod 'Masonry'
-  pod 'SVProgressHUD'
   pod 'MBProgressHUD'
 
   # Pods for Wuyoda

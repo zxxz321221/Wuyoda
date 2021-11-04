@@ -39,7 +39,12 @@
         cell = [[AttractionsListTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:NSStringFromClass([AttractionsListTableViewCell class])];
     }
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
-    
+    if (indexPath.row == 0) {
+        cell.attractionName = @"金獅湖風景區";
+    }else{
+        cell.attractionName = @"蓮池潭";
+    }
+        
     return cell;
 }
 
@@ -47,7 +52,7 @@
     return 1;
 }
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
-    return 8;
+    return 2;
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
     return kWidth(160);
@@ -82,6 +87,11 @@
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     AttractionDetailViewController *vc = [[AttractionDetailViewController alloc]init];
+    if (indexPath.row == 0) {
+        vc.attractionName = @"金獅湖風景區";
+    }else{
+        vc.attractionName = @"蓮池潭";
+    }
     [self.navigationController pushViewController:vc animated:YES];
 }
 

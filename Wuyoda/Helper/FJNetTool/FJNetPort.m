@@ -9,7 +9,7 @@
 #import "FJNetPort.h"
 
 // 请求网址前缀
-NSString *const HTTP = @"http://175.24.31.203/"; // 客户测试服务器
+NSString *const HTTP = @"http://new.wuyoda.com/"; // 客户测试服务器
 //NSString *const HTTP = @"http://139.196.218.116:6385/hz/"; // 客户正式服务器
 
 NSString *const CODE0 = @"200";

@@ -238,6 +238,8 @@
             [RegisterModel saveUserInfoModel:registerModel];
             
             [self dismissViewControllerAnimated:YES completion:nil];
+        }else{
+            [self.view showHUDWithText:model.msg withYOffSet:0];
         }
             
     } failure:^(NSError *error) {

@@ -242,6 +242,11 @@
 		F1CEC4AE27112EAF0000CDBF /* SecurityPhoneViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F1CEC4AD27112EAF0000CDBF /* SecurityPhoneViewController.m */; };
 		F1CEC4B127113D110000CDBF /* ChangePassWordViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F1CEC4B027113D110000CDBF /* ChangePassWordViewController.m */; };
 		F1CEC4B427113DA30000CDBF /* ChangePasswordTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F1CEC4B327113DA30000CDBF /* ChangePasswordTableViewCell.m */; };
+		F1D668AA273127F300E4A7F0 /* SVRadialGradientLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = F1D668A0273127F300E4A7F0 /* SVRadialGradientLayer.m */; };
+		F1D668AB273127F300E4A7F0 /* SVProgressAnimatedView.m in Sources */ = {isa = PBXBuildFile; fileRef = F1D668A3273127F300E4A7F0 /* SVProgressAnimatedView.m */; };
+		F1D668AC273127F300E4A7F0 /* SVProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = F1D668A6273127F300E4A7F0 /* SVProgressHUD.m */; };
+		F1D668AD273127F300E4A7F0 /* SVIndefiniteAnimatedView.m in Sources */ = {isa = PBXBuildFile; fileRef = F1D668A7273127F300E4A7F0 /* SVIndefiniteAnimatedView.m */; };
+		F1D668AE273127F300E4A7F0 /* SVProgressHUD.bundle in Resources */ = {isa = PBXBuildFile; fileRef = F1D668A8273127F300E4A7F0 /* SVProgressHUD.bundle */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -733,6 +738,16 @@
 		F1CEC4B027113D110000CDBF /* ChangePassWordViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ChangePassWordViewController.m; sourceTree = "<group>"; };
 		F1CEC4B227113DA30000CDBF /* ChangePasswordTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ChangePasswordTableViewCell.h; sourceTree = "<group>"; };
 		F1CEC4B327113DA30000CDBF /* ChangePasswordTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ChangePasswordTableViewCell.m; sourceTree = "<group>"; };
+		F1D668A0273127F300E4A7F0 /* SVRadialGradientLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SVRadialGradientLayer.m; sourceTree = "<group>"; };
+		F1D668A1273127F300E4A7F0 /* SVIndefiniteAnimatedView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SVIndefiniteAnimatedView.h; sourceTree = "<group>"; };
+		F1D668A2273127F300E4A7F0 /* SVProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SVProgressHUD.h; sourceTree = "<group>"; };
+		F1D668A3273127F300E4A7F0 /* SVProgressAnimatedView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SVProgressAnimatedView.m; sourceTree = "<group>"; };
+		F1D668A4273127F300E4A7F0 /* SVProgressHUD-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "SVProgressHUD-Prefix.pch"; sourceTree = "<group>"; };
+		F1D668A5273127F300E4A7F0 /* SVRadialGradientLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SVRadialGradientLayer.h; sourceTree = "<group>"; };
+		F1D668A6273127F300E4A7F0 /* SVProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SVProgressHUD.m; sourceTree = "<group>"; };
+		F1D668A7273127F300E4A7F0 /* SVIndefiniteAnimatedView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SVIndefiniteAnimatedView.m; sourceTree = "<group>"; };
+		F1D668A8273127F300E4A7F0 /* SVProgressHUD.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = SVProgressHUD.bundle; sourceTree = "<group>"; };
+		F1D668A9273127F300E4A7F0 /* SVProgressAnimatedView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SVProgressAnimatedView.h; sourceTree = "<group>"; };
 		FC003996F5EAB782201DF619 /* Pods_Wuyoda.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Wuyoda.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -1405,6 +1420,7 @@
 		F186ED7A26E9AEC6004E4DB6 /* Librarys */ = {
 			isa = PBXGroup;
 			children = (
+				F1D6689F273127F300E4A7F0 /* SVProgressHUD */,
 				F186EE0226E9AFED004E4DB6 /* SDCycleScrollView */,
 				F186ED7B26E9AEDF004E4DB6 /* Extension */,
 			);
@@ -1779,6 +1795,23 @@
 			path = View;
 			sourceTree = "<group>";
 		};
+		F1D6689F273127F300E4A7F0 /* SVProgressHUD */ = {
+			isa = PBXGroup;
+			children = (
+				F1D668A0273127F300E4A7F0 /* SVRadialGradientLayer.m */,
+				F1D668A1273127F300E4A7F0 /* SVIndefiniteAnimatedView.h */,
+				F1D668A2273127F300E4A7F0 /* SVProgressHUD.h */,
+				F1D668A3273127F300E4A7F0 /* SVProgressAnimatedView.m */,
+				F1D668A4273127F300E4A7F0 /* SVProgressHUD-Prefix.pch */,
+				F1D668A5273127F300E4A7F0 /* SVRadialGradientLayer.h */,
+				F1D668A6273127F300E4A7F0 /* SVProgressHUD.m */,
+				F1D668A7273127F300E4A7F0 /* SVIndefiniteAnimatedView.m */,
+				F1D668A8273127F300E4A7F0 /* SVProgressHUD.bundle */,
+				F1D668A9273127F300E4A7F0 /* SVProgressAnimatedView.h */,
+			);
+			path = SVProgressHUD;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -1887,6 +1920,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F186ECDD26E9AA43004E4DB6 /* LaunchScreen.storyboard in Resources */,
+				F1D668AE273127F300E4A7F0 /* SVProgressHUD.bundle in Resources */,
 				F186ECDA26E9AA43004E4DB6 /* Assets.xcassets in Resources */,
 				F186EE1826E9AFED004E4DB6 /* README.md in Resources */,
 				F186EE1726E9AFED004E4DB6 /* LICENSE in Resources */,
@@ -2043,10 +2077,12 @@
 				F12D9AD42705860D00AE79FF /* AccountListViewController.m in Sources */,
 				F186ED7726E9AE66004E4DB6 /* XHLaunchAdImageManager.m in Sources */,
 				F152F0A42716B95400C3C411 /* EvaluateInfoTableViewCell.m in Sources */,
+				F1D668AC273127F300E4A7F0 /* SVProgressHUD.m in Sources */,
 				F18548AA2713CFDA00A2F954 /* ChangePhoneViewController.m in Sources */,
 				F18548B7271410ED00A2F954 /* WillPayOrderViewController.m in Sources */,
 				F191830126FB0FCB00446003 /* CityLineRecommendTableViewCell.m in Sources */,
 				F186EE2726E9BAEC004E4DB6 /* CountDown.m in Sources */,
+				F1D668AB273127F300E4A7F0 /* SVProgressAnimatedView.m in Sources */,
 				F186EDCF26E9AEE0004E4DB6 /* NSObject+MJProperty.m in Sources */,
 				F14080A7270193A00022DCF9 /* AddressListTableViewCell.m in Sources */,
 				F124231F26EEEB93005B20C6 /* HomeTableHeaderView.m in Sources */,
@@ -2075,6 +2111,7 @@
 				F191831626FDAAEB00446003 /* ShoppingCarTableViewCell.m in Sources */,
 				F186ED6426E9AE66004E4DB6 /* FJBaseNavigationController.m in Sources */,
 				F186EDD126E9AEE0004E4DB6 /* NSString+MJExtension.m in Sources */,
+				F1D668AD273127F300E4A7F0 /* SVIndefiniteAnimatedView.m in Sources */,
 				F124232E26F03FC0005B20C6 /* HomeAttractionsTableViewCell.m in Sources */,
 				F186EE2326E9BAB8004E4DB6 /* WOPageControl.m in Sources */,
 				F14F082D2700226C0098A352 /* OrderAddressTableViewCell.m in Sources */,
@@ -2127,6 +2164,7 @@
 				F186EDCB26E9AEE0004E4DB6 /* UIViewExt.m in Sources */,
 				F186EE1926E9AFED004E4DB6 /* SDCycleScrollView.m in Sources */,
 				F186ED7526E9AE66004E4DB6 /* XHLaunchAdConfiguration.m in Sources */,
+				F1D668AA273127F300E4A7F0 /* SVRadialGradientLayer.m in Sources */,
 				F186EDFA26E9AF78004E4DB6 /* FJReceivedMemoryWarningManager.m in Sources */,
 				F152F0CB27181B8300C3C411 /* ShoppingCartEmptyView.m in Sources */,
 				F152F0A82716BDFF00C3C411 /* W_EnterpriseInvoiceTextView.m in Sources */,
@@ -2420,7 +2458,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(SRCROOT)/Wuyoda/PrefixHeader.pch";
 				INFOPLIST_FILE = Wuyoda/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -2444,7 +2482,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(SRCROOT)/Wuyoda/PrefixHeader.pch";
 				INFOPLIST_FILE = Wuyoda/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

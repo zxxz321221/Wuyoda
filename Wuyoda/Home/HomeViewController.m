@@ -39,25 +39,25 @@
 
 -(void)viewDidAppear:(BOOL)animated{
     [super viewDidAppear:animated];
-    RegisterModel *registerModel = [RegisterModel getUserInfoModel];
-    if (!registerModel) {
-        registerModel = [[RegisterModel alloc]init];
-    }
-    if (!registerModel.user_token.length) {
-        [FJNetTool postWithParams:@{} url:Login_GetToken loading:YES success:^(id responseObject){
-            NSString *token = [[NSString alloc]initWithData:responseObject encoding:NSUTF8StringEncoding];
-            registerModel.user_token = token;
-            [RegisterModel saveUserInfoModel:registerModel];
-        } failure:^(NSError *error) {
-            
-        }];
-    }
-    if (![UserInfoModel getUserInfoModel].token) {
-        LoginViewController *VC = [[LoginViewController alloc] init];
-        FJBaseNavigationController *nav = [[FJBaseNavigationController alloc]initWithRootViewController:VC];
-        nav.modalPresentationStyle = UIModalPresentationFullScreen;
-        [self presentViewController:nav animated:YES completion:nil];
-    }
+//    RegisterModel *registerModel = [RegisterModel getUserInfoModel];
+//    if (!registerModel) {
+//        registerModel = [[RegisterModel alloc]init];
+//    }
+//    if (!registerModel.user_token.length) {
+//        [FJNetTool postWithParams:@{} url:Login_GetToken loading:YES success:^(id responseObject){
+//            NSString *token = [[NSString alloc]initWithData:responseObject encoding:NSUTF8StringEncoding];
+//            registerModel.user_token = token;
+//            [RegisterModel saveUserInfoModel:registerModel];
+//        } failure:^(NSError *error) {
+//            
+//        }];
+//    }
+//    if (![UserInfoModel getUserInfoModel].token) {
+//        LoginViewController *VC = [[LoginViewController alloc] init];
+//        FJBaseNavigationController *nav = [[FJBaseNavigationController alloc]initWithRootViewController:VC];
+//        nav.modalPresentationStyle = UIModalPresentationFullScreen;
+//        [self presentViewController:nav animated:YES completion:nil];
+//    }
     
 }
 

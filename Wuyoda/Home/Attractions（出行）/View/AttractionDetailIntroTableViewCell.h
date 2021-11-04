@@ -11,6 +11,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface AttractionDetailIntroTableViewCell : UITableViewCell
 
+@property (nonatomic , copy)NSString *attractionName;
+
 @end
 
 NS_ASSUME_NONNULL_END

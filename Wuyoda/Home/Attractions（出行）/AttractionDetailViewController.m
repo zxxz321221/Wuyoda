@@ -42,6 +42,7 @@
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.tableView.backgroundColor = [ColorManager WhiteColor];
     self.tableHeaderV = [[AttractionDetailHeaderView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kWidth(470))];
+    self.tableHeaderV.attractionName = self.attractionName;
     self.tableView.tableHeaderView = self.tableHeaderV;
     
     [self.view addSubview:self.tableView];
@@ -105,6 +106,7 @@
             cell = [[AttractionDetailIntroTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:NSStringFromClass([AttractionDetailIntroTableViewCell class])];
         }
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        cell.attractionName = self.attractionName;
         
         return cell;
     }
@@ -122,7 +124,16 @@
 
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
     if (indexPath.section == 0) {
-        return kWidth(304);
+        if ([self.attractionName isEqualToString:@"金獅湖風景區"]) {
+            return kWidth(200);
+        }
+        if ([self.attractionName isEqualToString:@"夜市文化"]) {
+            return kWidth(450);
+        }
+        if ([self.attractionName isEqualToString:@"旗津海鲜"]) {
+            return kWidth(250);
+        }
+        return kWidth(550);
     }else{
         return kWidth(194)*2;
     }
@@ -156,8 +167,6 @@
     }else{
         titleLab.text = @"其他景点";
     }
-
-    
     return headerV;
 }
 

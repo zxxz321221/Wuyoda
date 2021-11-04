@@ -13,6 +13,7 @@
 #import "CityDetailFoodTableViewCell.h"
 #import "CityPresentTableViewCell.h"
 #import "AttractionsListViewController.h"
+#import "AttractionDetailViewController.h"
 
 @interface CityDetailViewController ()<UITableViewDelegate,UITableViewDataSource>
 
@@ -44,7 +45,7 @@
     [self.tableView registerClass:[CityPresentTableViewCell class] forCellReuseIdentifier:NSStringFromClass([CityPresentTableViewCell class])];
     self.tableView.backgroundColor = [ColorManager WhiteColor];
     
-    self.headerV = [[CityDetailHeaderView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kWidth(360))];
+    self.headerV = [[CityDetailHeaderView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kWidth(560))];
     self.tableView.tableHeaderView = self.headerV;
     
     [self.view addSubview:self.tableView];
@@ -65,7 +66,12 @@
         }
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         
-        cell.imgName = [NSString stringWithFormat:@"景点%ld",indexPath.row+1];
+        //cell.imgName = [NSString stringWithFormat:@"景点%ld",indexPath.row+1];
+        if (indexPath.row == 0) {
+            cell.attractionName = @"金獅湖風景區";
+        }else{
+            cell.attractionName = @"蓮池潭";
+        }
         
         return cell;
     }else if (indexPath.section == 1){
@@ -91,7 +97,11 @@
         }
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         
-        cell.imgName = [NSString stringWithFormat:@"民俗美食%ld",indexPath.row+1];
+        if (indexPath.row == 0) {
+            cell.attractionName = @"夜市文化";
+        }else{
+            cell.attractionName = @"旗津海鲜";
+        }
         
         return cell;
     }else{
@@ -114,11 +124,11 @@
     if (section == 0) {
         return 2;
     }else if (section == 1){
-        return 2;
+        return 0;
     }else if (section == 2){
-        return 2;
+        return 0;
     }else if (section == 3){
-        return 3;
+        return 2;
     }else{
         return 1;
     }
@@ -137,6 +147,9 @@
     return kWidth(170);
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
+    if (section == 1 || section == 2) {
+        return 0.001;
+    }
     return kWidth(58);
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section{
@@ -173,6 +186,26 @@
     return [UIView new];
 }
 
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    if (indexPath.section == 0) {
+        AttractionDetailViewController *vc = [[AttractionDetailViewController alloc]init];
+        if (indexPath.row == 0) {
+            vc.attractionName = @"金獅湖風景區";
+        }else{
+            vc.attractionName = @"蓮池潭";
+        }
+        [self.navigationController pushViewController:vc animated:YES];
+    }
+    if (indexPath.section == 3) {
+        AttractionDetailViewController *vc = [[AttractionDetailViewController alloc]init];
+        if (indexPath.row == 0) {
+            vc.attractionName = @"夜市文化";
+        }else{
+            vc.attractionName = @"旗津海鲜";
+        }
+        [self.navigationController pushViewController:vc animated:YES];
+    }
+}
 
 /*
 #pragma mark - Navigation

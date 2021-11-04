@@ -9,6 +9,7 @@
 
 @interface AttractionDetailHeaderView ()
 
+@property (nonatomic , retain)UIScrollView *scrollV;
 @property (nonatomic , retain)UIImageView *attractionImgV;
 @property (nonatomic , retain)UILabel *titleLab;
 @property (nonatomic , retain)UILabel *priceLab;
@@ -30,13 +31,17 @@
 -(void)createUI{
     self.backgroundColor = [ColorManager WhiteColor];
     
-    self.attractionImgV = [[UIImageView alloc]init];
-    self.attractionImgV.backgroundColor = [ColorManager RandomColor];
-    [self addSubview:self.attractionImgV];
-    [self.attractionImgV mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.top.width.equalTo(self);
-        make.height.mas_offset(kWidth(330));
-    }];
+    self.scrollV = [[UIScrollView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kWidth(330))];
+    self.scrollV.pagingEnabled = YES;
+    [self addSubview:self.scrollV];
+    
+//    self.attractionImgV = [[UIImageView alloc]init];
+//    self.attractionImgV.backgroundColor = [ColorManager RandomColor];
+//    [self addSubview:self.attractionImgV];
+//    [self.attractionImgV mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.left.top.width.equalTo(self);
+//        make.height.mas_offset(kWidth(330));
+//    }];
     
     UIButton *closeBtn = [[UIButton alloc]init];
     [closeBtn setImage:kGetImage(@"商品详情_关闭") forState:UIControlStateNormal];
@@ -66,7 +71,7 @@
     [self.titleLab mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_offset(kWidth(20));
         make.right.mas_offset(kWidth(-20));
-        make.top.equalTo(self.attractionImgV.mas_bottom).mas_offset(kWidth(17));
+        make.top.mas_offset(kWidth(347));
     }];
     
     self.priceLab = [[UILabel alloc]init];
@@ -142,6 +147,55 @@
         make.height.mas_offset(lastLab.origin.y+lastLab.height);
     }];
     
+}
+
+-(void)setAttractionName:(NSString *)attractionName{
+    self.titleLab.text = attractionName;
+    if ([attractionName isEqualToString:@"金獅湖風景區"]) {
+        self.scrollV.contentSize = CGSizeMake(kScreenWidth*4, 0);
+        for (int i = 0; i<4; i++) {
+            UIImageView *attractionImgV = [[UIImageView alloc]initWithFrame:CGRectMake(i*kScreenWidth, 0, kScreenWidth, kWidth(330))];
+            attractionImgV.backgroundColor = [ColorManager RandomColor];
+            NSString *imgName = [NSString stringWithFormat:@"%@%d",attractionName,i];
+            attractionImgV.image = kGetImage(imgName);
+            [self.scrollV addSubview:attractionImgV];
+            
+        }
+    }else if ([attractionName isEqualToString:@"蓮池潭"]){
+        self.scrollV.contentSize = CGSizeMake(kScreenWidth*3, 0);
+        for (int i = 0; i<3; i++) {
+            UIImageView *attractionImgV = [[UIImageView alloc]initWithFrame:CGRectMake(i*kScreenWidth, 0, kScreenWidth, kWidth(330))];
+            attractionImgV.backgroundColor = [ColorManager RandomColor];
+            NSString *imgName = [NSString stringWithFormat:@"%@%d",attractionName,i];
+            attractionImgV.image = kGetImage(imgName);
+            [self.scrollV addSubview:attractionImgV];
+            
+        }
+    }
+    else if ([attractionName isEqualToString:@"夜市文化"]){
+        self.priceLab.text = @"";
+        self.scrollV.contentSize = CGSizeMake(kScreenWidth*2, 0);
+        for (int i = 0; i<2; i++) {
+            UIImageView *attractionImgV = [[UIImageView alloc]initWithFrame:CGRectMake(i*kScreenWidth, 0, kScreenWidth, kWidth(330))];
+            attractionImgV.backgroundColor = [ColorManager RandomColor];
+            NSString *imgName = [NSString stringWithFormat:@"%@%d",attractionName,i+1];
+            attractionImgV.image = kGetImage(imgName);
+            [self.scrollV addSubview:attractionImgV];
+            
+        }
+    }
+    else if ([attractionName isEqualToString:@"旗津海鲜"]){
+        self.priceLab.text = @"";
+        self.scrollV.contentSize = CGSizeMake(kScreenWidth, 0);
+        for (int i = 0; i<1; i++) {
+            UIImageView *attractionImgV = [[UIImageView alloc]initWithFrame:CGRectMake(i*kScreenWidth, 0, kScreenWidth, kWidth(330))];
+            attractionImgV.backgroundColor = [ColorManager RandomColor];
+            NSString *imgName = [NSString stringWithFormat:@"%@",attractionName];
+            attractionImgV.image = kGetImage(imgName);
+            [self.scrollV addSubview:attractionImgV];
+            
+        }
+    }
 }
 
 /*

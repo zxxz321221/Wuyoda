@@ -30,7 +30,7 @@
     
     self.backgroundColor = [ColorManager WhiteColor];
     
-    self.imgV = [[UIImageView alloc]initWithImage:kGetImage(@"地图单张")];
+    self.imgV = [[UIImageView alloc]initWithImage:kGetImage(@"高雄市")];
     //self.imgV.backgroundColor = [ColorManager RandomColor];
     [self addSubview:self.imgV];
     [self.imgV mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -41,7 +41,7 @@
     }];
     
     self.introLab = [[UILabel alloc]init];
-    self.introLab.text = @"台中市，别名中市，是台湾省中部的经济、交通、文化中心，始建于清朝，公元1886年（清光绪十二年）曾一度为台湾府的府治。\n全市下辖29个区，总面积约2215平方公里，设籍人口279.4万人（2018年），为台湾省人口排名第四的城市，也是台中都会区的核心都市。 2016年GaWC所公布之世界级城市名单中，台中市被列为Gamma-等级之城市。";
+    self.introLab.text = @"高雄市的旅游风情：拥有大都市现代风格的高雄市，旅游景点的丰富让人目不暇给，在市区有高雄85大楼、城市光廊、玫瑰圣母院、驳二艺术特区、瑞丰夜市、爱河之心(如意湖)、梦时代购物中心等，而近郊的旗津风景区、莲池潭、西子湾风景区也都有秀丽的景致供前往旅游的民众观赏；除此之外，五都合并前的高雄县，占地相当广大且旅游资源相对丰富，不论您打算来趟访古之旅拜访旗山老街、美浓、桥头糖厂，亦或是山林寻幽之旅，如阿公店水库、观音山、荖浓溪、茂林国家风景区、关山越岭古道、宝来温泉等，都可依您想到高雄旅游的目的来安排；而甫于2010年全新开幕位于大树区观音山风景区旁的义大世界，九十余公顷的面积，区域内包含学校、星级饭店、游乐世界、购物广场等涵盖文化艺术、购物美食、休闲渡假等多元主题，在南台湾掀起渡假游憩新风潮，也是您探访高雄不可错过的新兴景点。";
     self.introLab.textColor = [ColorManager Color333333];
     self.introLab.font = kFont(16);
     self.introLab.numberOfLines = 0;
