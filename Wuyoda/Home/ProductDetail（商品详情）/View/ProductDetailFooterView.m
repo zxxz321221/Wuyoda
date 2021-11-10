@@ -94,15 +94,25 @@
     }];
 }
 
+-(void)setModel:(HomeShopModel *)model{
+    _model = model;
+}
+
 -(void)addShoppingCartClicked:(UIButton *)sender{
-    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+
+    UserInfoModel *model = [UserInfoModel getUserInfoModel];
+    NSDictionary *dic = @{@"goods_id":self.model.uid,@"ps_num":@"1",@"m_id":model.member_id,@"att_value":@"",@"refer_g_uid":@"",@"api_token":[RegisterModel getUserInfoModel].user_token};
+    [FJNetTool postWithParams:dic url:Special_cart_order loading:YES success:^(id responseObject) {
+        BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
+        if ([baseModel.code isEqualToString:CODE0]) {
+            [self showHUDWithText:@"加入购物车成功" withYOffSet:0];
+        }else{
+            [self showHUDWithText:baseModel.msg withYOffSet:0];
+        }
+    } failure:^(NSError *error) {
+        
+    }];
     
-    NSMutableArray *shoppingCart = [[userDefaults valueForKey:@"shoppingCart"] mutableCopy];
-    [shoppingCart addObject:@"0"];
-    [userDefaults setObject:shoppingCart forKey:@"shoppingCart"];
-    [userDefaults synchronize];
-    
-    [self showHUDWithText:@"加入购物车成功" withYOffSet:0];
 }
 
 /*

@@ -21,6 +21,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic  , retain)UIImageView *arrowImgV;
 
+@property (nonatomic , assign)BOOL is_buy;
+
 
 @end
 

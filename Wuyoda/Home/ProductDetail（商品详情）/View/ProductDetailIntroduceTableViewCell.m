@@ -52,6 +52,10 @@
     }];
 }
 
+-(void)setModel:(HomeShopModel *)model{
+    self.introLab.text = model.goods_advance;
+}
+
 
 - (void)awakeFromNib {
     [super awakeFromNib];

@@ -44,12 +44,12 @@
 -(void)viewDidAppear:(BOOL)animated{
     [super viewDidAppear:animated];
     
-//    if (![UserInfoModel getUserInfoModel].token) {
-//        LoginViewController *VC = [[LoginViewController alloc] init];
-//        FJBaseNavigationController *nav = [[FJBaseNavigationController alloc]initWithRootViewController:VC];
-//        nav.modalPresentationStyle = UIModalPresentationFullScreen;
-//        [self presentViewController:nav animated:YES completion:nil];
-//    }
+    if (![UserInfoModel getUserInfoModel].token) {
+        LoginViewController *VC = [[LoginViewController alloc] init];
+        FJBaseNavigationController *nav = [[FJBaseNavigationController alloc]initWithRootViewController:VC];
+        nav.modalPresentationStyle = UIModalPresentationFullScreen;
+        [self presentViewController:nav animated:YES completion:nil];
+    }
     
 }
 
@@ -58,18 +58,19 @@
     if (!registerModel) {
         registerModel = [[RegisterModel alloc]init];
     }
-    if (!registerModel.user_token.length) {
-        [FJNetTool postWithParams:@{} url:Login_GetToken loading:YES success:^(id responseObject){
-            NSString *token = [[NSString alloc]initWithData:responseObject encoding:NSUTF8StringEncoding];
-            registerModel.user_token = token;
-            [RegisterModel saveUserInfoModel:registerModel];
-            [self getDataFromServer];
-        } failure:^(NSError *error) {
-
-        }];
-    }else{
+    [FJNetTool postWithParams:@{} url:Login_GetToken loading:YES success:^(id responseObject){
+        NSString *token = [[NSString alloc]initWithData:responseObject encoding:NSUTF8StringEncoding];
+        registerModel.user_token = token;
+        [RegisterModel saveUserInfoModel:registerModel];
         [self getDataFromServer];
-    }
+    } failure:^(NSError *error) {
+
+    }];
+//    if (!registerModel.user_token.length) {
+//        
+//    }else{
+//        [self getDataFromServer];
+//    }
 }
 
 -(void)getDataFromServer{

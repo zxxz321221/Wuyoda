@@ -77,6 +77,14 @@
     }];
 }
 
+-(void)setIs_buy:(BOOL)is_buy{
+    if (is_buy) {
+        [self.defaultImgV setImage:kGetImage(@"选中")];
+    }else{
+        [self.defaultImgV setImage:kGetImage(@"选择")];
+    }
+}
+
 - (void)awakeFromNib {
     [super awakeFromNib];
     // Initialization code

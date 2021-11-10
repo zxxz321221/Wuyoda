@@ -8,6 +8,7 @@
 #import "HomeSpecialProductTableViewCell.h"
 #import "HomeSpecialCollectionViewCell.h"
 #import "ProductDetailViewController.h"
+#import "HomeModel.h"
 
 @interface HomeSpecialProductTableViewCell ()<UICollectionViewDelegate,UICollectionViewDataSource>
 
@@ -67,7 +68,10 @@
 }
 
 -(void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
+    HomeShopModel *model = [self.shopArr objectAtIndex:indexPath.row];
     ProductDetailViewController *vc = [[ProductDetailViewController alloc]init];
+    vc.uid = model.uid;
+    vc.supplier_id = model.supplier_id;
     [self.CurrentViewController.navigationController pushViewController:vc animated:YES];
 }
 

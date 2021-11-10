@@ -6,12 +6,21 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "ShopCartModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
+@protocol updateCartNumDelegate <NSObject>
+
+-(void)updateCartNumwithModel:(ShopCartModel *)model;
+
+@end
+
 @interface ShoppingCarTableViewCell : UITableViewCell
 
-@property (nonatomic , copy)NSString *selectStr;
+@property (nonatomic , retain)ShopCartModel *model;
+
+@property (nonatomic , weak)id <updateCartNumDelegate>delegate;
 
 @end
 

@@ -12,6 +12,7 @@
 #import "ProductDetailEvaluateTableViewCell.h"
 #import "ProductDetailServerTableViewCell.h"
 #import "ProductDetailRecommendTableViewCell.h"
+#import "HomeModel.h"
 
 @interface ProductDetailViewController ()<UITableViewDelegate,UITableViewDataSource>
 
@@ -22,6 +23,9 @@
 
 @property (nonatomic , retain)NSMutableArray *sectionArr;
 @property (nonatomic , retain)NSMutableArray *labArr;
+
+@property (nonatomic , retain)NSMutableArray *shopArr;
+@property (nonatomic , retain)HomeShopModel *storeModel;
 
 @end
 
@@ -58,6 +62,25 @@
     
     self.sectionArr = [[NSMutableArray alloc]initWithObjects:@"商品介绍",@"客人评价",@"",@"其他好东西", nil];
     
+    [self getDataFromServer];
+    
+}
+
+-(void)getDataFromServer{
+    NSDictionary *dic = @{@"uid":self.uid,@"supplier_id":self.supplier_id,@"api_token":[RegisterModel getUserInfoModel].user_token};
+    [FJNetTool postWithParams:dic url:Store_Detail loading:YES success:^(id responseObject) {
+        BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
+        if ([baseModel.code isEqualToString:CODE0]) {
+            self.storeModel = [HomeShopModel mj_objectWithKeyValues:responseObject[@"data"]];
+            self.shopArr = [HomeShopModel mj_objectArrayWithKeyValuesArray:responseObject[@"data"][@"qita"]];
+            self.tableFooterV.model = self.storeModel;
+            [self.tableView reloadData];
+        }else{
+            [self.view showHUDWithText:baseModel.msg withYOffSet:0];
+        }
+    } failure:^(NSError *error) {
+            
+    }];
 }
 
 -(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
@@ -75,6 +98,7 @@
             cell = [[ProductDetailIntroduceTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:NSStringFromClass([ProductDetailIntroduceTableViewCell class])];
         }
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        cell.model = self.storeModel;
         
         return cell;
     }
@@ -101,6 +125,7 @@
             cell = [[ProductDetailRecommendTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:NSStringFromClass([ProductDetailRecommendTableViewCell class])];
         }
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        cell.shopArr = self.shopArr;
         
         return cell;
     }

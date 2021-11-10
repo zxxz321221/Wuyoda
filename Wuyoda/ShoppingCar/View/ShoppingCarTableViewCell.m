@@ -111,6 +111,7 @@
     self.addBtn.titleLabel.font = kFont(14);
     self.addBtn.layer.borderColor = [ColorManager ColorF2F2F2].CGColor;
     self.addBtn.layer.borderWidth = kWidth(1);
+    [self.addBtn addTarget:self action:@selector(changeCartNumClicked:) forControlEvents:UIControlEventTouchUpInside];
     [bgV addSubview:self.addBtn];
     [self.addBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.right.mas_offset(kWidth(-19));
@@ -133,11 +134,12 @@
     }];
     
     self.subtractBtn = [[UIButton alloc]init];
-    [self.subtractBtn setTitle:@"+" forState:UIControlStateNormal];
+    [self.subtractBtn setTitle:@"-" forState:UIControlStateNormal];
     [self.subtractBtn setTitleColor:[ColorManager BlackColor] forState:UIControlStateNormal];
     self.subtractBtn.titleLabel.font = kFont(14);
     self.subtractBtn.layer.borderColor = [ColorManager ColorF2F2F2].CGColor;
     self.subtractBtn.layer.borderWidth = kWidth(1);
+    [self.subtractBtn addTarget:self action:@selector(changeCartNumClicked:) forControlEvents:UIControlEventTouchUpInside];
     [bgV addSubview:self.subtractBtn];
     [self.subtractBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.right.equalTo(self.numLab.mas_left).mas_offset(kWidth(1));
@@ -146,12 +148,43 @@
     }];
 }
 
--(void)setSelectStr:(NSString *)selectStr{
-    if ([selectStr isEqualToString:@"0"]) {
-        [self.selectImgV setImage:kGetImage(@"选择")];
-    }else{
+
+-(void)setModel:(ShopCartModel *)model{
+    _model = model;
+    self.nameLab.text = model.goods_name;
+    [self.imgV sd_setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@",HTTP,model.goods_file1]]];
+    if (model.isSelect.length && [model.isSelect isEqualToString:@"1"]) {
         [self.selectImgV setImage:kGetImage(@"选中")];
+    }else{
+        [self.selectImgV setImage:kGetImage(@"选择")];
     }
+    self.oldPriceLab.text = model.ori_price;
+    self.priceLab.text = model.cart_price;
+    self.numLab.text = model.cart_num;
+}
+
+-(void)changeCartNumClicked:(UIButton *)sender{
+    NSInteger num = [self.model.cart_num integerValue];
+    if (sender == self.addBtn) {
+        num += 1;
+    }else{
+        num -= 1;
+    }
+    NSDictionary *dic = @{@"cart_id":self.model.uid,@"num":[NSString stringWithFormat:@"%ld",num],@"api_token":[RegisterModel getUserInfoModel].user_token};
+    
+    [FJNetTool postWithParams:dic url:Specia_cart_num loading:YES success:^(id responseObject) {
+        BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
+        if ([baseModel.code isEqualToString:CODE0]) {
+            self.model.cart_num = [NSString stringWithFormat:@"%ld",num];
+            if (self.delegate && [self.delegate respondsToSelector:@selector(updateCartNumwithModel:)]) {
+                [self.delegate updateCartNumwithModel:self.model];
+            }
+        }else{
+            [self showHUDWithText:baseModel.msg withYOffSet:0];
+        }
+    } failure:^(NSError *error) {
+        
+    }];
 }
 
 - (void)awakeFromNib {

@@ -90,6 +90,10 @@
 		F152F0C52718138400C3C411 /* MessageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F152F0C42718138400C3C411 /* MessageViewController.m */; };
 		F152F0C8271813EB00C3C411 /* MessageTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F152F0C7271813EB00C3C411 /* MessageTableViewCell.m */; };
 		F152F0CB27181B8300C3C411 /* ShoppingCartEmptyView.m in Sources */ = {isa = PBXBuildFile; fileRef = F152F0CA27181B8300C3C411 /* ShoppingCartEmptyView.m */; };
+		F1571CAD273A633600D78111 /* ShopCartModel.m in Sources */ = {isa = PBXBuildFile; fileRef = F1571CAC273A633600D78111 /* ShopCartModel.m */; };
+		F1571CB1273BCEF800D78111 /* AddressModel.m in Sources */ = {isa = PBXBuildFile; fileRef = F1571CB0273BCEF800D78111 /* AddressModel.m */; };
+		F1571CB5273BCF9800D78111 /* OrderModel.m in Sources */ = {isa = PBXBuildFile; fileRef = F1571CB4273BCF9800D78111 /* OrderModel.m */; };
+		F1571CB9273BD8C100D78111 /* PayModel.m in Sources */ = {isa = PBXBuildFile; fileRef = F1571CB8273BD8C100D78111 /* PayModel.m */; };
 		F18548AA2713CFDA00A2F954 /* ChangePhoneViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F18548A92713CFDA00A2F954 /* ChangePhoneViewController.m */; };
 		F18548AD2713D15A00A2F954 /* ChangeEmailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F18548AC2713D15A00A2F954 /* ChangeEmailViewController.m */; };
 		F18548B127140F5900A2F954 /* OrderViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F18548B027140F5900A2F954 /* OrderViewController.m */; };
@@ -436,6 +440,14 @@
 		F152F0C7271813EB00C3C411 /* MessageTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MessageTableViewCell.m; sourceTree = "<group>"; };
 		F152F0C927181B8300C3C411 /* ShoppingCartEmptyView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShoppingCartEmptyView.h; sourceTree = "<group>"; };
 		F152F0CA27181B8300C3C411 /* ShoppingCartEmptyView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ShoppingCartEmptyView.m; sourceTree = "<group>"; };
+		F1571CAB273A633600D78111 /* ShopCartModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShopCartModel.h; sourceTree = "<group>"; };
+		F1571CAC273A633600D78111 /* ShopCartModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ShopCartModel.m; sourceTree = "<group>"; };
+		F1571CAF273BCEF800D78111 /* AddressModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AddressModel.h; sourceTree = "<group>"; };
+		F1571CB0273BCEF800D78111 /* AddressModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AddressModel.m; sourceTree = "<group>"; };
+		F1571CB3273BCF9800D78111 /* OrderModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OrderModel.h; sourceTree = "<group>"; };
+		F1571CB4273BCF9800D78111 /* OrderModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OrderModel.m; sourceTree = "<group>"; };
+		F1571CB7273BD8C100D78111 /* PayModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PayModel.h; sourceTree = "<group>"; };
+		F1571CB8273BD8C100D78111 /* PayModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PayModel.m; sourceTree = "<group>"; };
 		F18548A82713CFDA00A2F954 /* ChangePhoneViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ChangePhoneViewController.h; sourceTree = "<group>"; };
 		F18548A92713CFDA00A2F954 /* ChangePhoneViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ChangePhoneViewController.m; sourceTree = "<group>"; };
 		F18548AB2713D15A00A2F954 /* ChangeEmailViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ChangeEmailViewController.h; sourceTree = "<group>"; };
@@ -980,6 +992,7 @@
 		F12D9A942702B3DB00AE79FF /* Pay（付款） */ = {
 			isa = PBXGroup;
 			children = (
+				F1571CB6273BD8AE00D78111 /* Model */,
 				F12D9A952702B3FF00AE79FF /* PayViewController.h */,
 				F12D9A962702B3FF00AE79FF /* PayViewController.m */,
 				F12D9A982702DF2800AE79FF /* PaySuccessViewController.h */,
@@ -1057,6 +1070,7 @@
 		F14080A0270192FA0022DCF9 /* Address（地址） */ = {
 			isa = PBXGroup;
 			children = (
+				F1571CAE273BCEE300D78111 /* Model */,
 				F14080A42701937E0022DCF9 /* View */,
 				F14080A1270193320022DCF9 /* AddressListViewController.h */,
 				F14080A2270193320022DCF9 /* AddressListViewController.m */,
@@ -1082,6 +1096,7 @@
 		F14F082627000D760098A352 /* OrderDetail（订单详情） */ = {
 			isa = PBXGroup;
 			children = (
+				F1571CB2273BCF8200D78111 /* Model */,
 				F14F082A270022400098A352 /* View */,
 				F14F082727000DF20098A352 /* OrderDetailViewController.h */,
 				F14F082827000DF20098A352 /* OrderDetailViewController.m */,
@@ -1152,6 +1167,42 @@
 				F152F0C12718091E00C3C411 /* HelperTableViewCell.m */,
 			);
 			path = View;
+			sourceTree = "<group>";
+		};
+		F1571CAA273A631200D78111 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				F1571CAB273A633600D78111 /* ShopCartModel.h */,
+				F1571CAC273A633600D78111 /* ShopCartModel.m */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		F1571CAE273BCEE300D78111 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				F1571CAF273BCEF800D78111 /* AddressModel.h */,
+				F1571CB0273BCEF800D78111 /* AddressModel.m */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		F1571CB2273BCF8200D78111 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				F1571CB3273BCF9800D78111 /* OrderModel.h */,
+				F1571CB4273BCF9800D78111 /* OrderModel.m */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		F1571CB6273BD8AE00D78111 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				F1571CB7273BD8C100D78111 /* PayModel.h */,
+				F1571CB8273BD8C100D78111 /* PayModel.m */,
+			);
+			path = Model;
 			sourceTree = "<group>";
 		};
 		F18548AE27140F3700A2F954 /* Order（订单） */ = {
@@ -1695,6 +1746,7 @@
 		F186EE3E26E9D30D004E4DB6 /* ShoppingCar */ = {
 			isa = PBXGroup;
 			children = (
+				F1571CAA273A631200D78111 /* Model */,
 				F12D9A942702B3DB00AE79FF /* Pay（付款） */,
 				F14080A0270192FA0022DCF9 /* Address（地址） */,
 				F14F082627000D760098A352 /* OrderDetail（订单详情） */,
@@ -2205,6 +2257,7 @@
 				F124238926F57EE4005B20C6 /* AttractionsListNavView.m in Sources */,
 				F12D9AB427040E7A00AE79FF /* SettingViewController.m in Sources */,
 				F186EE4126E9D330004E4DB6 /* ShoppingCarViewController.m in Sources */,
+				F1571CB5273BCF9800D78111 /* OrderModel.m in Sources */,
 				F14080AD2701A9080022DCF9 /* AddressInfoTableViewCell.m in Sources */,
 				F1AC8B40270FD5630007A015 /* AboutTableViewCell.m in Sources */,
 				F124234C26F1DF46005B20C6 /* ProductDetailEvaluateTableViewCell.m in Sources */,
@@ -2212,6 +2265,7 @@
 				F19182F526FAF23C00446003 /* CityDetailViewController.m in Sources */,
 				F186EDBB26E9AEE0004E4DB6 /* UIButton+FJImageTitleSpacing.m in Sources */,
 				F124238F26F5C1CD005B20C6 /* AttractionDetailHeaderView.m in Sources */,
+				F1571CAD273A633600D78111 /* ShopCartModel.m in Sources */,
 				F186EDEE26E9AF57004E4DB6 /* NSLayoutConstraint+BSIBDesignable.m in Sources */,
 				F186EDCD26E9AEE0004E4DB6 /* UILabel+FJExtension.m in Sources */,
 				F186EDCA26E9AEE0004E4DB6 /* UIView+IBExtension.m in Sources */,
@@ -2224,6 +2278,7 @@
 				F152F0B72717D55E00C3C411 /* LogisticsTableViewCell.m in Sources */,
 				F186ED6926E9AE66004E4DB6 /* DataModel.m in Sources */,
 				F186EDBD26E9AEE0004E4DB6 /* UIImage+ColorAtPixel.m in Sources */,
+				F1571CB1273BCEF800D78111 /* AddressModel.m in Sources */,
 				F186ED1E26E9AE3B004E4DB6 /* YYDiskCache.m in Sources */,
 				F124234026F1851A005B20C6 /* ProductDetailHeaderView.m in Sources */,
 				F186EE1D26E9AFED004E4DB6 /* TAPageControl.m in Sources */,
@@ -2269,6 +2324,7 @@
 				F186ECE026E9AA43004E4DB6 /* main.m in Sources */,
 				F18548B127140F5900A2F954 /* OrderViewController.m in Sources */,
 				F186EE1C26E9AFED004E4DB6 /* TADotView.m in Sources */,
+				F1571CB9273BD8C100D78111 /* PayModel.m in Sources */,
 				F124235526F2E3A5005B20C6 /* ProductDetailFooterView.m in Sources */,
 				F152F09B2716B20800C3C411 /* EvaluateViewController.m in Sources */,
 				F12D9AB027030E1900AE79FF /* MineTableViewCell.m in Sources */,

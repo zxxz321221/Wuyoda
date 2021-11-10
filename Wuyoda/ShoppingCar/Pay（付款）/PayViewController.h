@@ -11,6 +11,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface PayViewController : FJBaseViewController
 
+@property (nonatomic , retain)NSDictionary *cartListDic;
+
 @end
 
 NS_ASSUME_NONNULL_END

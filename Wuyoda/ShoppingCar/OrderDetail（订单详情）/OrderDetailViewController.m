@@ -13,12 +13,18 @@
 #import "AddressListViewController.h"
 #import "OrderDetailBottomView.h"
 #import "PayViewController.h"
+#import "ShopCartModel.h"
+#import "AddressModel.h"
 
 @interface OrderDetailViewController ()<UITableViewDelegate,UITableViewDataSource>
 
 @property (nonatomic , retain)UITableView *tableView;
 
 @property (nonatomic , retain)OrderDetailBottomView *bottomV;
+
+@property (nonatomic , retain)AddressModel *addressModel;
+
+@property (nonatomic , retain)NSDictionary *cartListDic;
 
 @end
 
@@ -48,10 +54,38 @@
         make.bottom.width.left.equalTo(self.view);
         make.height.mas_offset(kWidth(48)+kHeight_SafeArea);
     }];
+    
+    [self getDataFromServer];
+}
+
+-(void)getDataFromServer{
+    NSString *cartIDStr = @"";
+    for (int i = 0; i<self.cartArr.count; i++) {
+        ShopCartModel *model = [self.cartArr objectAtIndex:i];
+        if (i == 0) {
+            cartIDStr = model.uid;
+        }else{
+            cartIDStr = [cartIDStr stringByAppendingFormat:@",%@",model.uid];
+        }
+    }
+    
+    [FJNetTool postWithParams:@{@"cart_id":cartIDStr,@"api_token":[RegisterModel getUserInfoModel].user_token,@"m_id":[UserInfoModel getUserInfoModel].member_id} url:Specia_confirm_order loading:YES success:^(id responseObject) {
+        BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
+        if ([baseModel.code isEqualToString:CODE0]) {
+            self.addressModel = [AddressModel mj_objectWithKeyValues:responseObject[@"data"][@"address"]];
+            self.cartListDic = responseObject[@"data"][@"cart_list"];
+            [self.tableView reloadData];
+        }
+        
+    } failure:^(NSError *error) {
+        
+    }];
+    
 }
 
 -(void)payClicked{
     PayViewController *vc = [[PayViewController alloc]init];
+    vc.cartListDic = self.cartListDic;
     [self.navigationController pushViewController:vc animated:YES];
 }
 
@@ -62,6 +96,7 @@
             cell = [[OrderAddressTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:NSStringFromClass([OrderAddressTableViewCell class])];
         }
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        cell.model = self.addressModel;
         
         return cell;
     }

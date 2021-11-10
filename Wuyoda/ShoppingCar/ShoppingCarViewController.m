@@ -12,8 +12,9 @@
 #import "ShoppingCartEmptyView.h"
 #import "OrderInfoViewController.h"
 #import "OrderDetailViewController.h"
+#import "ShopCartModel.h"
 
-@interface ShoppingCarViewController ()<UITableViewDelegate,UITableViewDataSource>
+@interface ShoppingCarViewController ()<UITableViewDelegate,UITableViewDataSource,updateCartNumDelegate>
 
 @property (nonatomic , retain)UITableView *tableView;
 
@@ -30,17 +31,16 @@
 -(void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
     
-    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+//    [self.tableView reloadData];
+//    if (self.shoppingCartArr.count) {
+//        self.tableView.hidden = NO;
+//        self.bottomV.hidden = NO;
+//    }else{
+//        self.tableView.hidden = YES;
+//        self.bottomV.hidden = YES;
+//    }
     
-    self.shoppingCartArr = [[userDefaults valueForKey:@"shoppingCart"] mutableCopy];
-    [self.tableView reloadData];
-    if (self.shoppingCartArr.count) {
-        self.tableView.hidden = NO;
-        self.bottomV.hidden = NO;
-    }else{
-        self.tableView.hidden = YES;
-        self.bottomV.hidden = YES;
-    }
+    [self getDataFromServer];
 }
 
 - (void)viewDidLoad {
@@ -108,21 +108,66 @@
     
 }
 
+-(void)getDataFromServer{
+    NSDictionary *dic = @{@"m_id":[UserInfoModel getUserInfoModel].member_id,@"api_token":[RegisterModel getUserInfoModel].user_token};
+    
+    [FJNetTool postWithParams:dic url:Store_order_cart loading:YES success:^(id responseObject) {
+        BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
+        if ([baseModel.code isEqualToString:CODE0]) {
+            self.shoppingCartArr = [ShopCartModel mj_objectArrayWithKeyValuesArray:responseObject[@"data"][@"cart_list"]];
+            if (self.shoppingCartArr.count) {
+                self.emptyV.hidden = YES;
+                self.tableView.hidden = NO;
+                self.bottomV.hidden = NO;
+                [self.tableView reloadData];
+            }else{
+                self.tableView.hidden = YES;
+                self.bottomV.hidden = YES;
+                self.emptyV.hidden = NO;
+            }
+            
+        }else{
+            [self.view showHUDWithText:baseModel.msg withYOffSet:0];
+        }
+    } failure:^(NSError *error) {
+            
+    }];
+}
+
 -(void)selectedAllClicked:(UIButton *)sender{
     sender.selected = !sender.isSelected;
+    
     for (int i = 0; i<self.shoppingCartArr.count; i++) {
+        ShopCartModel *model = [self.shoppingCartArr objectAtIndex:i];
         if (sender.isSelected) {
-            [self.shoppingCartArr replaceObjectAtIndex:i withObject:@"1"];
+            model.isSelect = @"1";
         }else{
-            [self.shoppingCartArr replaceObjectAtIndex:i withObject:@"0"];
+            model.isSelect = @"0";
         }
+        [self.shoppingCartArr replaceObjectAtIndex:i withObject:model];
     }
+    
     [self.tableView reloadData];
+    
+    [self handleCartPrice];
 }
 
 -(void)cleaningShoppingCartClicked{
-    OrderDetailViewController *vc = [[OrderDetailViewController alloc]init];
-    [self.navigationController pushViewController:vc animated:YES];
+    NSMutableArray *cartArr = [NSMutableArray array];
+    for (int i = 0; i<self.shoppingCartArr.count; i++) {
+        ShopCartModel *model = [self.shoppingCartArr objectAtIndex:i];
+        if ([model.isSelect isEqualToString:@"1"]) {
+            [cartArr addObject:model];
+        }
+    }
+    if (cartArr.count) {
+        OrderDetailViewController *vc = [[OrderDetailViewController alloc]init];
+        vc.cartArr = cartArr;
+        [self.navigationController pushViewController:vc animated:YES];
+    }else{
+        [self.view showHUDWithText:@"请选择商品" withYOffSet:0];
+    }
+    
     
 //    OrderInfoViewController *vc = [[OrderInfoViewController alloc]init];
 //    vc.type = @"1";
@@ -134,16 +179,6 @@
 }
 
 -(void)deleteGoodsClicked:(UIButton *)sender{
-    for (int i = 0; i<self.shoppingCartArr.count; i++) {
-        NSString *selectStr = [self.shoppingCartArr objectAtIndex:i];
-        if ([selectStr isEqualToString:@"1"]) {
-            [self.shoppingCartArr removeObjectAtIndex:i];
-        }
-    }
-    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
-    [userDefaults setObject:self.shoppingCartArr forKey:@"shoppingCart"];
-    [userDefaults synchronize];
-    [self.tableView reloadData];
     
 }
 
@@ -167,6 +202,19 @@
     
 }
 
+-(void)updateCartNumwithModel:(ShopCartModel *)model{
+    for (int i = 0; i<self.shoppingCartArr.count; i++) {
+        ShopCartModel *subModel = [self.shoppingCartArr objectAtIndex:i];
+        if ([subModel.uid isEqualToString:model.uid]) {
+            [self.shoppingCartArr replaceObjectAtIndex:i withObject:model];
+            break;
+        }
+    }
+    [self.tableView reloadData];
+    
+    [self handleCartPrice];
+}
+
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     ShoppingCarTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:NSStringFromClass([ShoppingCarTableViewCell class]) forIndexPath:indexPath];
     if (!cell) {
@@ -174,8 +222,8 @@
     }
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     cell.backgroundColor = [ColorManager ColorF2F2F2];
-    
-    cell.selectStr = [self.shoppingCartArr objectAtIndex:indexPath.row];
+    cell.delegate = self;
+    cell.model = [self.shoppingCartArr objectAtIndex:indexPath.row];
     
     return cell;
 }
@@ -203,13 +251,36 @@
 }
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
-    NSString *str = [self.shoppingCartArr objectAtIndex:indexPath.row];
-    if ([str isEqualToString:@"0"]) {
-        [self.shoppingCartArr replaceObjectAtIndex:indexPath.row withObject:@"1"];
+
+    ShopCartModel *model = [self.shoppingCartArr objectAtIndex:indexPath.row];
+    if ([model.isSelect isEqualToString:@"1"]) {
+        model.isSelect = @"0";
+        
     }else{
-        [self.shoppingCartArr replaceObjectAtIndex:indexPath.row withObject:@"0"];
+        model.isSelect = @"1";
     }
+    [self.shoppingCartArr replaceObjectAtIndex:indexPath.row withObject:model];
     [tableView reloadData];
+    
+    [self handleCartPrice];
+}
+
+-(void)handleCartPrice{
+    CGFloat allPrice = 0;
+    BOOL selectAll = YES;
+    for (int i = 0; i<self.shoppingCartArr.count; i++) {
+        ShopCartModel *model = [self.shoppingCartArr objectAtIndex:i];
+        CGFloat price = [model.ori_price floatValue];
+        NSInteger num = [model.cart_num integerValue];
+        if (![model.isSelect isEqualToString:@"1"]) {
+            selectAll = NO;
+        }else{
+            allPrice += (price *num);
+        }
+    }
+    
+    self.bottomV.priceLab.text = [NSString stringWithFormat:@"%.2f",allPrice];
+    self.bottomV.selectBtn.selected = selectAll;
 }
 
 

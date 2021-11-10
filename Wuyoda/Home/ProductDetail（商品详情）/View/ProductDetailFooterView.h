@@ -6,10 +6,13 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "HomeModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface ProductDetailFooterView : UIView
+
+@property (nonatomic , retain)HomeShopModel *model;
 
 @end
 

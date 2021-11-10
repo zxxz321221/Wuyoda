@@ -17,8 +17,6 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
     
-    [[NSUserDefaults standardUserDefaults] setObject:[NSMutableArray new] forKey:@"shoppingCart"];
-    [[NSUserDefaults standardUserDefaults] synchronize];
     if (@available(iOS 13.0, *)) {
       
         } else {

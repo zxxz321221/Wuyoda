@@ -73,7 +73,7 @@
     [self.addressLab mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_offset(kWidth(43));
         make.right.mas_offset(kWidth(-36));
-        make.top.equalTo(self.nameLab.mas_bottom).mas_offset(kWidth(8));
+        make.bottom.mas_offset(kWidth(-12));
     }];
     
     UIImageView *arrowImgV = [[UIImageView alloc]initWithImage:kGetImage(@"")];
@@ -92,6 +92,13 @@
         make.height.mas_offset(kWidth(1));
     }];
     
+}
+
+-(void)setModel:(AddressModel *)model{
+    _model = model;
+    self.nameLab.text = model.name;
+    self.phoneLab.text = model.mobile;
+    self.addressLab.text = [NSString stringWithFormat:@"%@%@%@%@",model.province,model.city,model.county,model.address];
 }
 
 - (void)awakeFromNib {

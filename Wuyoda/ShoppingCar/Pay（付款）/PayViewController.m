@@ -7,8 +7,14 @@
 
 #import "PayViewController.h"
 #import "PaySuccessViewController.h"
+#import "ShopCartModel.h"
+#import "PayModel.h"
 
 @interface PayViewController ()
+
+@property (nonatomic , retain)PayModel *payModel;
+
+@property (nonatomic , retain)UILabel *priceLab;
 
 @end
 
@@ -34,9 +40,10 @@
     }];
     
     UILabel *priceLab = [[UILabel alloc]init];
-    priceLab.text = @"￥349";
+    priceLab.text = @"￥0";
     priceLab.textColor = [ColorManager BlackColor];
     priceLab.font = kFont(36);
+    self.priceLab = priceLab;
     [topV addSubview:priceLab];
     [priceLab mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.equalTo(topV);
@@ -88,6 +95,43 @@
         make.top.equalTo(payTypeView.mas_bottom).mas_offset(kWidth(63));
         make.width.mas_offset(kWidth(350));
         make.height.mas_offset(kWidth(42));
+    }];
+    
+    [self getDataFromServer];
+}
+
+-(void)getDataFromServer{
+    NSArray *allKeys = [self.cartListDic allKeys];
+    NSMutableDictionary *cartIdDic = [[NSMutableDictionary alloc]init];
+    for (int i = 0; i<allKeys.count; i++) {
+        NSArray *goodsArr = [self.cartListDic objectForKey:allKeys[i]];
+        NSArray *goodsModelArr = [ShopCartModel mj_objectArrayWithKeyValuesArray:goodsArr];
+        NSString *idStr = @"";
+        for (int j = 0; j<goodsModelArr.count; j++) {
+            ShopCartModel *model = [goodsModelArr objectAtIndex:j];
+            if (j == 0) {
+                idStr = model.uid;
+            }else{
+                idStr = [idStr stringByAppendingFormat:@",%@",model.uid];
+            }
+            [cartIdDic setObject:idStr forKey:allKeys[i]];
+        }
+    }
+    
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:cartIdDic options:NSJSONWritingPrettyPrinted error:nil];
+        
+    NSString * cart_uid = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    
+    NSDictionary *dic = @{@"m_id":[UserInfoModel getUserInfoModel].member_id,@"cart_uid":cart_uid,@"api_token":[RegisterModel getUserInfoModel].user_token};
+    
+    [FJNetTool postWithParams:dic url:Specia_order_create loading:YES success:^(id responseObject) {
+        BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
+        if ([baseModel.code isEqualToString:CODE0]) {
+            self.payModel = [PayModel mj_objectWithKeyValues:[responseObject[@"data"] firstObject]];
+            self.priceLab.text = [NSString stringWithFormat:@"￥%@",self.payModel.total_price];
+        }
+    } failure:^(NSError *error) {
+        
     }];
 }
 

@@ -6,10 +6,13 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "AddressModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface OrderAddressTableViewCell : UITableViewCell
+
+@property (nonatomic , retain)AddressModel *model;
 
 @end
 

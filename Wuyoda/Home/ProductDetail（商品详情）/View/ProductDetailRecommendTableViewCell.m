@@ -7,6 +7,7 @@
 
 #import "ProductDetailRecommendTableViewCell.h"
 #import "HomeSpecialCollectionViewCell.h"
+#import "HomeModel.h"
 
 @interface ProductDetailRecommendTableViewCell ()<UICollectionViewDelegate,UICollectionViewDataSource>
 
@@ -43,7 +44,8 @@
 -(__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
     HomeSpecialCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass([HomeSpecialCollectionViewCell class]) forIndexPath:indexPath];
     
-    cell.imgName = [NSString stringWithFormat:@"home_special_good%ld",indexPath.row+1];
+    //cell.imgName = [NSString stringWithFormat:@"home_special_good%ld",indexPath.row+1];
+    cell.model = [self.shopArr objectAtIndex:indexPath.row];
     
     return cell;
 }
@@ -53,7 +55,12 @@
 }
 
 -(NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section{
-    return 4;
+    return self.shopArr.count;
+}
+
+-(void)setShopArr:(NSArray *)shopArr{
+    _shopArr = shopArr;
+    [self.collectionV reloadData];
 }
 
 - (void)awakeFromNib {

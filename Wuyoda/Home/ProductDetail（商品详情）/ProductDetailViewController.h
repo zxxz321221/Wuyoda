@@ -11,6 +11,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface ProductDetailViewController : FJBaseViewController
 
+@property (nonatomic , copy)NSString *uid;
+
+@property (nonatomic , copy)NSString *supplier_id;
+
 @end
 
 NS_ASSUME_NONNULL_END

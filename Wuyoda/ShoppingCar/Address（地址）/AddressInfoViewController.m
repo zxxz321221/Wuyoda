@@ -19,6 +19,16 @@
 
 @property (nonatomic  , retain)AddressInfoFooterView *footerV;
 
+@property (nonatomic , retain)UITextField *nameField;
+@property (nonatomic , retain)UITextField *phoneField;
+@property (nonatomic , retain)UITextField *addressField;
+@property (nonatomic , retain)UITextField *numField;
+@property (nonatomic , retain)UITextField *realNameField;
+@property (nonatomic , retain)UITextField *idNumField;
+@property (nonatomic , assign)BOOL is_buy;
+@property (nonatomic , retain)UIImage *front_id;
+@property (nonatomic , retain)UIImage *reverse_id;
+
 @end
 
 @implementation AddressInfoViewController
@@ -62,7 +72,53 @@
     self.placeholderArr = @[@[@"您的姓名",@"您的手机号",@"小区/写字楼/学校",@"例：8号楼808室",@""],@[@"请输入姓名",@"请输入身份证号"]];
 }
 -(void)saveAddressClicked{
-    [self.navigationController popViewControllerAnimated:YES];
+    self.front_id = kGetImage(@"手办礼品1");
+    self.reverse_id = kGetImage(@"手办礼品2");
+    
+    NSDictionary *dic = @{@"consignee":self.nameField.text,@"province":@"辽宁省",@"city":@"大连市",@"county":@"甘井子区",@"address":[NSString stringWithFormat:@"%@%@",self.addressField.text,self.numField.text],@"mobile":self.phoneField.text,@"m_uid":[UserInfoModel getUserInfoModel].uid,@"is_buy":[NSString stringWithFormat:@"%d",self.is_buy],@"name":self.realNameField.text,@"card":self.idNumField.text,@"front_ID":@"xxxx.png",@"reverse_ID":@"xxxxx.png",@"api_token":[RegisterModel getUserInfoModel].user_token};
+    
+//    FJNetTool uploadWithURL:<#(NSString *)#> params:<#(NSDictionary *)#> images:<#(NSArray<UIImage *> *)#> name:<#(NSString *)#> filename:<#(NSArray<NSString *> *)#> loading:<#(BOOL)#> imageScale:<#(CGFloat)#> imageType:<#(NSString *)#> progress:<#^(NSProgress *progress)progres#> success:<#^(id responseObject)success#> failure:<#^(NSError *error)failure#>
+    
+    AFHTTPSessionManager *sessionManager = [AFHTTPSessionManager manager];
+    [sessionManager POST:[NSString stringWithFormat:@"%@%@",HTTP,Specia_address_add] parameters:dic headers:nil constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
+        NSData *data =UIImageJPEGRepresentation(self.front_id,0.5);//把要上传的图片转成NSData
+
+        //把要上传的文件转成NSData
+        //NSString*path=[[NSBundlemainBundle]pathForResource:@"123"ofType:@"txt"];
+
+        //NSData*fileData = [NSDatadataWithContentsOfFile:path];
+
+        [formData appendPartWithFileData:data name:@"uploadFile" fileName:@"front_ID" mimeType:@"image/png"];//给定数据流的数据名，文件名，文件类型（以图片为例）
+        
+        
+
+        NSData *data2 =UIImageJPEGRepresentation(self.reverse_id,0.5);//把要上传的图片转成NSData
+
+        //把要上传的文件转成NSData
+        //NSString*path=[[NSBundlemainBundle]pathForResource:@"123"ofType:@"txt"];
+
+        //NSData*fileData = [NSDatadataWithContentsOfFile:path];
+
+        [formData appendPartWithFileData:data2 name:@"uploadFile" fileName:@"reverse_id" mimeType:@"image/png"];//给定数据流的数据名，文件名，文件类型（以图片为例）
+        
+        } progress:^(NSProgress * _Nonnull uploadProgress) {
+            
+        } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+            
+        } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+            
+        }];
+    
+//    [FJNetTool postWithParams:dic url:Specia_address_add loading:YES success:^(id responseObject) {
+//        BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
+//        if ([baseModel.code isEqualToString:CODE0]) {
+//            [self.navigationController popViewControllerAnimated:YES];
+//        }
+//    } failure:^(NSError *error) {
+//
+//    }];
+    
+    
 }
 
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -74,6 +130,8 @@
     
     cell.titleLab.text = self.titleArr[indexPath.section][indexPath.row];
     cell.infoTextField.placeholder = self.placeholderArr[indexPath.section][indexPath.row];
+    
+    cell.is_buy = self.is_buy;
     
     if (indexPath.section == 0 && indexPath.row == 4) {
         cell.titleLab.hidden = YES;
@@ -90,6 +148,31 @@
         
         if (indexPath.section == 0 && indexPath.row == 2) {
             cell.arrowImgV.hidden = NO;
+        }
+    }
+    
+    
+    if (indexPath.section == 0) {
+        if (indexPath.row == 0) {
+            self.nameField = cell.infoTextField;
+        }
+        if (indexPath.row == 1) {
+            self.phoneField = cell.infoTextField;
+        }
+
+        if (indexPath.row == 2) {
+            self.addressField = cell.infoTextField;
+        }
+
+        if (indexPath.row == 3) {
+            self.numField = cell.infoTextField;
+        }
+    }else{
+        if (indexPath.row == 0) {
+            self.realNameField = cell.infoTextField;
+        }
+        if (indexPath.row == 1) {
+            self.idNumField = cell.infoTextField;
         }
     }
     
@@ -126,6 +209,11 @@
     UIView *headerV = [[UIView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kWidth(10))];
     headerV.backgroundColor = [ColorManager ColorF2F2F2];
     return headerV;
+}
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    if (indexPath.section == 0 && indexPath.row == 4) {
+        self.is_buy = !self.is_buy;
+    }
 }
 
 /*

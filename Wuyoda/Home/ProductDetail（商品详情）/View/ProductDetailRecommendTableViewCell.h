@@ -11,6 +11,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface ProductDetailRecommendTableViewCell : UITableViewCell
 
+@property (nonatomic , retain)NSArray *shopArr;
+
 @end
 
 NS_ASSUME_NONNULL_END
