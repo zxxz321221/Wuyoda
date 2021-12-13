@@ -46,8 +46,8 @@
 #define kNSKeyedArchPathUserList [[NSHomeDirectory() stringByAppendingPathComponent:@"Documents"]      stringByAppendingPathComponent:@"UserDetailInfoList.arch"]
 
 // 微信相关
-#define WXPatient_App_ID @"wxea5e44cedff4f795"
-#define WXPatient_App_Secret @"722f913770c1613d39e3fce49a6a9e1b"
+#define WXPatient_App_ID @"wx05a006c8129ec1fa"
+#define WXPatient_App_Secret @"31d048e49961980c421c2cd13bd3ce4c"
 #define WX_ACCESS_TOKEN @"access_token"
 #define WX_OPEN_ID @"openid"
 #define WX_REFRESH_TOKEN @"refresh_token"
@@ -55,7 +55,7 @@
 #define WX_BASE_URL @"https://api.weixin.qq.com/sns"
 #define WX_USER_HEADER @"user_header"
 #define WX_USER_NICKNAME @"user_nickName"
-#define WXPatient_App_NIVERSAL_LINK @"https://HuoJian.HuoZhiShop/"
+#define WXPatient_App_NIVERSAL_LINK @"https://dyh.wuyoda/app/"
 
 //环信相关key
 #define ImServiceKey @"kefuchannelimid_258000"
@@ -137,7 +137,7 @@ _Pragma("clang diagnostic pop")
 #import "MYLabel.h"
 #import "UIImage+Blur.h"
 #import "UIImage+ImageEffects.h"
-
+#import "WXApi.h"
 
 
 #define HEX_COLOR(hex)              [UIColor nb_colorWithHex:hex alpha:1.0]

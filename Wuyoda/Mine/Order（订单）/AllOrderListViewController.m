@@ -7,10 +7,22 @@
 
 #import "AllOrderListViewController.h"
 #import "OrderListTableViewCell.h"
+#import "OrderInfoViewController.h"
+#import "OrderListModel.h"
+#import "ChangeOrderAddressViewController.h"
+#import "OrderCancelViewController.h"
+#import "LogisticsViewController.h"
+#import "EvaluateViewController.h"
+#import "PayInfoModel.h"
+#import "PayInfoViewController.h"
 
 @interface AllOrderListViewController ()<UITableViewDelegate, UITableViewDataSource>
 
 @property (nonatomic , retain)UITableView *tableView;
+
+@property (nonatomic , retain)NSMutableArray *ordersArr;
+
+@property (nonatomic , assign)NSInteger page;
 
 @end
 
@@ -28,7 +40,113 @@
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.tableView.backgroundColor = [ColorManager ColorF2F2F2];
     
+    __weak typeof (self) weakSelf = self;
+    self.tableView.mj_header = [MJRefreshNormalHeader headerWithRefreshingBlock:^{
+        [weakSelf getDataFromServer:YES];
+    }];
+    self.tableView.mj_footer = [MJRefreshBackNormalFooter footerWithRefreshingBlock:^{
+        [weakSelf getDataFromServer:NO];
+    }];
+    
+    [self getDataFromServer:YES];
     [self.view addSubview:self.tableView];
+}
+
+-(void)getDataFromServer:(BOOL)isRefresh{
+    if (isRefresh) {
+        self.page = 1;
+    }
+    
+    NSDictionary *dic = @{@"m_id":[UserInfoModel getUserInfoModel].member_id,@"status":@"0",@"page":[NSString stringWithFormat:@"%ld",self.page],@"limit":@"10",@"api_token":[RegisterModel getUserInfoModel].user_token};
+    
+    [FJNetTool postWithParams:dic url:Special_orders loading:YES success:^(id responseObject) {
+        BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
+        if ([baseModel.code isEqualToString:CODE0]) {
+            self.page++;
+
+            NSArray *arr = [OrderListModel mj_objectArrayWithKeyValuesArray:responseObject[@"data"]];
+          
+            if (isRefresh) {
+                self.ordersArr = arr.mutableCopy;
+                
+            }else {
+                [self.ordersArr addObjectsFromArray:arr];
+            }
+            
+            if (isRefresh) {
+                [self.tableView.mj_header endRefreshing];
+                [self.tableView.mj_footer endRefreshing];
+
+            }else {
+                if (arr.count == 0) {
+                    [self.tableView.mj_footer setState:MJRefreshStateNoMoreData];
+                }else {
+                    [self.tableView.mj_footer endRefreshing];
+                }
+            }
+            [self.tableView reloadData];
+        }else {
+            [self.tableView reloadData];
+            [self.tableView.mj_header endRefreshing];
+            [self.tableView.mj_footer endRefreshing];
+        }
+    } failure:^(NSError *error) {
+        [self.tableView.mj_header endRefreshing];
+        [self.tableView.mj_footer endRefreshing];
+    }];
+}
+
+-(void)payOrderClicked:(UIButton *)sender{
+    OrderListModel *model = [self.ordersArr objectAtIndex:sender.tag];
+    PayInfoModel *payModel = [[PayInfoModel alloc]init];
+    payModel.ordersn = model.ordersn;
+    payModel.original_price = model.original_price;
+    payModel.uid = model.uid;
+    PayInfoViewController *vc = [[PayInfoViewController alloc]init];
+    vc.payInfoModel = payModel;
+    [self.navigationController pushViewController:vc animated:YES];
+}
+
+-(void)changeAddressClicked:(UIButton *)sender{
+    OrderListModel *model = [self.ordersArr objectAtIndex:sender.tag];
+    ChangeOrderAddressViewController *vc = [[ChangeOrderAddressViewController alloc]init];
+    vc.orderListModel = model;
+    [self.navigationController pushViewController:vc animated:YES];
+    
+}
+-(void)cancelOrderClicked:(UIButton *)sender{
+    
+    OrderListModel *model = [self.ordersArr objectAtIndex:sender.tag];
+    OrderCancelViewController *vc = [[OrderCancelViewController alloc]init];
+    vc.uid = model.uid;
+    [self.navigationController pushViewController:vc animated:YES];
+}
+
+-(void)doneTakeClicked:(UIButton *)sender{
+    OrderListModel *model = [self.ordersArr objectAtIndex:sender.tag];
+    
+    NSDictionary *dic = @{@"m_id":[UserInfoModel getUserInfoModel].member_id,@"uid":model.uid,@"api_token":[RegisterModel getUserInfoModel].user_token};
+    
+    [FJNetTool postWithParams:dic url:Special_receiv loading:YES success:^(id responseObject) {
+        BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
+        if ([baseModel.code isEqualToString:CODE0]) {
+            [self.view showHUDWithText:baseModel.msg withYOffSet:0];
+            [self getDataFromServer:YES];
+        }
+    } failure:^(NSError *error) {
+        
+    }];
+    
+}
+
+-(void)readLogisticsClicked:(UIButton *)sender{
+    LogisticsViewController *vc = [[LogisticsViewController alloc]init];
+    [self.navigationController pushViewController:vc animated:YES];
+}
+
+-(void)evaluateClicked:(UIButton *)sender{
+    EvaluateViewController *vc = [[EvaluateViewController alloc]init];
+    [self.navigationController pushViewController:vc animated:YES];
 }
 
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -38,19 +156,36 @@
         cell = [[OrderListTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:NSStringFromClass([OrderListTableViewCell class])];
     }
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    OrderListModel *model = [self.ordersArr objectAtIndex:indexPath.row];
     
-    if (indexPath.row == 0) {
+    cell.listModel = model;
+    
+    if ([model.status isEqualToString:@"1"]) {
+        cell.type = @"1";
+        [cell.addressBtn addTarget:self action:@selector(changeAddressClicked:) forControlEvents:UIControlEventTouchUpInside];
+        [cell.cancelBtn addTarget:self action:@selector(cancelOrderClicked:) forControlEvents:UIControlEventTouchUpInside];
+        [cell.payBtn addTarget:self action:@selector(payOrderClicked:) forControlEvents:UIControlEventTouchUpInside];
+        cell.cancelBtn.tag = indexPath.row;
+        cell.addressBtn.tag = indexPath.row;
+        cell.payBtn.tag = indexPath.row;
+        
+    }
+    else if ([model.status isEqualToString:@"4"]) {
+        cell.type = @"2";
+        cell.doneTakeBtn.tag = indexPath.row;
+        cell.readLogisticsBtn.tag = indexPath.row;
+        [cell.doneTakeBtn addTarget:self action:@selector(doneTakeClicked:) forControlEvents:UIControlEventTouchUpInside];
+        
+        [cell.readLogisticsBtn addTarget:self action:@selector(readLogisticsClicked:) forControlEvents:UIControlEventTouchUpInside];
+    }
+    else if ([model.status isEqualToString:@"5"]) {
+        cell.type = @"3";
+        cell.finishEvaluateBtn.tag = indexPath.row;
+        [cell.finishEvaluateBtn addTarget:self action:@selector(evaluateClicked:) forControlEvents:UIControlEventTouchUpInside];
+    }else{
         cell.type = @"4";
     }
-    else if (indexPath.row == 1) {
-        cell.type = @"1";
-    }else if (indexPath.row == 2) {
-        cell.type = @"2";
-    }else if (indexPath.row == 3) {
-        cell.type = @"3";
-    }else{
-        cell.type = @"3";
-    }
+    
     return cell;
     
 }
@@ -59,7 +194,7 @@
 }
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
 
-    return 10;
+    return self.ordersArr.count;
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
 
@@ -81,6 +216,14 @@
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
 
     return [UIView new];
+}
+
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    OrderListModel *model = [self.ordersArr objectAtIndex:indexPath.row];
+    OrderInfoViewController *vc = [[OrderInfoViewController alloc]init];
+    vc.type = @"1";
+    vc.ordersn = model.ordersn;
+    [self.navigationController pushViewController:vc animated:YES];
 }
 
 /*

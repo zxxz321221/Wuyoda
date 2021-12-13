@@ -8,6 +8,7 @@
 
 #import "FJWebViewController.h"
 #import <WebKit/WebKit.h>
+#import "MessageModel.h"
 @interface FJWebViewController ()<WKNavigationDelegate>
 @property (nonatomic,strong) WKWebView * myWebView;
 
@@ -133,31 +134,43 @@
 }
 -(void)request{
     NSString *url;
-//    if (self.type ==  0 ) {
-//        url = getIntroduceUrl;
-//    }else if (self.type ==  1 ){
-//        url = getCertificateUrl;
-//    }else if (self.type  == 2){
-//        url = getAgreementUrl;
-//    }else if (self.type  == 3){
-//        url = getSalesReturnUrl;
-//    }
     NSMutableDictionary *pardic = [NSMutableDictionary dictionary];
+    [pardic setValue:[RegisterModel getUserInfoModel].user_token forKey:@"api_token"];
+    if (self.type ==  0 ) {
+        url = Store_notice_list;
+        [pardic setValue:self.uid forKey:@"uid"];
+    }
+    else if (self.type ==  1 ){
+        url = Store_shopprocess;
+    }else if (self.type  == 2){
+        url = Store_deliveryfaq;
+    }else if (self.type  == 3){
+        url = Store_return_policy;
+    }else if (self.type  == 4){
+        url = Store_aboutus;
+    }else if (self.type  == 5){
+        url = Store_recruitment;
+    }
+    
     [FJNetTool postWithParams:pardic url:url loading:YES success:^(id responseObject) {
         NSLog(@"%@",responseObject);
         BaseModel *model = [BaseModel mj_objectWithKeyValues:responseObject];
         if ([model.code isEqualToString:CODE0]) {
             if (self.type ==  0 ) {
+                MessageModel *msgModel = [MessageModel mj_objectWithKeyValues:responseObject[@"data"]];
+                [self loadHtml:msgModel.board_body];
                 
-                [self loadHtml:model.introduce];
+            }
+            if (self.type ==  1 || self.type ==  2) {
+                [self loadHtml:responseObject[@"data"][@"page_body"]];
                 
-            }else if (self.type ==  1 ){
-                [self loadHtml:model.certificate];
-                
-            }else if (self.type == 2){
-                [self loadHtml:model.agreement];
-            }else if (self.type == 3){
-                [self loadHtml:model.salesReturn];
+            }
+            if (self.type ==  3 || self.type == 4 || self.type == 5) {
+                NSArray *dataArr = responseObject[@"data"];
+                if (dataArr.count) {
+                    NSDictionary *dataDic = [dataArr firstObject];
+                    [self loadHtml:dataDic[@"page_body"]];
+                }
             }
         }else{
             [self.view showHUDWithText:model.msg withYOffSet:0];

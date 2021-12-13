@@ -7,9 +7,12 @@
 
 #import <UIKit/UIKit.h>
 
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface CityPresentTableViewCell : UITableViewCell
+
+@property (nonatomic , retain)NSArray *goodsArr;
 
 @end
 

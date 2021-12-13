@@ -74,6 +74,7 @@
             self.storeModel = [HomeShopModel mj_objectWithKeyValues:responseObject[@"data"]];
             self.shopArr = [HomeShopModel mj_objectArrayWithKeyValuesArray:responseObject[@"data"][@"qita"]];
             self.tableFooterV.model = self.storeModel;
+            self.tableHeaderV.model = self.storeModel;
             [self.tableView reloadData];
         }else{
             [self.view showHUDWithText:baseModel.msg withYOffSet:0];
@@ -133,7 +134,9 @@
 
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
     if (indexPath.section == 0) {
-        return kWidth(260);
+        CGFloat textH = [UILabel getHeightByWidth:kWidth(335) title:self.storeModel.goods_advance font:kFont(14)];
+        return kWidth(65)+textH;
+        //return kWidth(260);
     }else if (indexPath.section == 1){
         return kWidth(196);
     }else if (indexPath.section == 2){

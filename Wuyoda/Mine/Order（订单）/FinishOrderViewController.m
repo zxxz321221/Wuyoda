@@ -9,10 +9,16 @@
 #import "OrderListTableViewCell.h"
 #import "OrderInfoViewController.h"
 #import "EvaluateViewController.h"
+#import "OrderListModel.h"
 
 @interface FinishOrderViewController ()<UITableViewDelegate, UITableViewDataSource>
 
 @property (nonatomic , retain)UITableView *tableView;
+
+@property (nonatomic , retain)NSMutableArray *ordersArr;
+
+@property (nonatomic , assign)NSInteger page;
+
 
 @end
 
@@ -30,7 +36,61 @@
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.tableView.backgroundColor = [ColorManager ColorF2F2F2];
     
+    __weak typeof (self) weakSelf = self;
+    self.tableView.mj_header = [MJRefreshNormalHeader headerWithRefreshingBlock:^{
+        [weakSelf getDataFromServer:YES];
+    }];
+    self.tableView.mj_footer = [MJRefreshBackNormalFooter footerWithRefreshingBlock:^{
+        [weakSelf getDataFromServer:NO];
+    }];
+    
+    [self getDataFromServer:YES];
+    
     [self.view addSubview:self.tableView];
+}
+
+-(void)getDataFromServer:(BOOL)isRefresh{
+    if (isRefresh) {
+        self.page = 1;
+    }
+    
+    NSDictionary *dic = @{@"m_id":[UserInfoModel getUserInfoModel].member_id,@"status":@"5",@"page":[NSString stringWithFormat:@"%ld",self.page],@"limit":@"10",@"api_token":[RegisterModel getUserInfoModel].user_token};
+    
+    [FJNetTool postWithParams:dic url:Special_orders loading:YES success:^(id responseObject) {
+        BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
+        if ([baseModel.code isEqualToString:CODE0]) {
+            self.page++;
+
+            NSArray *arr = [OrderListModel mj_objectArrayWithKeyValuesArray:responseObject[@"data"]];
+          
+            if (isRefresh) {
+                self.ordersArr = arr.mutableCopy;
+                
+            }else {
+                [self.ordersArr addObjectsFromArray:arr];
+            }
+            
+            if (isRefresh) {
+                [self.tableView.mj_header endRefreshing];
+                [self.tableView.mj_footer endRefreshing];
+
+            }else {
+                if (arr.count == 0) {
+                    [self.tableView.mj_footer setState:MJRefreshStateNoMoreData];
+                }else {
+                    [self.tableView.mj_footer endRefreshing];
+                }
+            }
+            [self.tableView reloadData];
+        }else {
+            [self.tableView reloadData];
+            [self.tableView.mj_header endRefreshing];
+            [self.tableView.mj_footer endRefreshing];
+        }
+    } failure:^(NSError *error) {
+        [self.tableView.mj_header endRefreshing];
+        [self.tableView.mj_footer endRefreshing];
+    }];
 }
 
 -(void)evaluateClicked:(UIButton *)sender{
@@ -46,8 +106,13 @@
     }
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     
+    OrderListModel *model = [self.ordersArr objectAtIndex:indexPath.row];
+    
+    cell.listModel = model;
+    
     cell.type = @"3";
     
+    cell.finishEvaluateBtn.tag = indexPath.row;
     [cell.finishEvaluateBtn addTarget:self action:@selector(evaluateClicked:) forControlEvents:UIControlEventTouchUpInside];
     
     return cell;
@@ -58,7 +123,7 @@
 }
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
 
-    return 10;
+    return self.ordersArr.count;
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
 
@@ -82,8 +147,10 @@
     return [UIView new];
 }
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    OrderListModel *model = [self.ordersArr objectAtIndex:indexPath.row];
     OrderInfoViewController *vc = [[OrderInfoViewController alloc]init];
     vc.type = @"3";
+    vc.ordersn = model.ordersn;
     [self.navigationController pushViewController:vc animated:YES];
 }
 /*

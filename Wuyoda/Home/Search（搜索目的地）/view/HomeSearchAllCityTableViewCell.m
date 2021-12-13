@@ -9,7 +9,6 @@
 
 @interface HomeSearchAllCityTableViewCell ()
 
-@property (nonatomic , retain)UILabel *cityLab;
 
 @end
 
@@ -19,7 +18,7 @@
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
         self.cityLab = [[UILabel alloc]init];
-        self.cityLab.text = @"中正、万华";
+        //self.cityLab.text = @"中正、万华";
         self.cityLab.textColor = [ColorManager BlackColor];
         self.cityLab.font = kFont(14);
         [self.contentView addSubview:self.cityLab];

@@ -10,7 +10,7 @@
 #import "HomeSearchHotCityView.h"
 #import "TWProductListViewController.h"
 
-@interface HomeSearchCityViewController ()<UITableViewDelegate,UITableViewDataSource,UITextFieldDelegate>
+@interface HomeSearchCityViewController ()<UITableViewDelegate,UITableViewDataSource,UITextFieldDelegate,HomeSearchHotCitySelectDelegate>
 
 @property (nonatomic , retain)UITextField *searchField;
 
@@ -59,31 +59,31 @@
         make.height.mas_offset(kWidth(36));
     }];
     
-    self.areaScrollV = [[UIScrollView alloc]initWithFrame:CGRectMake(0, kHeight_NavBar+kWidth(85), kScreenWidth, kWidth(40))];
-    [self.view addSubview:self.areaScrollV];
+//    self.areaScrollV = [[UIScrollView alloc]initWithFrame:CGRectMake(0, kHeight_NavBar+kWidth(85), kScreenWidth, kWidth(40))];
+//    [self.view addSubview:self.areaScrollV];
+//
+//    self.scrollLine = [[UIView alloc]initWithFrame:CGRectMake(kWidth(-40), kWidth(36), kWidth(40), kWidth(4))];
+//    self.scrollLine.backgroundColor = [ColorManager MainColor];
+//    [self.areaScrollV addSubview:self.scrollLine];
+//
+//    self.areaArr = [[NSMutableArray alloc]initWithObjects:@"北台湾",@"中台湾",@"南台湾",@"东台湾",@"台湾离岛", nil];
+//    for (int i = 0; i<self.areaArr.count; i++) {
+//        UIButton *areaBtn = [[UIButton alloc]initWithFrame:CGRectMake(kWidth(20)+kWidth(67)*i, 0, kWidth(67), kWidth(40))];
+//        [areaBtn setTitle:[self.areaArr objectAtIndex:i] forState:UIControlStateNormal];
+//        areaBtn.titleLabel.font = kFont(14);
+//        if (i == 0) {
+//            [areaBtn setTitleColor:[ColorManager MainColor] forState:UIControlStateNormal];
+//            self.scrollLine.frame = CGRectMake(areaBtn.centerX-kWidth(20), kWidth(36), kWidth(40), kWidth(4));
+//        }else{
+//            [areaBtn setTitleColor:[ColorManager BlackColor] forState:UIControlStateNormal];
+//        }
+//        areaBtn.tag = i;
+//        [areaBtn addTarget:self action:@selector(changAreaClicked:) forControlEvents:UIControlEventTouchUpInside];
+//        [self.areaScrollV addSubview:areaBtn];
+//    }
     
-    self.scrollLine = [[UIView alloc]initWithFrame:CGRectMake(kWidth(-40), kWidth(36), kWidth(40), kWidth(4))];
-    self.scrollLine.backgroundColor = [ColorManager MainColor];
-    [self.areaScrollV addSubview:self.scrollLine];
     
-    self.areaArr = [[NSMutableArray alloc]initWithObjects:@"北台湾",@"中台湾",@"南台湾",@"东台湾",@"台湾离岛", nil];
-    for (int i = 0; i<self.areaArr.count; i++) {
-        UIButton *areaBtn = [[UIButton alloc]initWithFrame:CGRectMake(kWidth(20)+kWidth(67)*i, 0, kWidth(67), kWidth(40))];
-        [areaBtn setTitle:[self.areaArr objectAtIndex:i] forState:UIControlStateNormal];
-        areaBtn.titleLabel.font = kFont(14);
-        if (i == 0) {
-            [areaBtn setTitleColor:[ColorManager MainColor] forState:UIControlStateNormal];
-            self.scrollLine.frame = CGRectMake(areaBtn.centerX-kWidth(20), kWidth(36), kWidth(40), kWidth(4));
-        }else{
-            [areaBtn setTitleColor:[ColorManager BlackColor] forState:UIControlStateNormal];
-        }
-        areaBtn.tag = i;
-        [areaBtn addTarget:self action:@selector(changAreaClicked:) forControlEvents:UIControlEventTouchUpInside];
-        [self.areaScrollV addSubview:areaBtn];
-    }
-    
-    
-    self.tableView = [[UITableView alloc]initWithFrame:CGRectMake(0, kHeight_NavBar+kWidth(125), kScreenWidth, kScreenHeight-kHeight_NavBar-kWidth(125)-kHeight_SafeArea) style:UITableViewStyleGrouped];
+    self.tableView = [[UITableView alloc]initWithFrame:CGRectMake(0, kHeight_NavBar+kWidth(72), kScreenWidth, kScreenHeight-kHeight_NavBar-kWidth(72)-kHeight_SafeArea) style:UITableViewStyleGrouped];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     
@@ -91,6 +91,8 @@
 
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.tableHeaderV = [[HomeSearchHotCityView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kWidth(184))];
+    self.tableHeaderV.delegate = self;
+    self.tableHeaderV.hotCityArr = self.hotCityArr;
     self.tableView.tableHeaderView = self.tableHeaderV;
     
     [self.view addSubview:self.tableView];
@@ -98,12 +100,19 @@
 
 
 -(void)cancelClicked:(id)sender{
-    
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 -(BOOL)textFieldShouldReturn:(UITextField *)textField{
     
     return YES;
+}
+
+-(void)selectHotCity:(NSString *)city{
+    if (self.delegate && [self.delegate respondsToSelector:@selector(selectCity:)]) {
+        [self.delegate selectCity:city];
+        [self.navigationController popViewControllerAnimated:YES];
+    }
 }
 
 -(void)changAreaClicked:(UIButton *)sender{
@@ -121,11 +130,11 @@
 }
 
 -(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
-    return 3;
+    return 1;
 }
 
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
-    return 6;
+    return self.allCityArr.count;
 }
 
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -135,6 +144,7 @@
     }
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     
+    cell.cityLab.text = [self.allCityArr objectAtIndex:indexPath.row];
     
     return cell;
 }
@@ -144,26 +154,26 @@
 }
 
 -(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
-    return kWidth(36);
+    return 0.0001;
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section{
 
     return 0.0001;
 }
 -(UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
-    UIView *headerV = [[UIView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kWidth(36))];
-    headerV.backgroundColor = [ColorManager ColorF2F2F2];
-    UILabel *titleLab = [[UILabel alloc]init];
-    titleLab.text = @"台北市";
-    titleLab.textColor = [ColorManager BlackColor];
-    titleLab.font = kFont(16);
-    [headerV addSubview:titleLab];
-    [titleLab mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_offset(kWidth(20));
-        make.centerY.equalTo(headerV);
-    }];
+//    UIView *headerV = [[UIView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kWidth(36))];
+//    headerV.backgroundColor = [ColorManager ColorF2F2F2];
+//    UILabel *titleLab = [[UILabel alloc]init];
+//    titleLab.text = @"台北市";
+//    titleLab.textColor = [ColorManager BlackColor];
+//    titleLab.font = kFont(16);
+//    [headerV addSubview:titleLab];
+//    [titleLab mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.left.mas_offset(kWidth(20));
+//        make.centerY.equalTo(headerV);
+//    }];
     
-    return headerV;
+    return [UIView new];
 }
 
 -(UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section{
@@ -173,8 +183,7 @@
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     if (self.delegate && [self.delegate respondsToSelector:@selector(selectCity:)]) {
-        //[self.delegate selectCity:self.cityArr[indexPath.section][indexPath.row]];
-        [self.delegate selectCity:@"台南市"];
+        [self.delegate selectCity:self.allCityArr[indexPath.row]];
         [self.navigationController popViewControllerAnimated:YES];
     }
 }

@@ -179,6 +179,18 @@
     
 }
 
+-(void)setModel:(OrderListModel *)model{
+    
+    NSDictionary *orderGoodDic = model.order_goods;
+    NSArray *allKey = orderGoodDic.allKeys;
+    OrderGoodModel *goodModel = [OrderGoodModel mj_objectWithKeyValues:[orderGoodDic valueForKey:allKey.firstObject]];
+    [self.goodImgV sd_setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@",goodModel.goods_file1]]];
+    self.goodNameLab.text = goodModel.goods_name;
+    self.goodNumLab.text = [NSString stringWithFormat:@"数量：%@",goodModel.buy_number];
+    self.goodPriceLab.text = [NSString stringWithFormat:@"￥%@",goodModel.buy_price];
+    self.goodAllPriceLab.text = [NSString stringWithFormat:@"￥%@",model.original_price];
+}
+
 - (void)awakeFromNib {
     [super awakeFromNib];
     // Initialization code

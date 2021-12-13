@@ -13,6 +13,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic , retain)UITextField *searField;
 
+@property (nonatomic , retain)UIButton *addressBtn;
+
 @end
 
 NS_ASSUME_NONNULL_END

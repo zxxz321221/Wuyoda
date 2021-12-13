@@ -8,6 +8,7 @@
 #import "ProductDetailRecommendTableViewCell.h"
 #import "HomeSpecialCollectionViewCell.h"
 #import "HomeModel.h"
+#import "ProductDetailViewController.h"
 
 @interface ProductDetailRecommendTableViewCell ()<UICollectionViewDelegate,UICollectionViewDataSource>
 
@@ -56,6 +57,14 @@
 
 -(NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section{
     return self.shopArr.count;
+}
+
+-(void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
+    HomeShopModel *model = [self.shopArr objectAtIndex:indexPath.row];
+    ProductDetailViewController *vc = [[ProductDetailViewController alloc]init];
+    vc.uid = model.uid;
+    vc.supplier_id = model.supplier_id;
+    [self.CurrentViewController.navigationController pushViewController:vc animated:YES];
 }
 
 -(void)setShopArr:(NSArray *)shopArr{

@@ -9,6 +9,8 @@
 #import "PaySuccessViewController.h"
 #import "ShopCartModel.h"
 #import "PayModel.h"
+#import "PayInfoViewController.h"
+#import "PayInfoModel.h"
 
 @interface PayViewController ()
 
@@ -122,13 +124,13 @@
         
     NSString * cart_uid = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
     
-    NSDictionary *dic = @{@"m_id":[UserInfoModel getUserInfoModel].member_id,@"cart_uid":cart_uid,@"api_token":[RegisterModel getUserInfoModel].user_token};
+    NSDictionary *dic = @{@"m_id":[UserInfoModel getUserInfoModel].member_id,@"cart_uid":cart_uid,@"memo":self.memo,@"fare":self.fare,@"addressid":self.addressid,@"api_token":[RegisterModel getUserInfoModel].user_token};
     
-    [FJNetTool postWithParams:dic url:Specia_order_create loading:YES success:^(id responseObject) {
+    [FJNetTool postWithParams:dic url:Special_order_create loading:YES success:^(id responseObject) {
         BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
         if ([baseModel.code isEqualToString:CODE0]) {
             self.payModel = [PayModel mj_objectWithKeyValues:[responseObject[@"data"] firstObject]];
-            self.priceLab.text = [NSString stringWithFormat:@"￥%@",self.payModel.total_price];
+            self.priceLab.text = [NSString stringWithFormat:@"￥%.2f",[self.payModel.total_price floatValue]];
         }
     } failure:^(NSError *error) {
         
@@ -136,8 +138,23 @@
 }
 
 -(void)payClicked{
-    PaySuccessViewController *vc = [[PaySuccessViewController alloc]init];
-    [self.navigationController pushViewController:vc animated:YES];
+//    PaySuccessViewController *vc = [[PaySuccessViewController alloc]init];
+//    [self.navigationController pushViewController:vc animated:YES];
+    NSDictionary *dic = @{@"ordersn":self.payModel.ordersn,@"m_id":[UserInfoModel getUserInfoModel].member_id,@"api_token":[RegisterModel getUserInfoModel].user_token};
+    
+    [FJNetTool postWithParams:dic url:Special_order_pay loading:YES success:^(id responseObject) {
+        BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
+        if ([baseModel.code isEqualToString:CODE0]) {
+            PayInfoModel *model = [PayInfoModel mj_objectWithKeyValues:responseObject[@"data"]];
+            PayInfoViewController *vc = [[PayInfoViewController alloc]init];
+            vc.payInfoModel = model;
+            [self.navigationController pushViewController:vc animated:YES];
+        }
+    } failure:^(NSError *error) {
+        
+    }];
+    
+    
 }
 
 /*

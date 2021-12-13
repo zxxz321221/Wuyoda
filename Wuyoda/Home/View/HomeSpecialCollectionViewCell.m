@@ -118,10 +118,10 @@
 
 -(void)setModel:(HomeShopModel *)model{
     _model = model;
-    [self.imgV sd_setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@",HTTP,model.goods_file1]]];
+    [self.imgV sd_setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@",model.goods_file1]]];
     self.titleLab.text = model.goods_name;
-    self.priceLab.text = model.goods_sale_price;
-    self.oldPriceLab.text = model.goods_sale_price_org;
+    self.priceLab.text = [NSString stringWithFormat:@"%@%@",[CommonManager getPriceType:model.money_type],model.price];
+    self.oldPriceLab.text = [NSString stringWithFormat:@"%@%@",[CommonManager getPriceType:model.money_type],model.detail[@"goods_market_price_org"]];
     self.addressLab.text = model.belong_city;
 }
 

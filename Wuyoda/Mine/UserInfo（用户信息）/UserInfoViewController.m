@@ -14,6 +14,18 @@
 
 @property (nonatomic , retain)UIImageView *iconImgV;
 
+@property (nonatomic , retain)UITextField *nameField;
+
+@property (nonatomic , retain)UIButton *manBtn;
+
+@property (nonatomic , retain)UIButton *womenBtn;
+
+@property (nonatomic , retain)UITextField *birthdayField;
+
+@property (nonatomic , copy)NSString *nameStr;
+@property (nonatomic , copy)NSString *sexStr;
+@property (nonatomic , copy)NSString *birthdatStr;
+
 @end
 
 @implementation UserInfoViewController
@@ -55,6 +67,7 @@
     saveBtn .titleLabel.font = kFont(14);
     saveBtn.backgroundColor= [ColorManager MainColor];
     saveBtn.layer.cornerRadius = kWidth(24);
+    [saveBtn addTarget:self action:@selector(saveUserInfoClicked) forControlEvents:UIControlEventTouchUpInside];
     [footerV addSubview:saveBtn];
     [saveBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.bottom.equalTo(footerV);
@@ -62,8 +75,36 @@
         make.height.mas_offset(kWidth(48));
     }];
     self.tableView.tableFooterView = footerV;
+    self.sexStr = @"1";
     
     [self.view addSubview:self.tableView];
+}
+
+-(void)saveUserInfoClicked{
+    
+    NSDictionary *dic = @{@"uid":[UserInfoModel getUserInfoModel].uid,@"member_name":self.nameField.text,@"mamber_sex":self.sexStr,@"mamber_birthday":self.birthdatStr};
+    
+//    [FJNetTool postWithParams:dic url:Login_perfect loading:YES success:^(id responseObject) {
+//        BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
+//        if ([baseModel.code isEqualToString:CODE0]) {
+//
+//        }
+//    } failure:^(NSError *error) {
+//
+//    }];
+}
+
+-(void)changeSexClicked:(UIButton *)sender{
+    sender.selected = YES;
+    if (sender == self.manBtn) {
+        self.womenBtn.selected = NO;
+        self.sexStr = @"1";
+    }else{
+        self.manBtn.selected = NO;
+        self.sexStr = @"0";
+    }
+    
+    [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:1 inSection:0]] withRowAnimation:UITableViewRowAnimationNone];
 }
 
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -80,12 +121,26 @@
         cell.manBtn.hidden = YES;
         cell.womenBtn.hidden = YES;
         cell.infoTextField.hidden = NO;
+        self.nameField = cell.infoTextField;
+        cell.infoTextField.text = self.nameStr;
+        
     }
     if (indexPath.row == 1) {
         cell.titleLab.text = @"性别";
         cell.manBtn.hidden = NO;
         cell.womenBtn.hidden = NO;
         cell.infoTextField.hidden = YES;
+        self.manBtn = cell.manBtn;
+        self.womenBtn = cell.womenBtn;
+        [cell.manBtn addTarget:self action:@selector(changeSexClicked:) forControlEvents:UIControlEventTouchUpInside];
+        [cell.womenBtn addTarget:self action:@selector(changeSexClicked:) forControlEvents:UIControlEventTouchUpInside];
+        if ([self.sexStr isEqualToString:@"0"]) {
+            cell.womenBtn.selected = YES;
+            cell.manBtn.selected = NO;
+        }else{
+            cell.womenBtn.selected = NO;
+            cell.manBtn.selected = YES;
+        }
     }
     if (indexPath.row == 2) {
         cell.titleLab.text = @"生日";
@@ -93,6 +148,9 @@
         cell.manBtn.hidden = YES;
         cell.womenBtn.hidden = YES;
         cell.infoTextField.hidden = NO;
+        self.birthdayField = cell.infoTextField;
+        cell.infoTextField.text = self.birthdatStr;
+        self.birthdayField.userInteractionEnabled = NO;
     }
     
     
@@ -126,6 +184,12 @@
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
 
     return [UIView new];
+}
+
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    if (indexPath.row == 2) {
+        
+    }
 }
 
 

@@ -6,12 +6,15 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "OrderListModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface ChangeOrderAddressHeaderView : UIView
 
 @property (nonatomic , retain)UIButton *addBtn;
+
+@property (nonatomic , retain)OrderListModel *orderListModel;
 
 @end
 

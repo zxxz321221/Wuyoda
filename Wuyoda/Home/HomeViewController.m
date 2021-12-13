@@ -15,7 +15,7 @@
 #import <CoreLocation/CoreLocation.h>
 #import "HomeModel.h"
 
-@interface HomeViewController ()<UITableViewDelegate,UITableViewDataSource,UIScrollViewDelegate,SpecailProductTypeSelectDelegate,CLLocationManagerDelegate>
+@interface HomeViewController ()<UITableViewDelegate,UITableViewDataSource,SpecailProductTypeSelectDelegate,CLLocationManagerDelegate>
 
 @property (nonatomic , retain)UITableView *tableView;
 
@@ -73,21 +73,42 @@
 //    }
 }
 
+-(void)getHomeStoreFromServer:(NSString *)city{
+    NSDictionary *dic = @{@"city":city,@"api_token":[RegisterModel getUserInfoModel].user_token};
+    
+    [FJNetTool postWithParams:dic url:Index_shop loading:YES success:^(id responseObject) {
+        BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
+        if ([baseModel.code isEqualToString:CODE0]) {
+            self.specialShopArr = [HomeShopModel mj_objectArrayWithKeyValuesArray:responseObject[@"data"]];
+            
+            [self.tableView reloadData];
+        }
+    } failure:^(NSError *error) {
+        
+    }];
+}
+
 -(void)getDataFromServer{
     [FJNetTool postWithParams:@{@"token":[RegisterModel getUserInfoModel].user_token} url:Index_index loading:YES success:^(id responseObject) {
         
         BaseModel *model = [BaseModel mj_objectWithKeyValues:responseObject];
         if ([model.code isEqualToString:CODE0]) {
             self.cityArr = [[HomeCityModel mj_objectArrayWithKeyValuesArray:responseObject[@"data"][@"recity"]] mutableCopy];
-            NSDictionary *shopDic = responseObject[@"data"][@"shop"];
-            self.specialTypeArr = [[shopDic allKeys] mutableCopy];
-            for (int i = 0; i<self.specialTypeArr.count; i++) {
-                NSString *key = [self.specialTypeArr objectAtIndex:i];
-                NSMutableArray *modelArr = [HomeShopModel mj_objectArrayWithKeyValuesArray:shopDic[key]];
-                
-                [self.specialShopArr addObject:modelArr];;
-                
-            }
+            //NSDictionary *shopDic = responseObject[@"data"][@"shop"];
+            NSMutableArray *hotCityArr = [[NSMutableArray alloc]initWithObjects:@"台北市",@"台中市",@"苗栗县",@"嘉义县",@"花莲县" , nil];
+            self.tableHeaderV.hotCityArr = hotCityArr;
+            self.tableHeaderV.allCityArr = responseObject[@"data"][@"city"];
+            self.specialTypeArr = hotCityArr;
+            
+//            for (int i = 0; i<self.specialTypeArr.count; i++) {
+//                NSString *key = [self.specialTypeArr objectAtIndex:i];
+//                NSMutableArray *modelArr = [HomeShopModel mj_objectArrayWithKeyValuesArray:shopDic[key]];
+//
+//                [self.specialShopArr addObject:modelArr];;
+//
+//            }
+            self.specialTypeIndex = 0;
+            [self getHomeStoreFromServer:[hotCityArr objectAtIndex:self.specialTypeIndex]];
             [self.tableView reloadData];
         }else{
             [self.view showHUDWithText:model.msg withYOffSet:0];
@@ -122,8 +143,10 @@
     
     [self locate];
     
-    self.sectionArr = [[NSMutableArray alloc]initWithObjects:@{@"title":@"短途盛夏特惠",@"sub":@"台湾名产贴心推荐，低至7折"},@{@"title":@"两蒋文化商品",@"sub":@"文创商品直接销售机会难得"},@{@"title":@"你可能也想去",@"sub":@"发现更多出行灵感"}, nil];
+    self.sectionArr = [[NSMutableArray alloc]initWithObjects:@{@"title":@"口碑推荐",@"sub":@"台湾名产贴心推荐，低至7折"},@{@"title":@"宝岛特色文创",@"sub":@"文创商品直接销售机会难得"},@{@"title":@"你可能也想去",@"sub":@"发现更多出行灵感"}, nil];
     self.specialShopArr = [[NSMutableArray alloc]init];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeHomdeCity:) name:@"changeHomeCity" object:nil];
 //    self.specialTypeArr = [[NSMutableArray alloc]initWithObjects:@"台北市",@"莺歌",@"马祖",@"阿里山",@"基隆",@"台南市",@"高雄市",@"澎湖", nil];
 }
 
@@ -187,9 +210,31 @@
     }];
 }
 
+-(void)changeHomdeCity:(NSNotification *)notification{
+    NSString *city = notification.object[@"city"];
+    BOOL inArr = [self.specialTypeArr containsObject:city];
+    if (self.specialTypeArr.count == 5) {
+        if (inArr) {
+            self.specialTypeIndex = [self.specialTypeArr indexOfObject:city];
+        }else{
+            [self.specialTypeArr insertObject:city atIndex:0];
+            self.specialTypeIndex = 0;
+        }
+    }else{
+        if (inArr) {
+            self.specialTypeIndex = [self.specialTypeArr indexOfObject:city];
+        }else{
+            [self.specialTypeArr replaceObjectAtIndex:0 withObject:city];
+            self.specialTypeIndex = 0;
+        }
+    }
+    [self getHomeStoreFromServer:city];
+}
+
 -(void)selectSpecailProductType:(NSInteger)index{
     self.specialTypeIndex = index;
-    [self.tableView reloadData];
+    //[self.tableView reloadData];
+    [self getHomeStoreFromServer:[self.specialTypeArr objectAtIndex:index]];
 }
 
 -(void)showMoreClicked:(UIButton *)sender{
@@ -197,9 +242,9 @@
     [self.navigationController pushViewController:vc animated:YES];
 }
 
--(void)scrollViewDidScroll:(UIScrollView *)scrollView{
-    [self.view endEditing:YES];
-}
+//-(void)scrollViewDidScroll:(UIScrollView *)scrollView{
+//    [self.view endEditing:YES];
+//}
 
 -(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
     return 3;
@@ -218,10 +263,7 @@
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         cell.typeIndex = self.specialTypeIndex;
         cell.typeArr = self.specialTypeArr;
-        if (self.specialShopArr.count) {
-            cell.shopArr = [self.specialShopArr objectAtIndex:self.specialTypeIndex];
-        }
-        
+        cell.shopArr = self.specialShopArr;
         cell.delegate = self;
         
         return cell;

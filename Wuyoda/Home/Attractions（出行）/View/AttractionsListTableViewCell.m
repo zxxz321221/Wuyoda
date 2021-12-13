@@ -98,6 +98,12 @@
     }];
 }
 
+-(void)setModel:(AttractionModel *)model{
+    [self.imgV sd_setImageWithURL:[NSURL URLWithString:model.cover]];
+    self.nameLab.text = model.scenic_title;
+    self.introLab.text = model.scenic_content;
+}
+
 - (void)awakeFromNib {
     [super awakeFromNib];
     // Initialization code
@@ -107,17 +113,6 @@
     [super setSelected:selected animated:animated];
 
     // Configure the view for the selected state
-}
-
--(void)setAttractionName:(NSString *)attractionName{
-    self.nameLab.text = attractionName;
-    if ([attractionName isEqualToString:@"金獅湖風景區"]) {
-        self.imgV.image = kGetImage(@"金獅湖風景區0");
-        self.introLab.text = @"金狮湖位于高雄爱河上游，原名大埤或覆鼎金埤，是爱河源头的贮水埤圳之一，水源来自中山高速公路东侧之鼎金圳，湖面积约11公顷，雨季时有调节的重要功能。与澄清湖之间，隔着中山高速公路与高雄高尔夫球场。湖面状似伏狮、倚着狮头山而风景宜人，狮山公园、蝴蝶园、道德院以及覆鼎金保安宫等各景点围绕着湖畔。";
-    }else if ([attractionName isEqualToString:@"蓮池潭"]){
-        self.imgV.image = kGetImage(@"蓮池潭0");
-        self.introLab.text = @"莲池潭位于高雄市左营区，南邻龟山、北倚半屏山，起初称为莲花潭，莲池潭总面积约为42公顷是高雄市左营区最大的湖泊，拥有约20多座的寺庙，环潭十二座香烟缭绕的庙宇包含北极玄天上帝、启明堂、春秋阁、五里亭和龙虎塔，北面有高雄孔庙和万年公园、南侧为凤山县旧城残、东面则为莲池潭牌楼入口和高雄市风景区管理所。高雄左营莲池潭近年来会举办一年一度的「莲池潭万年祭」，约在10月份举行，让莲池潭充满传统文化和宗教气息的高雄旅游景点。";
-    }
 }
 
 @end

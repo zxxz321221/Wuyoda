@@ -33,6 +33,9 @@
 +(UIColor *)ColorF2F2F2{
     return [self whiteColor:[UIColor colorWithHexString:@"#F2F2F2"] blackColor:[UIColor colorWithHexString:@"#F2F2F2"]];
 }
++(UIColor *)ColorE2E2E2{
+    return [self whiteColor:[UIColor colorWithHexString:@"#E2E2E2"] blackColor:[UIColor colorWithHexString:@"#E2E2E2"]];
+}
 +(UIColor *)Color666666{
     return [self whiteColor:[UIColor colorWithHexString:@"#666666"] blackColor:[UIColor colorWithHexString:@"#666666"]];
 }

@@ -9,10 +9,13 @@
 #import "AttractionsListNavView.h"
 #import "AttractionsListTableViewCell.h"
 #import "AttractionDetailViewController.h"
+#import "AttractionModel.h"
 
 @interface AttractionsListViewController ()<UITableViewDelegate,UITableViewDataSource>
 
 @property (nonatomic , retain)UITableView *tableView;
+
+@property (nonatomic , retain)NSArray *attractionArr;
 
 @end
 
@@ -31,6 +34,21 @@
     [self.tableView registerClass:[AttractionsListTableViewCell class] forCellReuseIdentifier:NSStringFromClass([AttractionsListTableViewCell class])];
     [self.view addSubview:self.tableView];
     
+    [self getDataFromServer];
+}
+
+-(void)getDataFromServer{
+    NSDictionary *dic = @{@"ps_id":self.cityID,@"api_token":[RegisterModel getUserInfoModel].user_token};
+    
+    [FJNetTool postWithParams:dic url:Store_scenic_list loading:YES success:^(id responseObject) {
+        BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
+        if ([baseModel.code isEqualToString:CODE0]) {
+            self.attractionArr = [AttractionModel mj_objectArrayWithKeyValuesArray:responseObject[@"data"]];
+            [self.tableView reloadData];
+        }
+    } failure:^(NSError *error) {
+        
+    }];
 }
 
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -39,11 +57,7 @@
         cell = [[AttractionsListTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:NSStringFromClass([AttractionsListTableViewCell class])];
     }
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
-    if (indexPath.row == 0) {
-        cell.attractionName = @"金獅湖風景區";
-    }else{
-        cell.attractionName = @"蓮池潭";
-    }
+    cell.model = [self.attractionArr objectAtIndex:indexPath.row];
         
     return cell;
 }
@@ -52,7 +66,7 @@
     return 1;
 }
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
-    return 2;
+    return self.attractionArr.count;
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
     return kWidth(160);
@@ -87,11 +101,8 @@
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     AttractionDetailViewController *vc = [[AttractionDetailViewController alloc]init];
-    if (indexPath.row == 0) {
-        vc.attractionName = @"金獅湖風景區";
-    }else{
-        vc.attractionName = @"蓮池潭";
-    }
+    AttractionModel *model = [self.attractionArr objectAtIndex:indexPath.row];
+    vc.scenic_id = model.uid;
     [self.navigationController pushViewController:vc animated:YES];
 }
 

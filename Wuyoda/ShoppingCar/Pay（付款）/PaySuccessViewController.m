@@ -81,7 +81,7 @@
 }
 
 -(void)backClicked{
-    
+    [self.navigationController popToRootViewControllerAnimated:YES];
 }
 
 -(void)orderClicked{

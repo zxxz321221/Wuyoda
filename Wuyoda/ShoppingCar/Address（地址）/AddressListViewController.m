@@ -9,9 +9,12 @@
 #import "AddressListTableViewCell.h"
 #import "AddressInfoViewController.h"
 
-@interface AddressListViewController ()<UITableViewDelegate,UITableViewDataSource>
+
+@interface AddressListViewController ()<UITableViewDelegate,UITableViewDataSource,updateAddressDelegate,updateAddressInfoDelegate>
 
 @property (nonatomic , retain)UITableView *tableView;
+
+@property (nonatomic , retain)NSMutableArray *addressArr;
 
 @end
 
@@ -48,6 +51,38 @@
         make.width.mas_offset(kWidth(350));
         make.height.mas_offset(kWidth(42));
     }];
+    
+    [self getDataFromServer];
+}
+
+-(void)deleteAddressWithModel:(AddressModel *)model{
+    [self getDataFromServer];
+}
+-(void)updateNormalAddressWithModel:(AddressModel *)model{
+    [self getDataFromServer];
+}
+-(void)updateAddressInfo{
+    [self getDataFromServer];
+}
+
+-(void)getDataFromServer{
+    NSDictionary *dic = @{@"m_uid":[UserInfoModel getUserInfoModel].uid,@"api_token":[RegisterModel getUserInfoModel].user_token};
+    
+    [FJNetTool postWithParams:dic url:Special_address_list loading:YES success:^(id responseObject) {
+        BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
+        if ([baseModel.code isEqualToString:CODE0]) {
+            self.addressArr = [AddressModel mj_objectArrayWithKeyValuesArray:responseObject[@"data"]];
+            [self.tableView reloadData];
+            if (self.addressArr.count) {
+                if (self.delegate && [self.delegate respondsToSelector:@selector(selectAddress:)]) {
+                    [self.delegate selectAddress:self.addressArr[0]];
+                }
+            }
+            
+        }
+    } failure:^(NSError *error) {
+        
+    }];
 }
 
 -(void)addAddressClicked{
@@ -62,11 +97,13 @@
         cell = [[AddressListTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:NSStringFromClass([AddressListTableViewCell class])];
     }
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    cell.model = [self.addressArr objectAtIndex:indexPath.section];
+    cell.delegate = self;
     
     return cell;
 }
 -(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
-    return 10;
+    return self.addressArr.count;
 }
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
     return 1;
@@ -96,7 +133,11 @@
 }
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
-    [self.navigationController popViewControllerAnimated:YES];
+    if (self.delegate && [self.delegate respondsToSelector:@selector(selectAddress:)]) {
+        [self.delegate selectAddress:self.addressArr[indexPath.section]];
+        [self.navigationController popViewControllerAnimated:YES];
+    }
+    
 }
     
 /*

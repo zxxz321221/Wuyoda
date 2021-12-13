@@ -10,6 +10,7 @@
 #import "HomeSearchCityViewController.h"
 #import "TWProductListViewController.h"
 #import "PreferentialGoodListViewController.h"
+#import "MessageViewController.h"
 
 @interface HomeTableHeaderView ()
 
@@ -124,17 +125,23 @@
     if (sender.tag == 0) {
         TWProductListViewController *vc = [[TWProductListViewController alloc]init];
         vc.type = @"2";
+        vc.allCityArr = self.allCityArr;
+        vc.currentCity = self.currentCity;
         [self.CurrentViewController.navigationController pushViewController:vc animated:YES];
     }
     if (sender.tag == 100) {
         TWProductListViewController *vc = [[TWProductListViewController alloc]init];
         vc.type = @"3";
+        vc.allCityArr = self.allCityArr;
+        vc.currentCity = self.currentCity;
         [self.CurrentViewController.navigationController pushViewController:vc animated:YES];
     }
     if (sender.tag == 200) {
 //        TWProductListViewController *vc = [[TWProductListViewController alloc]init];
 //        vc.type = @"3";
 //        [self.CurrentViewController.navigationController pushViewController:vc animated:YES];
+        MessageViewController *vc = [[MessageViewController alloc]init];
+        [self.CurrentViewController.navigationController pushViewController:vc animated:YES];
     }
     if (sender.tag == 300) {
         PreferentialGoodListViewController *vc = [[PreferentialGoodListViewController alloc]init];
@@ -150,6 +157,14 @@
     self.addressView.currentCity = currentCity;
 }
 
+-(void)setHotCityArr:(NSMutableArray *)hotCityArr{
+    _hotCityArr = hotCityArr;
+    self.addressView.hotCityArr = hotCityArr;
+}
+-(void)setAllCityArr:(NSArray *)allCityArr{
+    _allCityArr = allCityArr;
+    self.addressView.allCityArr = allCityArr;
+}
 /*
 // Only override drawRect: if you perform custom drawing.
 // An empty implementation adversely affects performance during animation.

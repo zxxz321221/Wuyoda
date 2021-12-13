@@ -14,6 +14,8 @@
 
 @property (nonatomic , retain)NSArray *titleArr;
 
+@property (nonatomic , copy)NSString *reason;
+
 @end
 
 @implementation RemoveAccountViewController
@@ -53,7 +55,21 @@
 }
 
 -(void)doneClicked{
-    
+    if (self.reason.length) {
+        NSDictionary *dic = @{@"uid":[UserInfoModel getUserInfoModel].uid,@"cancel":self.reason,@"api_token":[RegisterModel getUserInfoModel].user_token};
+        
+        [FJNetTool postWithParams:dic url:Login_cancel loading:YES success:^(id responseObject) {
+            BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
+            if ([baseModel.code isEqualToString:CODE0]) {
+                [UserInfoModel clearUserInfo];
+                [self.navigationController popToRootViewControllerAnimated:YES];
+            }
+        } failure:^(NSError *error) {
+            
+        }];
+    }else{
+        [self.view showHUDWithText:@"请选择注销原因" withYOffSet:0];
+    }
 }
 
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -95,6 +111,9 @@
     return [UIView new];
 }
 
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    self.reason = [self.titleArr objectAtIndex:indexPath.row];
+}
 
 /*
 #pragma mark - Navigation

@@ -10,6 +10,7 @@
 #import "AttractionDetailIntroTableViewCell.h"
 #import "AttractionDetailRecommendTableViewCell.h"
 #import "CWStarRateView.h"
+#import "AttractionModel.h"
 
 @interface AttractionDetailViewController ()<UITableViewDelegate,UITableViewDataSource>
 
@@ -19,6 +20,9 @@
 @property (nonatomic , retain)CWStarRateView *recommendStar;
 @property (nonatomic , retain)UILabel *recommendLab;
 @property (nonatomic , retain)UIButton *likeBtn;
+
+@property (nonatomic , retain)AttractionModel *model;
+@property (nonatomic , retain)NSArray *otherArr;
 
 @end
 
@@ -42,7 +46,7 @@
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.tableView.backgroundColor = [ColorManager WhiteColor];
     self.tableHeaderV = [[AttractionDetailHeaderView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kWidth(470))];
-    self.tableHeaderV.attractionName = self.attractionName;
+    //self.tableHeaderV.attractionName = self.attractionName;
     self.tableView.tableHeaderView = self.tableHeaderV;
     
     [self.view addSubview:self.tableView];
@@ -84,7 +88,23 @@
         make.height.mas_offset(kWidth(40));
     }];
     
+    [self getDataFromServer];
+}
+
+-(void)getDataFromServer{
+    NSDictionary *dic = @{@"scenic_id":self.scenic_id,@"api_token":[RegisterModel getUserInfoModel].user_token};
     
+    [FJNetTool postWithParams:dic url:Store_scenic_intro loading:YES success:^(id responseObject) {
+        BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
+        if ([baseModel.code isEqualToString:CODE0]) {
+            self.model = [AttractionModel mj_objectWithKeyValues:responseObject[@"data"]];
+            self.otherArr = [AttractionModel mj_objectArrayWithKeyValuesArray:responseObject[@"data"][@"qita"]];
+            self.tableHeaderV.model = self.model;
+            [self.tableView reloadData];
+        }
+    } failure:^(NSError *error) {
+        
+    }];
 }
 
 -(void)likeAttractionClicked:(UIButton *)sender{
@@ -106,7 +126,8 @@
             cell = [[AttractionDetailIntroTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:NSStringFromClass([AttractionDetailIntroTableViewCell class])];
         }
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        cell.attractionName = self.attractionName;
+        //cell.attractionName = self.attractionName;
+        cell.model = self.model;
         
         return cell;
     }
@@ -116,6 +137,7 @@
             cell = [[AttractionDetailRecommendTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:NSStringFromClass([AttractionDetailRecommendTableViewCell class])];
         }
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        cell.otherArr = self.otherArr;
         
         return cell;
     }
@@ -124,16 +146,8 @@
 
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
     if (indexPath.section == 0) {
-        if ([self.attractionName isEqualToString:@"金獅湖風景區"]) {
-            return kWidth(200);
-        }
-        if ([self.attractionName isEqualToString:@"夜市文化"]) {
-            return kWidth(450);
-        }
-        if ([self.attractionName isEqualToString:@"旗津海鲜"]) {
-            return kWidth(250);
-        }
-        return kWidth(550);
+        CGFloat textH = [UILabel getHeightByWidth:kWidth(335) title:self.model.scenic_content font:kFont(14)];
+        return kWidth(65)+textH;
     }else{
         return kWidth(194)*2;
     }

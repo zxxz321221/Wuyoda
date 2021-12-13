@@ -7,10 +7,16 @@
 
 #import "MessageViewController.h"
 #import "MessageTableViewCell.h"
+#import "MessageModel.h"
+#import "FJWebViewController.h"
 
 @interface MessageViewController ()<UITableViewDelegate, UITableViewDataSource>
 
 @property (nonatomic , retain)UITableView *tableView;
+
+@property (nonatomic , retain)NSMutableArray *messagesArr;
+
+@property (nonatomic , assign)NSInteger page;
 
 @end
 
@@ -51,8 +57,62 @@
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.tableView.backgroundColor = [ColorManager WhiteColor];
     
+    __weak typeof (self) weakSelf = self;
+    self.tableView.mj_header = [MJRefreshNormalHeader headerWithRefreshingBlock:^{
+        [weakSelf getDataFromServer:YES];
+    }];
+    self.tableView.mj_footer = [MJRefreshBackNormalFooter footerWithRefreshingBlock:^{
+        [weakSelf getDataFromServer:NO];
+    }];
+    
+    [self getDataFromServer:YES];
+    
     [self.view addSubview:self.tableView];
     
+}
+
+-(void)getDataFromServer:(BOOL)isRefresh{
+    if (isRefresh) {
+        self.page = 1;
+    }
+    
+    NSDictionary *dic = @{@"page":[NSString stringWithFormat:@"%ld",self.page],@"limit":@"10",@"api_token":[RegisterModel getUserInfoModel].user_token};
+    
+    [FJNetTool postWithParams:dic url:Store_notice loading:YES success:^(id responseObject) {
+        BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
+        if ([baseModel.code isEqualToString:CODE0]) {
+            self.page++;
+
+            NSArray *arr = [MessageModel mj_objectArrayWithKeyValuesArray:responseObject[@"data"]];
+          
+            if (isRefresh) {
+                self.messagesArr = arr.mutableCopy;
+                
+            }else {
+                [self.messagesArr addObjectsFromArray:arr];
+            }
+            
+            if (isRefresh) {
+                [self.tableView.mj_header endRefreshing];
+                [self.tableView.mj_footer endRefreshing];
+
+            }else {
+                if (arr.count == 0) {
+                    [self.tableView.mj_footer setState:MJRefreshStateNoMoreData];
+                }else {
+                    [self.tableView.mj_footer endRefreshing];
+                }
+            }
+            [self.tableView reloadData];
+        }else {
+            [self.tableView reloadData];
+            [self.tableView.mj_header endRefreshing];
+            [self.tableView.mj_footer endRefreshing];
+        }
+    } failure:^(NSError *error) {
+        [self.tableView.mj_header endRefreshing];
+        [self.tableView.mj_footer endRefreshing];
+    }];
 }
 
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -63,6 +123,7 @@
     }
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     
+    cell.model = [self.messagesArr objectAtIndex:indexPath.row];
     
     return cell;
     
@@ -72,7 +133,7 @@
 }
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
 
-    return 3;
+    return self.messagesArr.count;
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
 
@@ -94,6 +155,14 @@
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
 
     return [UIView new];
+}
+
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    MessageModel *model = [self.messagesArr objectAtIndex:indexPath.row];
+    FJWebViewController *vc = [[FJWebViewController alloc]init];
+    vc.type = 0;
+    vc.uid = model.uid;
+    [self.navigationController pushViewController:vc animated:YES];
 }
 
 /*

@@ -8,6 +8,7 @@
 #import "HelperViewController.h"
 #import "HelperHeaderView.h"
 #import "HelperTableViewCell.h"
+#import "FJWebViewController.h"
 
 @interface HelperViewController ()<UITableViewDelegate, UITableViewDataSource>
 
@@ -99,6 +100,21 @@
     return headerV;
 }
 
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    
+    FJWebViewController *vc = [[FJWebViewController alloc]init];
+    if (indexPath.row == 0) {
+        vc.type = 1;
+    }
+    if (indexPath.row == 1) {
+        vc.type = 2;
+    }
+    if (indexPath.row == 2) {
+        vc.type = 3;
+    }
+    
+    [self.navigationController pushViewController:vc animated:YES];
+}
 
 /*
 #pragma mark - Navigation

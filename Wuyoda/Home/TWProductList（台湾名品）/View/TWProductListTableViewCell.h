@@ -6,6 +6,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "HomeModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -13,7 +14,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic , retain)NSMutableArray *tagsArr;
 
-@property (nonatomic , copy)NSString *imgName;
+@property (nonatomic , retain)HomeShopModel *model;
+
+//@property (nonatomic , copy)NSString *imgName;
 
 @end
 

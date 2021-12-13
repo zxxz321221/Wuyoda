@@ -7,6 +7,7 @@
 
 #import "HomeSearchHotCityView.h"
 #import "HomeSearchCityCollectionViewCell.h"
+#import "PreferentialGoodListViewController.h"
 
 @interface HomeSearchHotCityView ()<UICollectionViewDelegate,UICollectionViewDataSource>
 
@@ -60,12 +61,12 @@
         make.bottom.mas_offset(kWidth(-15));
     }];
     
-    self.hotCityArr = [[NSMutableArray alloc]initWithObjects:@"台北市",@"新北市",@"基隆市",@"桃园市",@"新竹市",@"宜兰市", nil];
+    //self.hotCityArr = [[NSMutableArray alloc]initWithObjects:@"台北市",@"新北市",@"基隆市",@"桃园市",@"新竹市",@"宜兰市", nil];
 }
 
 -(__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
     HomeSearchCityCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass([HomeSearchCityCollectionViewCell class]) forIndexPath:indexPath];
-    
+    cell.cityLab.text = [self.hotCityArr objectAtIndex:indexPath.row];
     return cell;
 }
 
@@ -78,10 +79,18 @@
 }
 
 -(void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
+//    PreferentialGoodListViewController *vc = [[PreferentialGoodListViewController alloc]init];
+//    vc.cityStr = [self.hotCityArr objectAtIndex:indexPath.row];
+//    [self.CurrentViewController.navigationController pushViewController:vc animated:YES];
     
+    if (self.delegate && [self.delegate respondsToSelector:@selector(selectHotCity:)]) {
+        [self.delegate selectHotCity:self.hotCityArr[indexPath.row]];
+        //[self.delegate selectCity:@"台南市"];
+        [self.CurrentViewController.navigationController popViewControllerAnimated:YES];
+    }
 }
 
--(void)setHotCityArr:(NSMutableArray *)hotCityArr{
+-(void)setHotCityArr:(NSArray *)hotCityArr{
     _hotCityArr = hotCityArr;
     [self.collectionV reloadData];
 }

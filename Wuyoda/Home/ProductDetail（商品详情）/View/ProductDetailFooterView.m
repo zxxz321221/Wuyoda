@@ -96,6 +96,8 @@
 
 -(void)setModel:(HomeShopModel *)model{
     _model = model;
+    self.priceLab.text = [NSString stringWithFormat:@"%@%@",[CommonManager getPriceType:model.money_type],model.price];
+    self.oldPriceLab.text = [NSString stringWithFormat:@"%@%@",[CommonManager getPriceType:model.money_type],model.goods_market_price_org];
 }
 
 -(void)addShoppingCartClicked:(UIButton *)sender{

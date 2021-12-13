@@ -7,6 +7,7 @@
 
 #import "AboutViewController.h"
 #import "AboutTableViewCell.h"
+#import "FJWebViewController.h"
 
 @interface AboutViewController ()<UITableViewDelegate, UITableViewDataSource>
 
@@ -78,7 +79,20 @@
 
     return [UIView new];
 }
-
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    FJWebViewController *vc = [[FJWebViewController alloc]init];
+    if (indexPath.row == 0) {
+        vc.type = 4;
+    }
+    if (indexPath.row == 1) {
+        
+    }
+    if (indexPath.row == 2) {
+        vc.type = 5;
+    }
+    
+    [self.navigationController pushViewController:vc animated:YES];
+}
 /*
 #pragma mark - Navigation
 

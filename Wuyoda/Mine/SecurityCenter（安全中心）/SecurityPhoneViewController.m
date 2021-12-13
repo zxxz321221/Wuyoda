@@ -83,6 +83,7 @@
 -(void)changePhoneClicked{
     if ([self.type isEqualToString:@"1"]) {
         ChangePhoneViewController *vc = [[ChangePhoneViewController alloc]init];
+        vc.type = @"1";
         [self.navigationController pushViewController:vc animated:YES];
     }else{
         ChangeEmailViewController *vc = [[ChangeEmailViewController alloc]init];

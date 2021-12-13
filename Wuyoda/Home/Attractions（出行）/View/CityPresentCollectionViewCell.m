@@ -17,6 +17,8 @@
 
 @property (nonatomic , retain)UILabel *unitLab;
 
+@property (nonatomic , retain)UIImageView *selectImgV;
+
 @end
 
 @implementation CityPresentCollectionViewCell
@@ -70,10 +72,43 @@
         make.left.equalTo(self.oldPriceLab.mas_right);
         make.centerY.equalTo(self.oldPriceLab);
     }];
+    
+    self.selectImgV = [[UIImageView alloc]init];
+    self.selectImgV.hidden = YES;
+    [self.contentView addSubview:self.selectImgV];
+    [self.selectImgV mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_offset(kWidth(10));
+        make.right.mas_offset(kWidth(-3));
+        make.width.height.mas_offset(kWidth(15));
+    }];
 }
 
--(void)setImgName:(NSString *)imgName{
-    [self.imgV setImage:kGetImage(imgName)];
+-(void)setModel:(HomeShopModel *)model{
+    [self.imgV sd_setImageWithURL:[NSURL URLWithString:model.goods_file1]];
+    self.priceLab.text = [NSString stringWithFormat:@"￥%@",model.goods_sale_price];
+    NSMutableAttributedString *oldPrice = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"￥%@",model.goods_sale_price_org]];
+    [oldPrice addAttribute:NSStrikethroughStyleAttributeName value:@(NSUnderlinePatternSolid | NSUnderlineStyleSingle) range:NSMakeRange(0, oldPrice.length)];
+    self.oldPriceLab.attributedText = oldPrice;
+}
+
+-(void)setFootPrintmodel:(FootPrintModel *)footPrintmodel{
+    _footPrintmodel = footPrintmodel;
+    
+    [self.imgV sd_setImageWithURL:[NSURL URLWithString:footPrintmodel.goods.goods_file1]];
+    self.priceLab.text = [NSString stringWithFormat:@"￥%@",footPrintmodel.goods.goods_sale_price];
+    NSMutableAttributedString *oldPrice = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"￥%@",footPrintmodel.goods.goods_sale_price_org]];
+    [oldPrice addAttribute:NSStrikethroughStyleAttributeName value:@(NSUnderlinePatternSolid | NSUnderlineStyleSingle) range:NSMakeRange(0, oldPrice.length)];
+    self.oldPriceLab.attributedText = oldPrice;
+    
+    if ([footPrintmodel.isSelect isEqualToString:@"1"]) {
+        [self.selectImgV setImage:kGetImage(@"选中")];
+    }else{
+        [self.selectImgV setImage:kGetImage(@"选择")];
+    }
+}
+
+-(void)setIsEdit:(BOOL)isEdit{
+    self.selectImgV.hidden = !isEdit;
 }
 
 @end

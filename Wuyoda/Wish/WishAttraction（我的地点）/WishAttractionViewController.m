@@ -56,7 +56,7 @@
 -(__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
     AttractionDetailRecommendCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass([AttractionDetailRecommendCollectionViewCell class]) forIndexPath:indexPath];
     
-    cell.imgName = [NSString stringWithFormat:@"home_attractions%ld",indexPath.row+1];
+    //cell.imgName = [NSString stringWithFormat:@"home_attractions%ld",indexPath.row+1];
     
     return cell;
 }

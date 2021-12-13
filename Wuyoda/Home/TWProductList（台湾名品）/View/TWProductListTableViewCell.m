@@ -180,8 +180,19 @@
     }];
 }
 
--(void)setImgName:(NSString *)imgName{
-    [self.imgV setImage:kGetImage(imgName)];
+-(void)setModel:(HomeShopModel *)model{
+    self.nameLab.text = model.goods_name;
+    [self.imgV sd_setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@",model.goods_file1]]];
+    self.priceLab.text = [NSString stringWithFormat:@"%@%@",[CommonManager getPriceType:model.money_type],model.price];
+    NSString *oldPriceStr = model.goods_market_price_org;
+    if (!oldPriceStr.length) {
+        HomeShopModel *detailModel = [HomeShopModel mj_objectWithKeyValues:model.detail];
+        oldPriceStr = detailModel.goods_market_price_org;
+    }
+    
+    NSMutableAttributedString *oldPrice = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@%@",[CommonManager getPriceType:model.money_type],oldPriceStr]];
+    [oldPrice addAttribute:NSStrikethroughStyleAttributeName value:@(NSUnderlinePatternSolid | NSUnderlineStyleSingle) range:NSMakeRange(0, oldPrice.length)];
+    self.oldPriceLab.attributedText = oldPrice;
 }
 
 - (void)awakeFromNib {

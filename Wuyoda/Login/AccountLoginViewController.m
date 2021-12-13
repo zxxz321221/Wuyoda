@@ -7,6 +7,8 @@
 
 #import "AccountLoginViewController.h"
 #import "ForgetPasswordViewController.h"
+#import <AuthenticationServices/AuthenticationServices.h>
+#import "ChangePhoneViewController.h"
 
 @interface AccountLoginViewController ()
 
@@ -211,6 +213,8 @@
 
     }];
     
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(checkWeiXinAccount:) name:@"weixinLoginSuccess" object:nil];
+    
 }
 
 -(void)loginClicked:(UIButton *)sender{
@@ -227,7 +231,9 @@
         return;
     }
     
-    [FJNetTool postWithParams:@{@"phone":self.accountField.text,@"pwd":self.passwordField.text,@"api_token":[RegisterModel getUserInfoModel].user_token} url:Login_Login_index loading:YES success:^(id responseObject) {
+    NSDictionary *dic =@{@"phone":self.accountField.text,@"pwd":self.passwordField.text,@"api_token":[RegisterModel getUserInfoModel].user_token};
+    
+    [FJNetTool postWithParams:dic url:Login_Login_index loading:YES success:^(id responseObject) {
         BaseModel *model = [BaseModel mj_objectWithKeyValues:responseObject];
         if ([model.code isEqualToString:CODE0]) {
             UserInfoModel *userModel = [UserInfoModel mj_objectWithKeyValues:responseObject[@"data"]];
@@ -256,15 +262,135 @@
 }
 
 -(void)wxLoginClicked{
+    if (!self.agreementBtn.isSelected) {
+        [self.view showHUDWithText:@"请同意用户协议" withYOffSet:0];
+        return;
+    }
     
+    SendAuthReq *req =[[SendAuthReq alloc ] init];
+    req.scope = @"snsapi_userinfo";
+    req.state = @"none" ;
+    //第三方向微信终端发送一个SendAuthReq消息结构
+    [WXApi sendReq:req completion:^(BOOL success) {
+        
+    }];
 }
--(void)appleLoginClicked{
+-(void)checkWeiXinAccount:(NSNotification *)notification{
+    NSDictionary *responseDic = notification.object;
+    NSString *unionid = responseDic[@"unionid"];
     
+    NSDictionary *dic = @{@"unionid":unionid,@"api_token":[RegisterModel getUserInfoModel].user_token};
+    
+    [FJNetTool postWithParams:dic url:Login_weixinLogin loading:YES success:^(id responseObject) {
+        BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
+        if ([baseModel.code isEqualToString:CODE0]) {
+            UserInfoModel *userModel = [UserInfoModel mj_objectWithKeyValues:responseObject[@"data"]];
+            [UserInfoModel saveUserInfoModel:userModel];
+            RegisterModel *registerModel = [RegisterModel getUserInfoModel];
+            registerModel.user_id = userModel.member_id;
+            registerModel.user_token = userModel.token;
+            [RegisterModel saveUserInfoModel:registerModel];
+            
+            [self dismissViewControllerAnimated:YES completion:nil];
+        }else{
+            //未绑定手机号
+            ChangePhoneViewController *vc = [[ChangePhoneViewController alloc]init];
+            vc.type = @"2";
+            vc.unionid = unionid;
+            [self.navigationController pushViewController:vc animated:YES];
+        }
+    } failure:^(NSError *error) {
+        
+    }];
+}
+
+-(void)appleLoginClicked{
+    if (@available(iOS 13.0, *)) {
+            
+            ASAuthorizationAppleIDProvider *appleIDProvider = [[ASAuthorizationAppleIDProvider alloc] init];
+            ASAuthorizationAppleIDRequest *appleIDRequest = [appleIDProvider createRequest];
+            // 用户授权请求的联系信息
+            appleIDRequest.requestedScopes = @[ASAuthorizationScopeFullName, ASAuthorizationScopeEmail];
+            ASAuthorizationController *authorizationController = [[ASAuthorizationController alloc] initWithAuthorizationRequests:@[appleIDRequest]];
+            // 设置授权控制器通知授权请求的成功与失败的代理
+            authorizationController.delegate = self;
+            // 设置提供 展示上下文的代理，在这个上下文中 系统可以展示授权界面给用户
+            authorizationController.presentationContextProvider = self;
+            // 在控制器初始化期间启动授权流
+            [authorizationController performRequests];
+        } else {
+            NSLog(@"该系统版本不可用Apple登录");
+            [self.view showHUDWithText:@"该系统版本不可用Apple登录" withYOffSet:0];
+        }
 }
 
 -(void)agreementClicked:(UIButton *)sender{
     sender.selected = !sender.isSelected;
 }
+
+-(void)appleLoginWithServer:(NSString *)appleUser{
+    NSDictionary *dic = @{@"appleid":appleUser,@"api_token":[RegisterModel getUserInfoModel].user_token};
+    
+    [FJNetTool postWithParams:dic url:Login_appleLogin loading:YES success:^(id responseObject) {
+        BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
+        if ([baseModel.code isEqualToString:CODE0]) {
+            UserInfoModel *userModel = [UserInfoModel mj_objectWithKeyValues:responseObject[@"data"]];
+            [UserInfoModel saveUserInfoModel:userModel];
+            RegisterModel *registerModel = [RegisterModel getUserInfoModel];
+            registerModel.user_id = userModel.member_id;
+            registerModel.user_token = userModel.token;
+            [RegisterModel saveUserInfoModel:registerModel];
+            
+            [self dismissViewControllerAnimated:YES completion:nil];
+        }else{
+            [self.view showHUDWithText:baseModel.msg withYOffSet:0];
+            //未绑定手机号
+            ChangePhoneViewController *vc = [[ChangePhoneViewController alloc]init];
+            vc.type = @"3";
+            vc.unionid = appleUser;
+            [self.navigationController pushViewController:vc animated:YES];
+        }
+    } failure:^(NSError *error) {
+        
+    }];
+    
+}
+
+///代理主要用于展示在哪里
+-(ASPresentationAnchor)presentationAnchorForAuthorizationController:(ASAuthorizationController *)controller API_AVAILABLE(ios(13.0)){
+    return self.view.window;
+}
+
+
+-(void)authorizationController:(ASAuthorizationController *)controller didCompleteWithAuthorization:(ASAuthorization *)authorization API_AVAILABLE(ios(13.0)){
+        if([authorization.credential isKindOfClass:[ASAuthorizationAppleIDCredential class]]){
+            ASAuthorizationAppleIDCredential *apple = authorization.credential;
+            ///将返回得到的user 存储起来
+            NSString *userIdentifier = apple.user;
+            NSPersonNameComponents *fullName = apple.fullName;
+            NSString *email = apple.email;
+            //用于后台像苹果服务器验证身份信息
+            NSData *identityToken = apple.identityToken;
+            [self appleLoginWithServer:apple.user];
+            
+            NSLog(@"%@\n--%@\n--%@\n--%@",userIdentifier,fullName,email,identityToken);
+        }else if ([authorization.credential isKindOfClass:[ASPasswordCredential class]]){
+            
+            //// Sign in using an existing iCloud Keychain credential.
+            ASPasswordCredential *pass = authorization.credential;
+            NSString *username = pass.user;
+            NSString *passw = pass.password;
+            
+        }
+    
+}
+
+///回调失败
+-(void)authorizationController:(ASAuthorizationController *)controller didCompleteWithError:(NSError *)error API_AVAILABLE(ios(13.0)){
+    NSLog(@"%@",error);
+    [self.view showHUDWithText:@"苹果账号登录失败" withYOffSet:0];
+}
+
 
 /*
 #pragma mark - Navigation

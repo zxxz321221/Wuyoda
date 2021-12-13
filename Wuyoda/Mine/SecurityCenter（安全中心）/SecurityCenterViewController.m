@@ -9,6 +9,7 @@
 #import "SecurityCenterTableViewCell.h"
 #import "SecurityPhoneViewController.h"
 #import "ChangePassWordViewController.h"
+#import "ChangePhoneViewController.h"
 
 @interface SecurityCenterViewController ()<UITableViewDelegate, UITableViewDataSource>
 
@@ -93,8 +94,16 @@
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     if (indexPath.row == 0) {
-        ChangePassWordViewController *vc = [[ChangePassWordViewController alloc]init];
-        [self.navigationController pushViewController:vc animated:YES];
+        if ([UserInfoModel getUserInfoModel].member_tel2.length) {
+            ChangePassWordViewController *vc = [[ChangePassWordViewController alloc]init];
+            [self.navigationController pushViewController:vc animated:YES];
+        }else{
+            [self.view showHUDWithText:@"请先绑定手机号" withYOffSet:0];
+            ChangePhoneViewController *vc = [[ChangePhoneViewController alloc]init];
+            vc.type = @"1";
+            [self.navigationController pushViewController:vc animated:YES];
+        }
+        
     }
     if (indexPath.row == 1) {
         SecurityPhoneViewController *vc = [[SecurityPhoneViewController alloc]init];

@@ -17,7 +17,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface HomeSearchCityViewController : FJBaseViewController
 
-@property (nonatomic , retain)NSMutableArray *cityArr;
+@property (nonatomic , retain)NSMutableArray *hotCityArr;
+
+@property (nonatomic , retain)NSArray *allCityArr;
 
 @property (nonatomic , weak)id <HomeSearchCitySelectDelegate>delegate;
 

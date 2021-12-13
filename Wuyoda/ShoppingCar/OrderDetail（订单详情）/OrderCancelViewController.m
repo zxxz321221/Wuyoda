@@ -12,6 +12,10 @@
 
 @property (nonatomic , retain)UITableView *tableView;
 
+@property (nonatomic , retain)NSMutableArray *titleArr;
+
+@property (nonatomic , copy)NSString *cancelType;
+
 @end
 
 @implementation OrderCancelViewController
@@ -45,10 +49,23 @@
         make.width.mas_offset(kWidth(321));
         make.height.mas_offset(kWidth(48));
     }];
+    self.titleArr = [[NSMutableArray alloc]initWithObjects:@"商品无货",@"不想要了",@"商品信息填写错误",@"地址信息填写错误",@"商品降价",@"其他", nil];
 }
 
 -(void)doneClicked{
-    
+    if (self.cancelType.length) {
+        NSDictionary *dic = @{@"m_id":[UserInfoModel getUserInfoModel].member_id,@"uid":self.uid,@"cancel":self.cancelType};
+        [FJNetTool postWithParams:dic url:Special_cancel_order loading:YES success:^(id responseObject) {
+            BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
+            if ([baseModel.code isEqualToString:CODE0]) {
+                [self.view showHUDWithText:@"订单取消成功" withYOffSet:0];
+            }
+        } failure:^(NSError *error) {
+                
+        }];
+    }else{
+        [self.view showHUDWithText:@"请选择取消理由" withYOffSet:0];
+    }
 }
 
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -58,7 +75,7 @@
     }
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     
-    
+    cell.titleLab.text = [self.titleArr objectAtIndex:indexPath.row];
     
     return cell;
 }
@@ -66,7 +83,7 @@
     return 1;
 }
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
-    return 6;
+    return self.titleArr.count;
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
 
@@ -90,6 +107,9 @@
     return [UIView new];
 }
 
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    self.cancelType = [self.titleArr objectAtIndex:indexPath.row];
+}
 /*
 #pragma mark - Navigation
 

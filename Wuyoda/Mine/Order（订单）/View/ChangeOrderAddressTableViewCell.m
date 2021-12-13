@@ -71,6 +71,13 @@
     }];
 }
 
+-(void)setModel:(AddressModel *)model{
+    _model = model;
+    self.addressLab.text = model.address;
+    self.nameLab.text = model.name;
+    self.phoneLab.text = model.mobile;
+}
+
 - (void)awakeFromNib {
     [super awakeFromNib];
     // Initialization code

@@ -19,11 +19,6 @@
 
 @property (nonatomic , retain)UILabel *goodNumLab;
 
-@property (nonatomic , retain)UILabel *goodAllPriceLab;
-
-@property (nonatomic , retain)UILabel *goodFreightLab;
-
-@property (nonatomic , retain)UILabel *allPriceLab;
 
 @end
 
@@ -40,15 +35,15 @@
 
 -(void)createUI{
     
-    UIView *topLine = [[UIView alloc]init];
-    topLine.backgroundColor = [ColorManager ColorF2F2F2];
-    [self.contentView addSubview:topLine];
-    [topLine mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.top.width.equalTo(self.contentView);
-        make.height.mas_offset(kWidth(1));
-    }];
+//    UIView *topLine = [[UIView alloc]init];
+//    topLine.backgroundColor = [ColorManager ColorF2F2F2];
+//    [self.contentView addSubview:topLine];
+//    [topLine mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.left.top.width.equalTo(self.contentView);
+//        make.height.mas_offset(kWidth(1));
+//    }];
     
-    UIView *goodBGV = [[UIView alloc]initWithFrame:CGRectMake(kWidth(10), kWidth(22), kWidth(355), kWidth(120))];
+    UIView *goodBGV = [[UIView alloc]initWithFrame:CGRectMake(kWidth(10), kWidth(15), kWidth(355), kWidth(120))];
     goodBGV.backgroundColor = [ColorManager ColorF7F7F7];
     goodBGV.layer.cornerRadius = kWidth(5);
     [self.contentView addSubview:goodBGV];
@@ -106,77 +101,24 @@
         make.top.equalTo(self.goodUnitLab.mas_bottom).mas_offset(kWidth(10));
     }];
     
-    UILabel *goodAllPriceTitleLab = [[UILabel alloc]init];
-    goodAllPriceTitleLab.text = @"商品总价";
-    goodAllPriceTitleLab.textColor = [ColorManager ColorCCCCCC];
-    goodAllPriceTitleLab.font = kFont(14);
-    [self.contentView addSubview:goodAllPriceTitleLab];
-    [goodAllPriceTitleLab mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_offset(kWidth(55));
-        make.top.equalTo(goodBGV.mas_bottom).mas_offset(kWidth(14));
-    }];
-    
-    self.goodAllPriceLab = [[UILabel alloc]init];
-    self.goodAllPriceLab.text = @"￥349.00";
-    self.goodAllPriceLab.textColor = [ColorManager ColorCCCCCC];
-    self.goodAllPriceLab.font = kFont(14);
-    [self.contentView addSubview:self.goodAllPriceLab];
-    [self.goodAllPriceLab mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.right.mas_offset(kWidth(-13));
-        make.centerY.equalTo(goodAllPriceTitleLab);
-    }];
-    
-    UILabel *goodFreightTitleLab = [[UILabel alloc]init];
-    goodFreightTitleLab.text = @"运费";
-    goodFreightTitleLab.textColor = [ColorManager ColorCCCCCC];
-    goodFreightTitleLab.font = kFont(14);
-    [self.contentView addSubview:goodFreightTitleLab];
-    [goodFreightTitleLab mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.right.equalTo(goodAllPriceTitleLab);
-        make.top.equalTo(goodAllPriceTitleLab.mas_bottom).mas_offset(kWidth(10));
-    }];
-
-    self.goodFreightLab = [[UILabel alloc]init];
-    self.goodFreightLab.text = @"￥0.00";
-    self.goodFreightLab.textColor = [ColorManager ColorCCCCCC];
-    self.goodFreightLab.font = kFont(14);
-    [self.contentView addSubview:self.goodFreightLab];
-    [self.goodFreightLab mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.right.mas_offset(kWidth(-13));
-        make.centerY.equalTo(goodFreightTitleLab);
-    }];
-
-    self.allPriceLab = [[UILabel alloc]init];
-    self.allPriceLab.text = @"￥349.00";
-    self.allPriceLab.textColor = [UIColor redColor];
-    self.allPriceLab.font = kFont(16);
-    [self.contentView addSubview:self.allPriceLab];
-    [self.allPriceLab mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.right.mas_offset(kWidth(-13));
-        make.top.equalTo(goodFreightTitleLab.mas_bottom).mas_offset(kWidth(14));
-    }];
-
-    UILabel *allPriceTitleLab = [[UILabel alloc]init];
-    allPriceTitleLab.text = @"合计：";
-    allPriceTitleLab.textColor = [ColorManager ColorCCCCCC];
-    allPriceTitleLab.font = kFont(16);
-    [self.contentView addSubview:allPriceTitleLab];
-    [allPriceTitleLab mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.right.equalTo(self.allPriceLab.mas_left);
-        make.centerY.equalTo(self.allPriceLab);
-    }];
-    
-    UIView *bottomLine = [[UIView alloc]init];
-    bottomLine.backgroundColor = [ColorManager ColorF2F2F2];
-    [self.contentView addSubview:bottomLine];
-    [bottomLine mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.bottom.width.equalTo(self.contentView);
-        make.height.mas_offset(kWidth(1));
-    }];
     
 }
 
 
+-(void)setModel:(ShopCartModel *)model{
+    _model = model;
+    [self.goodImgV sd_setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@",model.goods_file1]]];
+    self.goodNameLab.text = model.goods_name;
+    self.goodPriceLab.text = [NSString stringWithFormat:@"%@%@",[CommonManager getPriceType:model.money_type],model.total_price];
+    self.goodNumLab.text = [NSString stringWithFormat:@"数量：%@",model.cart_num];
+}
+
+-(void)setOrderGoodModel:(OrderGoodModel *)orderGoodModel{
+    [self.goodImgV sd_setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@",orderGoodModel.goods_file1]]];
+    self.goodNameLab.text = orderGoodModel.goods_name;
+    self.goodPriceLab.text = [NSString stringWithFormat:@"%@%@",[CommonManager getPriceType:orderGoodModel.money_type],orderGoodModel.buy_total_price];
+    self.goodNumLab.text = [NSString stringWithFormat:@"数量：%@",orderGoodModel.buy_number];
+}
 - (void)awakeFromNib {
     [super awakeFromNib];
     // Initialization code

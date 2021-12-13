@@ -149,54 +149,65 @@
     
 }
 
--(void)setAttractionName:(NSString *)attractionName{
-    self.titleLab.text = attractionName;
-    if ([attractionName isEqualToString:@"金獅湖風景區"]) {
-        self.scrollV.contentSize = CGSizeMake(kScreenWidth*4, 0);
-        for (int i = 0; i<4; i++) {
-            UIImageView *attractionImgV = [[UIImageView alloc]initWithFrame:CGRectMake(i*kScreenWidth, 0, kScreenWidth, kWidth(330))];
-            attractionImgV.backgroundColor = [ColorManager RandomColor];
-            NSString *imgName = [NSString stringWithFormat:@"%@%d",attractionName,i];
-            attractionImgV.image = kGetImage(imgName);
-            [self.scrollV addSubview:attractionImgV];
-            
-        }
-    }else if ([attractionName isEqualToString:@"蓮池潭"]){
-        self.scrollV.contentSize = CGSizeMake(kScreenWidth*3, 0);
-        for (int i = 0; i<3; i++) {
-            UIImageView *attractionImgV = [[UIImageView alloc]initWithFrame:CGRectMake(i*kScreenWidth, 0, kScreenWidth, kWidth(330))];
-            attractionImgV.backgroundColor = [ColorManager RandomColor];
-            NSString *imgName = [NSString stringWithFormat:@"%@%d",attractionName,i];
-            attractionImgV.image = kGetImage(imgName);
-            [self.scrollV addSubview:attractionImgV];
-            
-        }
-    }
-    else if ([attractionName isEqualToString:@"夜市文化"]){
-        self.priceLab.text = @"";
-        self.scrollV.contentSize = CGSizeMake(kScreenWidth*2, 0);
-        for (int i = 0; i<2; i++) {
-            UIImageView *attractionImgV = [[UIImageView alloc]initWithFrame:CGRectMake(i*kScreenWidth, 0, kScreenWidth, kWidth(330))];
-            attractionImgV.backgroundColor = [ColorManager RandomColor];
-            NSString *imgName = [NSString stringWithFormat:@"%@%d",attractionName,i+1];
-            attractionImgV.image = kGetImage(imgName);
-            [self.scrollV addSubview:attractionImgV];
-            
-        }
-    }
-    else if ([attractionName isEqualToString:@"旗津海鲜"]){
-        self.priceLab.text = @"";
-        self.scrollV.contentSize = CGSizeMake(kScreenWidth, 0);
-        for (int i = 0; i<1; i++) {
-            UIImageView *attractionImgV = [[UIImageView alloc]initWithFrame:CGRectMake(i*kScreenWidth, 0, kScreenWidth, kWidth(330))];
-            attractionImgV.backgroundColor = [ColorManager RandomColor];
-            NSString *imgName = [NSString stringWithFormat:@"%@",attractionName];
-            attractionImgV.image = kGetImage(imgName);
-            [self.scrollV addSubview:attractionImgV];
-            
-        }
-    }
+-(void)setModel:(AttractionModel *)model{
+    _model = model;
+    self.titleLab.text = model.scenic_title;
+    self.scrollV.contentSize = CGSizeMake(kScreenWidth, 0);
+    UIImageView *attractionImgV = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kWidth(330))];
+    attractionImgV.backgroundColor = [ColorManager RandomColor];
+    [attractionImgV sd_setImageWithURL:[NSURL URLWithString:model.cover]];
+    [self.scrollV addSubview:attractionImgV];
+    self.priceLab.text = [NSString stringWithFormat:@"市场价门票：￥%@",model.scenic_price];
 }
+
+//-(void)setAttractionName:(NSString *)attractionName{
+//    self.titleLab.text = attractionName;
+//    if ([attractionName isEqualToString:@"金獅湖風景區"]) {
+//        self.scrollV.contentSize = CGSizeMake(kScreenWidth*4, 0);
+//        for (int i = 0; i<4; i++) {
+//            UIImageView *attractionImgV = [[UIImageView alloc]initWithFrame:CGRectMake(i*kScreenWidth, 0, kScreenWidth, kWidth(330))];
+//            attractionImgV.backgroundColor = [ColorManager RandomColor];
+//            NSString *imgName = [NSString stringWithFormat:@"%@%d",attractionName,i];
+//            attractionImgV.image = kGetImage(imgName);
+//            [self.scrollV addSubview:attractionImgV];
+//
+//        }
+//    }else if ([attractionName isEqualToString:@"蓮池潭"]){
+//        self.scrollV.contentSize = CGSizeMake(kScreenWidth*3, 0);
+//        for (int i = 0; i<3; i++) {
+//            UIImageView *attractionImgV = [[UIImageView alloc]initWithFrame:CGRectMake(i*kScreenWidth, 0, kScreenWidth, kWidth(330))];
+//            attractionImgV.backgroundColor = [ColorManager RandomColor];
+//            NSString *imgName = [NSString stringWithFormat:@"%@%d",attractionName,i];
+//            attractionImgV.image = kGetImage(imgName);
+//            [self.scrollV addSubview:attractionImgV];
+//
+//        }
+//    }
+//    else if ([attractionName isEqualToString:@"夜市文化"]){
+//        self.priceLab.text = @"";
+//        self.scrollV.contentSize = CGSizeMake(kScreenWidth*2, 0);
+//        for (int i = 0; i<2; i++) {
+//            UIImageView *attractionImgV = [[UIImageView alloc]initWithFrame:CGRectMake(i*kScreenWidth, 0, kScreenWidth, kWidth(330))];
+//            attractionImgV.backgroundColor = [ColorManager RandomColor];
+//            NSString *imgName = [NSString stringWithFormat:@"%@%d",attractionName,i+1];
+//            attractionImgV.image = kGetImage(imgName);
+//            [self.scrollV addSubview:attractionImgV];
+//
+//        }
+//    }
+//    else if ([attractionName isEqualToString:@"旗津海鲜"]){
+//        self.priceLab.text = @"";
+//        self.scrollV.contentSize = CGSizeMake(kScreenWidth, 0);
+//        for (int i = 0; i<1; i++) {
+//            UIImageView *attractionImgV = [[UIImageView alloc]initWithFrame:CGRectMake(i*kScreenWidth, 0, kScreenWidth, kWidth(330))];
+//            attractionImgV.backgroundColor = [ColorManager RandomColor];
+//            NSString *imgName = [NSString stringWithFormat:@"%@",attractionName];
+//            attractionImgV.image = kGetImage(imgName);
+//            [self.scrollV addSubview:attractionImgV];
+//
+//        }
+//    }
+//}
 
 /*
 // Only override drawRect: if you perform custom drawing.

@@ -12,6 +12,12 @@
 
 @property (nonatomic , retain)UITableView *tableView;
 
+@property (nonatomic , retain)UIButton *codeBtn;
+
+@property (nonatomic , retain)UITextField *codeField;
+@property (nonatomic , retain)UITextField *phoneField;
+@property (nonatomic , retain)UITextField *emailField;
+
 @end
 
 @implementation ChangeEmailViewController
@@ -39,6 +45,7 @@
     saveBtn .titleLabel.font = kFont(14);
     saveBtn.backgroundColor= [ColorManager MainColor];
     saveBtn.layer.cornerRadius = kWidth(24);
+    [saveBtn addTarget:self action:@selector(savePhoneClicked:) forControlEvents:UIControlEventTouchUpInside];
     [footerV addSubview:saveBtn];
     [saveBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.bottom.equalTo(footerV);
@@ -48,6 +55,49 @@
     self.tableView.tableFooterView = footerV;
     
     [self.view addSubview:self.tableView];
+}
+
+-(void)sendCodeClicked:(id)sender{
+    
+    if (self.phoneField.text.length) {
+        
+        NSDictionary *dic = @{@"phone":self.phoneField.text,@"prefix":@"86",@"api_token":[RegisterModel getUserInfoModel].user_token};
+        
+        [FJNetTool postWithParams:dic url:Login_sendVerify loading:YES success:^(id responseObject) {
+            BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
+            if ([baseModel.code isEqualToString:CODE0]) {
+                [self.view showHUDWithText:@"验证码发送成功" withYOffSet:0];
+                [self.codeBtn setTitle:@"重新发送" forState:UIControlStateNormal];
+            }else{
+                [self.view showHUDWithText:baseModel.msg withYOffSet:0];
+            }
+        } failure:^(NSError *error) {
+            
+        }];
+        
+    }else{
+        [self.view showHUDWithText:@"请输入手机号码" withYOffSet:0];
+    }
+}
+
+-(void)savePhoneClicked:(id)sender{
+    if (!self.codeField.text.length || !self.phoneField.text.length || !self.emailField.text.length) {
+        [self.view showHUDWithText:@"请填写完整信息" withYOffSet:0];
+    }else{
+        NSDictionary *dic = @{@"m_uid":[UserInfoModel getUserInfoModel].member_id,@"email":self.emailField.text,@"code":self.codeField.text,@"api_token":[RegisterModel getUserInfoModel].user_token};
+        
+        [FJNetTool postWithParams:dic url:Login_pass_save loading:YES success:^(id responseObject) {
+            BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
+            if ([baseModel.code isEqualToString:CODE0]) {
+                [self.view showHUDWithText:@"修改邮箱成功" withYOffSet:0];
+                [self.navigationController popViewControllerAnimated:YES];
+            }else{
+                [self.view showHUDWithText:baseModel.msg withYOffSet:0];
+            }
+        } failure:^(NSError *error) {
+            
+        }];
+    }
 }
 
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -64,16 +114,21 @@
         cell.titleLab.text = @"手机号";
         cell.infoTextField.placeholder = @"请输入手机号";
         cell.getCodeBtn.hidden = NO;
+        self.phoneField = cell.infoTextField;
+        self.codeBtn = cell.getCodeBtn;
+        [self.codeBtn addTarget:self action:@selector(sendCodeClicked:) forControlEvents:UIControlEventTouchUpInside];
     }
     if (indexPath.row == 1) {
         cell.titleLab.text = @"验证码";
         cell.infoTextField.placeholder = @"请输入验证码";
         cell.getCodeBtn.hidden = YES;
+        self.codeField = cell.infoTextField;
     }
     if (indexPath.row == 2) {
         cell.titleLab.text = @"邮箱";
         cell.infoTextField.placeholder = @"请输入新邮箱";
         cell.getCodeBtn.hidden = YES;
+        self.emailField = cell.infoTextField;
     }
     
     return cell;

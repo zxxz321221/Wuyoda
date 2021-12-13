@@ -34,6 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic , copy)NSString *taxes_show;
 @property (nonatomic , copy)NSString *total_price;
 @property (nonatomic , copy)NSString *total_price_m;
+@property (nonatomic , copy)NSString *total_price_show;
 @property (nonatomic , copy)NSString *uid;
 @property (nonatomic , copy)NSString *url;
 @property (nonatomic , copy)NSString *isSelect;

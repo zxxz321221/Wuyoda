@@ -141,6 +141,7 @@
     
     [action1 setValue:[ColorManager Color008A70] forKey:@"_titleTextColor"];
     UIAlertAction *action2 = [UIAlertAction actionWithTitle:@"退出当前账号" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        [UserInfoModel clearUserInfo];
         
     }];
     [action2 setValue:[ColorManager Color008A70] forKey:@"_titleTextColor"];

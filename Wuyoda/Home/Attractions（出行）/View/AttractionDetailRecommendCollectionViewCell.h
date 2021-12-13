@@ -6,12 +6,13 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "AttractionModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface AttractionDetailRecommendCollectionViewCell : UICollectionViewCell
 
-@property (nonatomic , copy)NSString *imgName;
+@property (nonatomic , copy)AttractionModel *model;
 
 @end
 

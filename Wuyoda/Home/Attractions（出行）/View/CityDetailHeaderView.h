@@ -6,10 +6,13 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "CityDetailModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface CityDetailHeaderView : UIView
+
+@property (nonatomic , retain)CityDetailModel *model;
 
 @end
 

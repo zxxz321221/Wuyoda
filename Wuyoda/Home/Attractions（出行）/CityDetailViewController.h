@@ -11,6 +11,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface CityDetailViewController : FJBaseViewController
 
+@property (nonatomic , copy)NSString *cityID;
+
 @end
 
 NS_ASSUME_NONNULL_END

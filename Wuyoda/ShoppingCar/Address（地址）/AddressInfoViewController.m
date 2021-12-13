@@ -8,8 +8,9 @@
 #import "AddressInfoViewController.h"
 #import "AddressInfoTableViewCell.h"
 #import "AddressInfoFooterView.h"
+#import "AddressChangeView.h"
 
-@interface AddressInfoViewController ()<UITableViewDelegate,UITableViewDataSource>
+@interface AddressInfoViewController ()<UITableViewDelegate,UITableViewDataSource,UIImagePickerControllerDelegate,UINavigationControllerDelegate,AddressChangeSelectDelegate>
 
 @property (nonatomic , retain)UITableView *tableView;
 
@@ -17,7 +18,13 @@
 
 @property (nonatomic , retain)NSArray *placeholderArr;
 
-@property (nonatomic  , retain)AddressInfoFooterView *footerV;
+@property (nonatomic , retain)AddressInfoFooterView *footerV;
+
+@property (nonatomic , retain)AddressChangeView *addressV;
+
+@property (nonatomic , copy)NSString *proStr;
+@property (nonatomic , copy)NSString *cityStr;
+@property (nonatomic , copy)NSString *areaStr;
 
 @property (nonatomic , retain)UITextField *nameField;
 @property (nonatomic , retain)UITextField *phoneField;
@@ -28,6 +35,8 @@
 @property (nonatomic , assign)BOOL is_buy;
 @property (nonatomic , retain)UIImage *front_id;
 @property (nonatomic , retain)UIImage *reverse_id;
+
+@property (nonatomic , copy)NSString *idCardType;
 
 @end
 
@@ -47,8 +56,10 @@
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.tableView.backgroundColor = [ColorManager WhiteColor];
     
-    AddressInfoFooterView *footerV = [[AddressInfoFooterView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kWidth(190))];
-    self.tableView.tableFooterView = footerV;
+    self.footerV = [[AddressInfoFooterView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kWidth(190))];
+    [self.footerV.identifierBtn1 addTarget:self action:@selector(selectIDCardImage:) forControlEvents:UIControlEventTouchUpInside];
+    [self.footerV.identifierBtn2 addTarget:self action:@selector(selectIDCardImage:) forControlEvents:UIControlEventTouchUpInside];
+    self.tableView.tableFooterView = self.footerV;
     
     
     [self.view addSubview:self.tableView];
@@ -68,57 +79,146 @@
         make.height.mas_offset(kWidth(42));
     }];
     
+    self.proStr = @"";
+    self.cityStr = @"";
+    self.areaStr = @"";
     self.titleArr = @[@[@"收货人",@"手机号",@"收货地址",@"门牌号",@""],@[@"姓名",@"身份证号"]];
     self.placeholderArr = @[@[@"您的姓名",@"您的手机号",@"小区/写字楼/学校",@"例：8号楼808室",@""],@[@"请输入姓名",@"请输入身份证号"]];
 }
+
+-(void)selectIDCardImage:(UIButton *)sender{
+    if (sender == self.footerV.identifierBtn1) {
+        self.idCardType = @"1";
+    }else{
+        self.idCardType = @"2";
+    }
+    
+    UIImagePickerController *imagePicker = [[UIImagePickerController alloc]init];
+    imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+    imagePicker.delegate = self;
+    [self presentViewController:imagePicker animated:YES completion:nil];
+}
+
 -(void)saveAddressClicked{
+    if ([self.type isEqualToString:@"2"]) {
+        [self editAddressFromServer];
+    }else{
+        self.front_id = kGetImage(@"手办礼品1");
+        self.reverse_id = kGetImage(@"手办礼品2");
+        
+        NSDictionary *dic = @{@"consignee":self.nameField.text,@"province":self.proStr,@"city":self.cityStr,@"county":self.areaStr,@"address":[NSString stringWithFormat:@"%@",self.numField.text],@"mobile":self.phoneField.text,@"m_uid":[UserInfoModel getUserInfoModel].uid,@"is_buy":[NSString stringWithFormat:@"%d",self.is_buy],@"name":self.realNameField.text,@"card":self.idNumField.text,@"api_token":[RegisterModel getUserInfoModel].user_token};
+        
+        AFHTTPSessionManager *sessionManager = [AFHTTPSessionManager manager];
+        sessionManager.responseSerializer = [AFHTTPResponseSerializer serializer];
+
+        [sessionManager.responseSerializer setAcceptableContentTypes:[NSSet setWithObjects:@"application/json", @"text/html", @"text/json", @"text/plain", @"text/javascript", @"text/xml", @"image/*", nil]];
+        [sessionManager POST:[NSString stringWithFormat:@"%@%@",HTTP,Special_address_add] parameters:dic headers:nil constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
+            NSData *data =UIImagePNGRepresentation(self.front_id);//把要上传的图片转成NSData
+
+            //把要上传的文件转成NSData
+            //NSString*path=[[NSBundlemainBundle]pathForResource:@"123"ofType:@"txt"];
+
+            //NSData*fileData = [NSDatadataWithContentsOfFile:path];
+
+            [formData appendPartWithFileData:data name:@"front_ID" fileName:@"front_ID.png" mimeType:@"image/png"];//给定数据流的数据名，文件名，文件类型（以图片为例）
+            
+            
+
+            NSData *data2 =UIImagePNGRepresentation(self.reverse_id);//把要上传的图片转成NSData
+
+            //把要上传的文件转成NSData
+            //NSString*path=[[NSBundlemainBundle]pathForResource:@"123"ofType:@"txt"];
+
+            //NSData*fileData = [NSDatadataWithContentsOfFile:path];
+
+            [formData appendPartWithFileData:data2 name:@"reverse_ID" fileName:@"reverse_ID.png" mimeType:@"image/png"];//给定数据流的数据名，文件名，文件类型（以图片为例）
+            
+            } progress:^(NSProgress * _Nonnull uploadProgress) {
+                
+            } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+                NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:responseObject
+                                                                    options:NSJSONReadingMutableContainers
+                                                                      error:nil];
+                BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:dic];
+                if ([baseModel.code isEqualToString:CODE0]) {
+                    if (self.delegate && [self.delegate respondsToSelector:@selector(updateAddressInfo)]) {
+                        [self.delegate updateAddressInfo];
+                        [self.view showHUDWithText:@"保存成功" withYOffSet:0];
+                        [self.navigationController popViewControllerAnimated:YES];
+                    }
+                }
+                
+            } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+                
+            }];
+        
+    //    [FJNetTool postWithParams:dic url:Special_address_add loading:YES success:^(id responseObject) {
+    //        BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
+    //        if ([baseModel.code isEqualToString:CODE0]) {
+    //            [self.navigationController popViewControllerAnimated:YES];
+    //        }
+    //    } failure:^(NSError *error) {
+    //
+    //    }];
+    }
+    
+    
+    
+}
+
+-(void)editAddressFromServer{
+    
     self.front_id = kGetImage(@"手办礼品1");
     self.reverse_id = kGetImage(@"手办礼品2");
     
-    NSDictionary *dic = @{@"consignee":self.nameField.text,@"province":@"辽宁省",@"city":@"大连市",@"county":@"甘井子区",@"address":[NSString stringWithFormat:@"%@%@",self.addressField.text,self.numField.text],@"mobile":self.phoneField.text,@"m_uid":[UserInfoModel getUserInfoModel].uid,@"is_buy":[NSString stringWithFormat:@"%d",self.is_buy],@"name":self.realNameField.text,@"card":self.idNumField.text,@"front_ID":@"xxxx.png",@"reverse_ID":@"xxxxx.png",@"api_token":[RegisterModel getUserInfoModel].user_token};
+    NSDictionary *dic = @{@"consignee":self.nameField.text,@"province":self.proStr,@"city":self.cityStr,@"county":self.areaStr,@"address":[NSString stringWithFormat:@"%@",self.numField.text],@"mobile":self.phoneField.text,@"m_uid":[UserInfoModel getUserInfoModel].uid,@"is_buy":[NSString stringWithFormat:@"%d",self.is_buy],@"name":self.realNameField.text,@"card":self.idNumField.text,@"api_token":[RegisterModel getUserInfoModel].user_token,@"uid":self.addressModel.uid};
     
 //    FJNetTool uploadWithURL:<#(NSString *)#> params:<#(NSDictionary *)#> images:<#(NSArray<UIImage *> *)#> name:<#(NSString *)#> filename:<#(NSArray<NSString *> *)#> loading:<#(BOOL)#> imageScale:<#(CGFloat)#> imageType:<#(NSString *)#> progress:<#^(NSProgress *progress)progres#> success:<#^(id responseObject)success#> failure:<#^(NSError *error)failure#>
     
     AFHTTPSessionManager *sessionManager = [AFHTTPSessionManager manager];
-    [sessionManager POST:[NSString stringWithFormat:@"%@%@",HTTP,Specia_address_add] parameters:dic headers:nil constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
-        NSData *data =UIImageJPEGRepresentation(self.front_id,0.5);//把要上传的图片转成NSData
+    sessionManager.responseSerializer = [AFHTTPResponseSerializer serializer];
+
+    [sessionManager.responseSerializer setAcceptableContentTypes:[NSSet setWithObjects:@"application/json", @"text/html", @"text/json", @"text/plain", @"text/javascript", @"text/xml", @"image/*", nil]];
+    [sessionManager POST:[NSString stringWithFormat:@"%@%@",HTTP,Special_address_edit] parameters:dic headers:nil constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
+        NSData *data =UIImagePNGRepresentation(self.front_id);//把要上传的图片转成NSData
 
         //把要上传的文件转成NSData
         //NSString*path=[[NSBundlemainBundle]pathForResource:@"123"ofType:@"txt"];
 
         //NSData*fileData = [NSDatadataWithContentsOfFile:path];
 
-        [formData appendPartWithFileData:data name:@"uploadFile" fileName:@"front_ID" mimeType:@"image/png"];//给定数据流的数据名，文件名，文件类型（以图片为例）
+        [formData appendPartWithFileData:data name:@"front_ID" fileName:@"front_ID.png" mimeType:@"image/png"];//给定数据流的数据名，文件名，文件类型（以图片为例）
         
         
 
-        NSData *data2 =UIImageJPEGRepresentation(self.reverse_id,0.5);//把要上传的图片转成NSData
+        NSData *data2 =UIImagePNGRepresentation(self.reverse_id);//把要上传的图片转成NSData
 
         //把要上传的文件转成NSData
         //NSString*path=[[NSBundlemainBundle]pathForResource:@"123"ofType:@"txt"];
 
         //NSData*fileData = [NSDatadataWithContentsOfFile:path];
 
-        [formData appendPartWithFileData:data2 name:@"uploadFile" fileName:@"reverse_id" mimeType:@"image/png"];//给定数据流的数据名，文件名，文件类型（以图片为例）
+        [formData appendPartWithFileData:data2 name:@"reverse_ID" fileName:@"reverse_ID.png" mimeType:@"image/png"];//给定数据流的数据名，文件名，文件类型（以图片为例）
         
         } progress:^(NSProgress * _Nonnull uploadProgress) {
             
         } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
             
+            NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:responseObject
+                                                                options:NSJSONReadingMutableContainers
+                                                                  error:nil];
+            BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:dic];
+            if ([baseModel.code isEqualToString:CODE0]) {
+                if (self.delegate && [self.delegate respondsToSelector:@selector(updateAddressInfo)]) {
+                    [self.delegate updateAddressInfo];
+                    [self.view showHUDWithText:@"修改成功" withYOffSet:0];
+                    [self.navigationController popViewControllerAnimated:YES];
+                }
+            }
+            
         } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
             
         }];
-    
-//    [FJNetTool postWithParams:dic url:Specia_address_add loading:YES success:^(id responseObject) {
-//        BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
-//        if ([baseModel.code isEqualToString:CODE0]) {
-//            [self.navigationController popViewControllerAnimated:YES];
-//        }
-//    } failure:^(NSError *error) {
-//
-//    }];
-    
-    
 }
 
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -162,6 +262,8 @@
 
         if (indexPath.row == 2) {
             self.addressField = cell.infoTextField;
+            self.addressField.userInteractionEnabled = NO;
+            self.addressField.text = [NSString stringWithFormat:@"%@%@%@",self.proStr,self.cityStr,self.areaStr];
         }
 
         if (indexPath.row == 3) {
@@ -174,6 +276,19 @@
         if (indexPath.row == 1) {
             self.idNumField = cell.infoTextField;
         }
+    }
+    
+    if (self.addressModel) {
+        self.nameField.text = self.addressModel.consignee;
+        self.phoneField.text = self.addressModel.mobile;
+        self.proStr = self.addressModel.province;
+        self.cityStr = self.addressModel.city;
+        self.areaStr = self.addressModel.county;
+        self.addressField.text = [NSString stringWithFormat:@"%@%@%@",self.proStr,self.cityStr,self.areaStr];
+        self.numField.text = self.addressModel.address;
+        self.realNameField.text = self.addressModel.name;
+        self.idNumField.text = self.addressModel.card;
+        self.is_buy = self.addressModel.is_buy;
     }
     
     return cell;
@@ -213,9 +328,47 @@
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     if (indexPath.section == 0 && indexPath.row == 4) {
         self.is_buy = !self.is_buy;
+        [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:4 inSection:0]] withRowAnimation:UITableViewRowAnimationNone];
+    }
+    if (indexPath.section == 0 && indexPath.row == 2) {
+        if (self.addressV) {
+            self.addressV.hidden = NO;
+        }else{
+            self.addressV = [[AddressChangeView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kScreenHeight)];
+            self.addressV.delegate = self;
+            [self.navigationController.view addSubview:self.addressV];
+        }
     }
 }
 
+-(void)selectAddress:(NSString *)proStr CityStr:(NSString *)cityStr AreaStr:(NSString *)areaStr{
+    self.proStr = proStr;
+    self.cityStr = cityStr;
+    self.areaStr = areaStr;
+    if (self.addressModel) {
+        self.addressModel.province = proStr;
+        self.addressModel.city = cityStr;
+        self.addressModel.county = areaStr;
+    }
+    [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:2 inSection:0]] withRowAnimation:UITableViewRowAnimationNone];
+}
+
+
+-(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary<UIImagePickerControllerInfoKey,id> *)info{
+    [picker dismissViewControllerAnimated:YES completion:nil];
+    
+    UIImage *image = [info objectForKey:UIImagePickerControllerOriginalImage];
+    
+    if ([self.idCardType isEqualToString:@"1"]) {
+        self.front_id = image;
+        [self.footerV.identifierBtn1 setImage:image forState:UIControlStateNormal];
+    }else{
+        self.reverse_id = image;
+        [self.footerV.identifierBtn2 setImage:image forState:UIControlStateNormal];
+    }
+    [self.tableView reloadData];
+    
+}
 /*
 #pragma mark - Navigation
 

@@ -54,6 +54,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic , copy)NSString *goods_sale_price_org;
 @property (nonatomic , copy)NSString *goods_market_price;
 @property (nonatomic , copy)NSString *goods_market_price_org;
+@property (nonatomic , copy)NSString *price;
 @property (nonatomic , copy)NSString *goods_status;
 @property (nonatomic , copy)NSString *goods_stock;
 @property (nonatomic , copy)NSString *is_makeup;
@@ -72,6 +73,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic , copy)NSString *uid;
 @property (nonatomic , copy)NSString *update_date;
 @property (nonatomic , copy)NSString *wholesale_price;
+@property (nonatomic , retain)NSDictionary *detail;
 
 @end
 

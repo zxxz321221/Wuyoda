@@ -44,7 +44,7 @@
 -(__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
     CityPresentCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass([CityPresentCollectionViewCell class]) forIndexPath:indexPath];
     
-    cell.imgName = [NSString stringWithFormat:@"手办礼品%ld",indexPath.row+1];
+    cell.model = [self.goodsArr objectAtIndex:indexPath.row];
 
     return cell;
 }
@@ -54,7 +54,7 @@
 }
 
 -(NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section{
-    return 3;
+    return self.goodsArr.count;
 }
 
 - (void)awakeFromNib {

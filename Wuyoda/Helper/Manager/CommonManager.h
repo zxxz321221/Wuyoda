@@ -32,7 +32,9 @@ NS_ASSUME_NONNULL_BEGIN
  
  @return 当前年月日
  */
-+ (NSString *)getCurrentDateOfYearMonthDay;
++ (NSString *)getCurrentDateOfYearMonthDay:(NSDate *)date;
+
++ (NSString *)getCurrentDateOfYearMonth:(NSDate *)date;
 /**
  获取当前年月日时分秒
 
@@ -63,6 +65,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 //获知运费算法
 + (NSString *)freightCalculation:(int)goodsNum first:(float)first second:(float)second third:(float)third;
+
++ (NSString *)getPriceType:(NSString *)type;
 
 // ------处理广告图跳转------
 + (void)bannerJump:(int)type viewController:(UIViewController *)viewController parStr:(NSString *)parStr;

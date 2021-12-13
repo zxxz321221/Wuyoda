@@ -88,7 +88,7 @@
         make.top.equalTo(self.titleLab.mas_bottom).mas_offset(kWidth(24));
     }];
     self.numLab = [[UILabel alloc]init];
-    self.numLab.text = @"规格：200g/块";
+    self.numLab.text = @"数量：1";
     self.numLab.textColor = [ColorManager Color999999];
     self.numLab.font = kFont(12);
     [bgV addSubview:self.numLab];
@@ -285,6 +285,17 @@
         self.finishEvaluateBtn.hidden = YES;
         self.deleteBtn.hidden = YES;
     }
+}
+
+-(void)setListModel:(OrderListModel *)listModel{
+    _listModel = listModel;
+    NSDictionary *orderGoodDic = listModel.order_goods;
+    NSArray *allKey = orderGoodDic.allKeys;
+    OrderGoodModel *goodModel = [OrderGoodModel mj_objectWithKeyValues:[orderGoodDic valueForKey:allKey.firstObject]];
+    [self.imgV sd_setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@",goodModel.goods_file1]]];
+    self.titleLab.text = goodModel.goods_name;
+    self.numLab.text = [NSString stringWithFormat:@"数量：%@",goodModel.buy_number];
+    self.priceLab.text = listModel.original_price;
 }
 
 - (void)awakeFromNib {

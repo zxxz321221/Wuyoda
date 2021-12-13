@@ -9,7 +9,7 @@
 
 @interface HomeSearchCityCollectionViewCell ()
 
-@property (nonatomic , retain)UILabel *cityLab;
+
 
 @end
 

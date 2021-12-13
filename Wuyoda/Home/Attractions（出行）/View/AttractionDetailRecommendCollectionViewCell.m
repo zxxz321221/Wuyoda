@@ -74,7 +74,7 @@
     }];
     
     self.unitLab = [[UILabel alloc]init];
-    self.unitLab.text = @"/盒";
+    self.unitLab.text = @"/人";
     self.unitLab.textColor = [ColorManager BlackColor];
     self.unitLab.font = kFont(10);
     [self.contentView addSubview:self.unitLab];
@@ -91,8 +91,13 @@
     
 }
 
--(void)setImgName:(NSString *)imgName{
-    [self.imgV setImage:kGetImage(imgName)];
+-(void)setModel:(AttractionModel *)model{
+    [self.imgV sd_setImageWithURL:[NSURL URLWithString:model.cover]];
+    self.titleLab.text = model.scenic_title;
+    self.priceLab.text = [NSString stringWithFormat:@"￥%@",model.scenic_price];
+    NSMutableAttributedString *oldPrice = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"￥%@",model.scenic_price]];
+    [oldPrice addAttribute:NSStrikethroughStyleAttributeName value:@(NSUnderlinePatternSolid | NSUnderlineStyleSingle) range:NSMakeRange(0, oldPrice.length)];
+    self.oldPriceLab.attributedText = oldPrice;
 }
 
 

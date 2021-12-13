@@ -9,9 +9,17 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@protocol HomeSearchHotCitySelectDelegate <NSObject>
+
+-(void)selectHotCity:(NSString *)city;
+
+@end
+
 @interface HomeSearchHotCityView : UIView
 
 @property (nonatomic , retain)NSMutableArray *hotCityArr;
+
+@property (nonatomic , weak)id <HomeSearchHotCitySelectDelegate>delegate;
 
 @end
 

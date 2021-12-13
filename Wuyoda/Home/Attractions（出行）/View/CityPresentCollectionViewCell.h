@@ -6,12 +6,18 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "HomeModel.h"
+#import "FootPrintModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface CityPresentCollectionViewCell : UICollectionViewCell
 
-@property (nonatomic , copy)NSString *imgName;
+@property (nonatomic , retain)HomeShopModel *model;
+
+@property (nonatomic , retain)FootPrintModel *footPrintmodel;
+
+@property (nonatomic , assign)BOOL isEdit;
 
 @end
 

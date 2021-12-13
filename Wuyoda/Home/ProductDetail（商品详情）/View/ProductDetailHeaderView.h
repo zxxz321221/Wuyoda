@@ -6,12 +6,15 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "HomeModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface ProductDetailHeaderView : UIView
 
 @property (nonatomic , retain)NSMutableArray *labelArr;
+
+@property (nonatomic , retain)HomeShopModel *model;
 
 @end
 

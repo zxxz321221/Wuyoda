@@ -138,10 +138,45 @@
 
 -(void)sendCodeClicked:(UIButton *)sender{
     
+    NSDictionary *dic = @{@"phone":self.phone,@"prefix":@"86",@"api_token":[RegisterModel getUserInfoModel].user_token};
+    
+    [FJNetTool postWithParams:dic url:Login_sendVerify loading:YES success:^(id responseObject) {
+        BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
+        if ([baseModel.code isEqualToString:CODE0]) {
+            [self.view showHUDWithText:@"发送验证码成功" withYOffSet:0];
+        }else{
+            [self.view showHUDWithText:baseModel.msg withYOffSet:0];
+        }
+    } failure:^(NSError *error) {
+        
+    }];
+    
 }
 
 -(void)loginClicked:(UIButton *)sender{
-    
+    if (self.vercodeView.textF.text.length >= 6) {
+        
+        NSDictionary *dic = @{@"code":self.vercodeView.textF.text,@"phone":self.phone,@"api_token":[RegisterModel getUserInfoModel].user_token};
+        
+        [FJNetTool postWithParams:dic url:Login_phone_check loading:YES success:^(id responseObject) {
+            BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
+            if ([baseModel.code isEqualToString:CODE0]) {
+                UserInfoModel *userModel = [UserInfoModel mj_objectWithKeyValues:responseObject[@"data"]];
+                [UserInfoModel saveUserInfoModel:userModel];
+                RegisterModel *registerModel = [RegisterModel getUserInfoModel];
+                registerModel.user_id = userModel.member_id;
+                registerModel.user_token = userModel.token;
+                [RegisterModel saveUserInfoModel:registerModel];
+                
+                [self dismissViewControllerAnimated:YES completion:nil];
+            }else{
+                [self.view showHUDWithText:baseModel.msg withYOffSet:0];
+            }
+        } failure:^(NSError *error) {
+            
+        }];
+        
+    }
 }
 
 /*

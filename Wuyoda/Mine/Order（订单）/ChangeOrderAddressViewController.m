@@ -8,12 +8,18 @@
 #import "ChangeOrderAddressViewController.h"
 #import "ChangeOrderAddressHeaderView.h"
 #import "ChangeOrderAddressTableViewCell.h"
+#import "AddressModel.h"
+#import "AddressInfoViewController.h"
 
-@interface ChangeOrderAddressViewController ()<UITableViewDelegate, UITableViewDataSource>
+@interface ChangeOrderAddressViewController ()<UITableViewDelegate, UITableViewDataSource,updateAddressInfoDelegate>
 
 @property (nonatomic , retain)UITableView *tableView;
 
 @property (nonatomic , retain)ChangeOrderAddressHeaderView *headerV;
+
+@property (nonatomic , retain)NSArray *addressArr;
+
+@property (nonatomic , retain)AddressModel *selectModel;
 
 @end
 
@@ -34,6 +40,8 @@
     self.tableView.backgroundColor = [ColorManager WhiteColor];
     
     self.headerV = [[ChangeOrderAddressHeaderView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kWidth(220))];
+    [self.headerV.addBtn addTarget:self action:@selector(addressAddClicked:) forControlEvents:UIControlEventTouchUpInside];
+    self.headerV.orderListModel = self.orderListModel;
     self.tableView.tableHeaderView = self.headerV;
     
     [self.view addSubview:self.tableView];
@@ -44,6 +52,7 @@
     saveBtn .titleLabel.font = kFont(14);
     saveBtn.backgroundColor= [ColorManager MainColor];
     saveBtn.layer.cornerRadius = kWidth(24);
+    [saveBtn addTarget:self action:@selector(changeAddressClicked:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:saveBtn];
     [saveBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.equalTo(self.view);
@@ -51,6 +60,55 @@
         make.height.mas_offset(kWidth(48));
         make.bottom.mas_offset(-kHeight_SafeArea-kWidth(15));
     }];
+    
+    [self getAddressListFromServer];
+}
+
+-(void)getAddressListFromServer{
+    NSDictionary *dic = @{@"m_uid":[UserInfoModel getUserInfoModel].uid,@"api_token":[RegisterModel getUserInfoModel].user_token};
+    
+    [FJNetTool postWithParams:dic url:Special_address_list loading:YES success:^(id responseObject) {
+        BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
+        if ([baseModel.code isEqualToString:CODE0]) {
+            self.selectModel = nil;
+            self.addressArr = [AddressModel mj_objectArrayWithKeyValuesArray:responseObject[@"data"]];
+            [self.tableView reloadData];
+            
+        }
+    } failure:^(NSError *error) {
+        
+    }];
+}
+
+-(void)addressAddClicked:(id)sender{
+    AddressInfoViewController *vc = [[AddressInfoViewController alloc]init];
+    vc.type = @"1";
+    vc.delegate = self;
+    [self.navigationController pushViewController:vc animated:YES];
+}
+
+-(void)changeAddressClicked:(id)sender{
+    if (self.selectModel) {
+        NSDictionary *dic = @{@"m_id":[UserInfoModel getUserInfoModel].member_id,@"ordersn":self.orderListModel.ordersn,@"addressid":self.selectModel.uid,@"api_token":[RegisterModel getUserInfoModel].user_token};
+        
+        [FJNetTool postWithParams:dic url:Special_modify_address loading:YES success:^(id responseObject) {
+            BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
+            if ([baseModel.code isEqualToString:CODE0]) {
+                [self.view showHUDWithText:@"修改成功" withYOffSet:0];
+                if (self.delegate && [self.delegate respondsToSelector:@selector(changeOrderAddress)]) {
+                    [self.delegate changeOrderAddress];
+                }
+            }
+        } failure:^(NSError *error) {
+            
+        }];
+    }else{
+        [self.view showHUDWithText:@"请选择地址" withYOffSet:0];
+    }
+}
+
+-(void)updateAddressInfo{
+    [self getAddressListFromServer];
 }
 
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -61,6 +119,8 @@
     }
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     
+    cell.model = [self.addressArr objectAtIndex:indexPath.row];
+    
     return cell;
     
 }
@@ -69,7 +129,7 @@
 }
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
 
-    return 10;
+    return self.addressArr.count;
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
 
@@ -91,6 +151,10 @@
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
 
     return [UIView new];
+}
+
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    self.selectModel = [self.addressArr objectAtIndex:indexPath.row];
 }
 
 /*

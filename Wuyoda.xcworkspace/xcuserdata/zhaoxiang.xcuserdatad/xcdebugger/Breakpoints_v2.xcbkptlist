@@ -7,96 +7,128 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "4A355DA5-6070-4F58-B7A7-668424744D3A"
+            uuid = "5D1810EC-B379-4841-9687-B2B3BABE2A07"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "Pods/AFNetworking/AFNetworking/AFURLResponseSerialization.m"
+            filePath = "Wuyoda/ShoppingCar/Pay&#xff08;&#x4ed8;&#x6b3e;&#xff09;/PayViewController.m"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "255"
-            endingLineNumber = "255"
-            landmarkName = "-responseObjectForResponse:data:error:"
+            startingLineNumber = "154"
+            endingLineNumber = "154"
+            landmarkName = "-payClicked"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "CED8425C-4BD9-4CC5-A297-0FC78114C5F2"
+            uuid = "A802B4D8-1973-47AD-A77F-F17641F0DDED"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "Wuyoda/ShoppingCar/Address&#xff08;&#x5730;&#x5740;&#xff09;/AddressInfoViewController.m"
+            filePath = "Wuyoda/Home/Preferential&#xff08;&#x7279;&#x60e0;&#x5546;&#x54c1;&#xff09;/PreferentialGoodListViewController.m"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "107"
-            endingLineNumber = "107"
-            landmarkName = "-saveAddressClicked"
+            startingLineNumber = "104"
+            endingLineNumber = "104"
+            landmarkName = "-getDataFromServer:"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "5B74A5C9-3247-40E2-A748-CA5EF6528FBC"
+            uuid = "A867936D-1EFC-48AE-B4A8-BBF0711EF9CB"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "Wuyoda/ShoppingCar/Address&#xff08;&#x5730;&#x5740;&#xff09;/AddressInfoViewController.m"
+            filePath = "Wuyoda/Login/CodeViewController.m"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "109"
-            endingLineNumber = "109"
-            landmarkName = "-saveAddressClicked"
+            startingLineNumber = "176"
+            endingLineNumber = "176"
+            landmarkName = "-loginClicked:"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "1D4FAA03-E772-43F3-B3E1-95E715C3B489"
+            uuid = "14D76445-65D2-4ED0-A202-ABE43511B2AD"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "Wuyoda/ShoppingCar/Address&#xff08;&#x5730;&#x5740;&#xff09;/AddressInfoViewController.m"
+            filePath = "Wuyoda/AppDelegate.m"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "79"
-            endingLineNumber = "79"
-            landmarkName = "-saveAddressClicked"
+            startingLineNumber = "50"
+            endingLineNumber = "50"
+            landmarkName = "-application:continueUserActivity:restorationHandler:"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "9FC2B7DE-C57F-4989-A712-9D73E9E0AB91"
+            uuid = "BF68CED3-03BE-44EA-A8AF-6656B5088CC9"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "Wuyoda/ShoppingCar/OrderDetail&#xff08;&#x8ba2;&#x5355;&#x8be6;&#x60c5;&#xff09;/OrderDetailViewController.m"
+            filePath = "Wuyoda/AppDelegate.m"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "74"
-            endingLineNumber = "74"
-            landmarkName = "-getDataFromServer"
+            startingLineNumber = "54"
+            endingLineNumber = "54"
+            landmarkName = "-onResp:"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "08567BED-E653-4855-B633-8C5D69661FD1"
+            uuid = "3B474DC5-4656-4623-8CC5-44C1AD3A6E0C"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "Wuyoda/ShoppingCar/OrderDetail&#xff08;&#x8ba2;&#x5355;&#x8be6;&#x60c5;&#xff09;/OrderDetailViewController.m"
+            filePath = "Wuyoda/SceneDelegate.m"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "71"
-            endingLineNumber = "71"
-            landmarkName = "-getDataFromServer"
+            startingLineNumber = "90"
+            endingLineNumber = "90"
+            landmarkName = "SceneDelegate"
+            landmarkType = "3">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "0608DDC3-04C8-425F-8B67-CF02D629428F"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Wuyoda/AppDelegate.m"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "46"
+            endingLineNumber = "46"
+            landmarkName = "-application:openURL:options:"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "CA251D13-EDFC-4C89-90EF-3A17CA4ECB6B"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Wuyoda/Mine/SecurityCenter&#xff08;&#x5b89;&#x5168;&#x4e2d;&#x5fc3;&#xff09;/ChangePhoneViewController.m"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "130"
+            endingLineNumber = "130"
+            landmarkName = "-bindPhoneFromServer"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

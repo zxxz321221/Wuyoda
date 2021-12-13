@@ -14,6 +14,12 @@ NS_ASSUME_NONNULL_BEGIN
 //1.搜索结果；2.台湾名品；3.宝岛礼盒
 @property (nonatomic , copy)NSString *type;
 
+@property (nonatomic , copy)NSString *searchStr;
+
+@property (nonatomic , retain)NSArray *allCityArr;
+
+@property (nonatomic , copy)NSString *currentCity;
+
 @end
 
 NS_ASSUME_NONNULL_END

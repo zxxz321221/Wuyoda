@@ -34,6 +34,7 @@
     self.iconImgV = [[UIImageView alloc]init];
     self.iconImgV.backgroundColor = [ColorManager RandomColor];
     self.iconImgV.layer.cornerRadius = kWidth(28);
+    self.iconImgV.layer.masksToBounds = YES;
     [self.contentView addSubview:self.iconImgV];
     [self.iconImgV mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.top.mas_offset(kWidth(20));
@@ -89,6 +90,13 @@
         make.right.mas_offset(kWidth(-20));
     }];
     
+}
+
+-(void)setModel:(MessageModel *)model{
+    [self.iconImgV sd_setImageWithURL:[NSURL URLWithString:model.cover]];
+    self.nameLab.text = model.author;
+    self.timeLab.text = model.register_date;
+    self.messageLab.text = model.board_subject;
 }
 
 - (void)awakeFromNib {

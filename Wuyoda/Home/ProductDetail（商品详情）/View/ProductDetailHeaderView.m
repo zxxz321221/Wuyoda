@@ -213,6 +213,12 @@
     self.labBGView.frame = CGRectMake(kWidth(20), self.labBGView.origin.y, kWidth(335), lastLab.origin.y+lastLab.height);
 }
 
+-(void)setModel:(HomeShopModel *)model{
+    _model = model;
+    self.titleLab.text = model.goods_name;
+    [self.productImgV sd_setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@",model.goods_file1]]];
+}
+
 /*
 // Only override drawRect: if you perform custom drawing.
 // An empty implementation adversely affects performance during animation.

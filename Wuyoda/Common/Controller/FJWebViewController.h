@@ -13,11 +13,11 @@
 
 @property(nonatomic,copy)NSString *url;
 /**
- 0: 关于
- 1:证照信息
- 2:用户服务协议
- 3:退款声明协议
+ 0:消息，1:购物指南，2.配送说明，3.售后服务，4.公司介绍 ，5.联系我们
+
  */
 @property(nonatomic,assign)NSInteger type;
+@property(nonatomic,copy)NSString *uid;
+
 
 @end

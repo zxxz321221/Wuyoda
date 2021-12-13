@@ -9,6 +9,7 @@
 #import "HomeAttractionsCollectionViewCell.h"
 #import "AttractionsListViewController.h"
 #import "CityDetailViewController.h"
+#import "HomeModel.h"
 
 @interface HomeAttractionsTableViewCell ()<UICollectionViewDelegate,UICollectionViewDataSource>
 
@@ -46,7 +47,7 @@
 -(__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
     HomeAttractionsCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass([HomeAttractionsCollectionViewCell class]) forIndexPath:indexPath];
     
-    cell.imgName = [NSString stringWithFormat:@"home_attractions%ld",indexPath.row+1];
+    //cell.imgName = [NSString stringWithFormat:@"home_attractions%ld",indexPath.row+1];
     cell.model = [self.cityArr objectAtIndex:indexPath.row];
     
     return cell;
@@ -64,7 +65,9 @@
 //    AttractionsListViewController *vc = [[AttractionsListViewController alloc] init];
 //    [self.CurrentViewController.navigationController pushViewController:vc animated:YES];
     
+    HomeCityModel *model = [self.cityArr objectAtIndex:indexPath.row];
     CityDetailViewController *vc = [[CityDetailViewController alloc]init];
+    vc.cityID = model.uid;
     [self.CurrentViewController.navigationController pushViewController:vc animated:YES];
 }
 

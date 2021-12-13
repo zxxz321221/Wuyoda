@@ -72,6 +72,11 @@
     
 }
 
+-(void)setModel:(OrderListModel *)model{
+    self.addressLab.text = model.address;
+    self.nameLab.text = model.pay_name;
+    self.phoneLab.text = model.mobile;
+}
 
 - (void)awakeFromNib {
     [super awakeFromNib];

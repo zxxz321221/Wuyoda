@@ -11,6 +11,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface HomeSearchAllCityTableViewCell : UITableViewCell
 
+@property (nonatomic , retain)UILabel *cityLab;
+
 @end
 
 NS_ASSUME_NONNULL_END

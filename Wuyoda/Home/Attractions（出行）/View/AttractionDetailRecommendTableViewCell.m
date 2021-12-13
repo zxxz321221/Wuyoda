@@ -42,7 +42,9 @@
 
 -(__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
     AttractionDetailRecommendCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass([AttractionDetailRecommendCollectionViewCell class]) forIndexPath:indexPath];
-    cell.imgName = [NSString stringWithFormat:@"home_attractions%ld",indexPath.row+1];
+    
+    cell.model = [self.otherArr objectAtIndex:indexPath.row];
+    
     return cell;
 }
 
@@ -51,7 +53,7 @@
 }
 
 -(NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section{
-    return 4;
+    return self.otherArr.count;
 }
 
 - (void)awakeFromNib {

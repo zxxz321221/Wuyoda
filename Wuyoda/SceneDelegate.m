@@ -34,7 +34,76 @@
 }
 
 
-- (void)sceneDidDisconnect:(UIScene *)scene {
+
+-(void) onResp:(BaseResp*)resp{
+    if ([resp isKindOfClass:[SendAuthResp class]]) {
+        SendAuthResp *temp = (SendAuthResp *)resp;
+        AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+        manager.responseSerializer.acceptableContentTypes = [NSSet setWithObjects: @"text/plain", @"application/json", @"text/json", @"text/javascript", @"text/html", @"image/png", nil];
+        NSString *accessUrlStr = [NSString stringWithFormat:@"%@/oauth2/access_token?appid=%@&secret=%@&code=%@&grant_type=authorization_code", WX_BASE_URL, WXPatient_App_ID, WXPatient_App_Secret, temp.code];
+        [manager GET:accessUrlStr parameters:nil headers:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+            
+            NSLog(@"请求access的response = %@", responseObject);
+            NSString *openid = responseObject[@"openid"];
+            NSString *unionid = responseObject[@"unionid"];
+            NSString *access_token = responseObject[@"access_token"];
+            if (openid == nil || unionid == nil) {
+                return ;
+            }
+            
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"weixinLoginSuccess" object:responseObject];
+// 微信登录成功
+
+//            NSString *vcName =  NSStringFromClass([[self currentViewController] class]);
+//            if ( [vcName isEqualToString :@"MyViewController"]) {
+//                // 从个人资料页绑定微信
+//
+//                [self PersonInfoWithWXLoginWithOpenid:openid withUnionid:unionid];
+//
+//
+//            }else {
+////
+////                // 从登录页进行微信登录
+//            NSString* urlStr = [NSString stringWithFormat:@"https://api.weixin.qq.com/sns/userinfo?access_token=%@&openid=%@",access_token,openid];
+//
+//            [manager GET:urlStr parameters:nil progress:^(NSProgress * _Nonnull downloadProgress) {
+//
+//            } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+//                NSString *nickname = responseObject[@"nickname"];
+//                NSString *headimgurl = responseObject[@"headimgurl"];
+//                [self WXLoginWithOpenId:openid withUnionid:unionid userName:nickname wxHeadImg:headimgurl];
+//            } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+//                NSLog(@"error ==%@",error);
+//            }];
+//
+//
+//           }
+            } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+                    
+            }];
+
+
+    }
+}
+
+//- (void)scene:(UIScene *)scene continueUserActivity:(NSUserActivity *)userActivity  API_AVAILABLE(ios(13.0)){
+//    [WXApi handleOpenUniversalLink:userActivity delegate:self];
+//}
+
+- (void)scene:(UIScene *)scene openURLContexts:(NSSet<UIOpenURLContext *> *)URLContexts
+{
+    if (@available(iOS 13.0, *)) {
+        UIOpenURLContext *urlContext = URLContexts.allObjects.firstObject;
+        if (urlContext) {
+            [WXApi handleOpenURL:urlContext.URL delegate:self];
+        }
+    } else {
+        // Fallback on earlier versions
+    }
+    
+}
+
+- (void)sceneDidDisconnect:(UIScene *)scene  API_AVAILABLE(ios(13.0)){
     // Called as the scene is being released by the system.
     // This occurs shortly after the scene enters the background, or when its session is discarded.
     // Release any resources associated with this scene that can be re-created the next time the scene connects.
@@ -42,25 +111,25 @@
 }
 
 
-- (void)sceneDidBecomeActive:(UIScene *)scene {
+- (void)sceneDidBecomeActive:(UIScene *)scene API_AVAILABLE(ios(13.0)){
     // Called when the scene has moved from an inactive state to an active state.
     // Use this method to restart any tasks that were paused (or not yet started) when the scene was inactive.
 }
 
 
-- (void)sceneWillResignActive:(UIScene *)scene {
+- (void)sceneWillResignActive:(UIScene *)scene API_AVAILABLE(ios(13.0)){
     // Called when the scene will move from an active state to an inactive state.
     // This may occur due to temporary interruptions (ex. an incoming phone call).
 }
 
 
-- (void)sceneWillEnterForeground:(UIScene *)scene {
+- (void)sceneWillEnterForeground:(UIScene *)scene API_AVAILABLE(ios(13.0)){
     // Called as the scene transitions from the background to the foreground.
     // Use this method to undo the changes made on entering the background.
 }
 
 
-- (void)sceneDidEnterBackground:(UIScene *)scene {
+- (void)sceneDidEnterBackground:(UIScene *)scene API_AVAILABLE(ios(13.0)){
     // Called as the scene transitions from the foreground to the background.
     // Use this method to save data, release shared resources, and store enough scene-specific state information
     // to restore the scene back to its current state.

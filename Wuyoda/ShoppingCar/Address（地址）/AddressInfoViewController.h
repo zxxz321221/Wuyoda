@@ -6,13 +6,24 @@
 //
 
 #import "FJBaseViewController.h"
+#import "AddressModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
+
+@protocol updateAddressInfoDelegate <NSObject>
+
+-(void)updateAddressInfo;
+
+@end
 
 @interface AddressInfoViewController : FJBaseViewController
 
 //1.新增；2.编辑
 @property (nonatomic , copy)NSString *type;
+
+@property (nonatomic , retain)AddressModel *addressModel;
+
+@property (nonatomic , weak)id <updateAddressInfoDelegate>delegate;
 
 @end
 

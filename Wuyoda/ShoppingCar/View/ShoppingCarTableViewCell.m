@@ -96,7 +96,7 @@
     }];
     
     self.priceLab = [[UILabel alloc]init];
-    self.priceLab.text = @"￥394";
+    self.priceLab.text = @"￥0";
     self.priceLab.textColor = [ColorManager ColorD8001B];
     self.priceLab.font = kFont(16);
     [bgV addSubview:self.priceLab];
@@ -152,14 +152,14 @@
 -(void)setModel:(ShopCartModel *)model{
     _model = model;
     self.nameLab.text = model.goods_name;
-    [self.imgV sd_setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@",HTTP,model.goods_file1]]];
+    [self.imgV sd_setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@",model.goods_file1]]];
     if (model.isSelect.length && [model.isSelect isEqualToString:@"1"]) {
         [self.selectImgV setImage:kGetImage(@"选中")];
     }else{
         [self.selectImgV setImage:kGetImage(@"选择")];
     }
-    self.oldPriceLab.text = model.ori_price;
-    self.priceLab.text = model.cart_price;
+    self.oldPriceLab.text = [NSString stringWithFormat:@"%@%@",[CommonManager getPriceType:model.money_type],model.ori_price];
+    self.priceLab.text = [NSString stringWithFormat:@"%@%@",[CommonManager getPriceType:model.money_type],model.cart_price];
     self.numLab.text = model.cart_num;
 }
 
@@ -172,7 +172,7 @@
     }
     NSDictionary *dic = @{@"cart_id":self.model.uid,@"num":[NSString stringWithFormat:@"%ld",num],@"api_token":[RegisterModel getUserInfoModel].user_token};
     
-    [FJNetTool postWithParams:dic url:Specia_cart_num loading:YES success:^(id responseObject) {
+    [FJNetTool postWithParams:dic url:Special_cart_num loading:YES success:^(id responseObject) {
         BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
         if ([baseModel.code isEqualToString:CODE0]) {
             self.model.cart_num = [NSString stringWithFormat:@"%ld",num];

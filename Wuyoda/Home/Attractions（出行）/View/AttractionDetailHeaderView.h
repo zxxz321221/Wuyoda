@@ -6,6 +6,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "AttractionModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -13,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic , retain)NSMutableArray *tagsArr;
 
-@property (nonatomic , copy)NSString *attractionName;
+@property (nonatomic , retain)AttractionModel *model;
 
 @end
 

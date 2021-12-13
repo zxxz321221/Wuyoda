@@ -14,6 +14,9 @@
 #import "CityPresentTableViewCell.h"
 #import "AttractionsListViewController.h"
 #import "AttractionDetailViewController.h"
+#import "CityDetailModel.h"
+#import "AttractionModel.h"
+#import "HomeModel.h"
 
 @interface CityDetailViewController ()<UITableViewDelegate,UITableViewDataSource>
 
@@ -22,6 +25,16 @@
 @property (nonatomic , retain)CityDetailHeaderView *headerV;
 
 @property (nonatomic , retain)NSArray *sectionArr;
+
+@property (nonatomic , retain)NSArray *customArr;
+
+@property (nonatomic , retain)NSArray *eventArr;
+
+@property (nonatomic , retain)NSArray *goodsArr;
+
+@property (nonatomic , retain)NSArray *attractionArr;
+
+@property (nonatomic , retain)CityDetailModel *cityModel;
 
 @end
 
@@ -51,10 +64,35 @@
     [self.view addSubview:self.tableView];
     
     self.sectionArr = [[NSArray alloc]initWithObjects:@"著名景点",@"历史事件",@"推荐行程",@"民俗美食",@"手办·礼品", nil];
+    [self getDataFromServer];
+}
+
+-(void)getDataFromServer{
+    NSDictionary *dic = @{@"city_id":self.cityID,@"api_token":[RegisterModel getUserInfoModel].user_token};
+    
+    [FJNetTool postWithParams:dic url:Store_city_list loading:YES success:^(id responseObject) {
+        BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
+        if ([baseModel.code isEqualToString:CODE0]) {
+            self.cityModel = [CityDetailModel mj_objectWithKeyValues:responseObject[@"data"]];
+            self.customArr = [CityCustomModel mj_objectArrayWithKeyValuesArray:responseObject[@"data"][@"custom"]];
+            self.eventArr = [CityEventModel mj_objectArrayWithKeyValuesArray:responseObject[@"data"][@"event"]];
+            self.goodsArr = [HomeShopModel mj_objectArrayWithKeyValuesArray:responseObject[@"data"][@"goods_table"]];
+            self.attractionArr = [AttractionModel mj_objectArrayWithKeyValuesArray:responseObject[@"data"][@"scenic"]];
+            self.headerV.model = self.cityModel;
+            
+            CGFloat textH = [UILabel getHeightByWidth:kWidth(335) title:self.cityModel.city_content font:kFont(16)];
+            self.headerV.frame = CGRectMake(0, 0, kScreenWidth, textH+kWidth(195));
+            
+            [self.tableView reloadData];
+        }
+    } failure:^(NSError *error) {
+        
+    }];
 }
 
 -(void)pushAttractionsVC{
     AttractionsListViewController *vc = [[AttractionsListViewController alloc]init];
+    vc.cityID = self.cityID;
     [self.navigationController pushViewController:vc animated:YES];
 }
 
@@ -67,11 +105,7 @@
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         
         //cell.imgName = [NSString stringWithFormat:@"景点%ld",indexPath.row+1];
-        if (indexPath.row == 0) {
-            cell.attractionName = @"金獅湖風景區";
-        }else{
-            cell.attractionName = @"蓮池潭";
-        }
+        cell.model = [self.attractionArr objectAtIndex:indexPath.row];
         
         return cell;
     }else if (indexPath.section == 1){
@@ -110,6 +144,7 @@
             cell = [[CityPresentTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:NSStringFromClass([CityPresentTableViewCell class])];
         }
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        cell.goodsArr = self.goodsArr;
         
         return cell;
     }
@@ -122,7 +157,7 @@
 }
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
     if (section == 0) {
-        return 2;
+        return self.attractionArr.count;
     }else if (section == 1){
         return 0;
     }else if (section == 2){
@@ -189,20 +224,13 @@
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     if (indexPath.section == 0) {
         AttractionDetailViewController *vc = [[AttractionDetailViewController alloc]init];
-        if (indexPath.row == 0) {
-            vc.attractionName = @"金獅湖風景區";
-        }else{
-            vc.attractionName = @"蓮池潭";
-        }
+        AttractionModel *model = [self.attractionArr objectAtIndex:indexPath.row];
+        vc.scenic_id = model.uid;
         [self.navigationController pushViewController:vc animated:YES];
     }
     if (indexPath.section == 3) {
         AttractionDetailViewController *vc = [[AttractionDetailViewController alloc]init];
-        if (indexPath.row == 0) {
-            vc.attractionName = @"夜市文化";
-        }else{
-            vc.attractionName = @"旗津海鲜";
-        }
+        
         [self.navigationController pushViewController:vc animated:YES];
     }
 }

@@ -55,6 +55,7 @@
     [addressBtn setTitleColor:[ColorManager MainColor] forState:UIControlStateNormal];
     addressBtn.titleLabel.font = kFont(14);
     [searchBGView addSubview:addressBtn];
+    self.addressBtn = addressBtn;
     [addressBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(backBtn.mas_right).mas_offset(kWidth(3));
         make.centerY.height.equalTo(searchBGView);
@@ -85,7 +86,6 @@
 -(void)backClicked{
     [self.CurrentViewController.navigationController popViewControllerAnimated:YES];
 }
-
 /*
 // Only override drawRect: if you perform custom drawing.
 // An empty implementation adversely affects performance during animation.

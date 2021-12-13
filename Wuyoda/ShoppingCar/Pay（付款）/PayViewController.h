@@ -13,6 +13,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic , retain)NSDictionary *cartListDic;
 
+@property (nonatomic , copy)NSString *memo;
+
+@property (nonatomic , copy)NSString *fare;
+
+@property (nonatomic , copy)NSString *addressid;
+
 @end
 
 NS_ASSUME_NONNULL_END

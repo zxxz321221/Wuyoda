@@ -111,8 +111,8 @@
     self.searchField.placeholder = @"景点/特产/品牌名";
     self.searchField.textColor = [ColorManager BlackColor];
     self.searchField.font = kFont(14);
-    self.searchField.returnKeyType = UIReturnKeySearch;
-    self.searchField.delegate = self;
+    //self.searchField.returnKeyType = UIReturnKeySearch;
+    //self.searchField.delegate = self;
     [self addSubview:self.searchField];
     [self.searchField mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.right.equalTo(lineV1);
@@ -190,33 +190,49 @@
 }
 
 -(void)addressBtnClicked:(id)sender{
-//    HomeSearchCityViewController *vc = [[HomeSearchCityViewController alloc]init];
-//    vc.delegate = self;
-//    [self.CurrentViewController.navigationController pushViewController:vc animated:YES];
+    HomeSearchCityViewController *vc = [[HomeSearchCityViewController alloc]init];
+    vc.delegate = self;
+    vc.hotCityArr = self.hotCityArr;
+    vc.allCityArr = self.allCityArr;
+    [self.CurrentViewController.navigationController pushViewController:vc animated:YES];
 }
 
 -(void)searchClicked:(id)sender{
-    TWProductListViewController *vc = [[TWProductListViewController alloc]init];
-    vc.type= @"1";
-    [self.CurrentViewController.navigationController pushViewController:vc animated:YES];
+    if (self.searchField.text.length) {
+        TWProductListViewController *vc = [[TWProductListViewController alloc]init];
+        vc.type= @"1";
+        vc.searchStr = self.searchField.text;
+        vc.allCityArr = self.allCityArr;
+        vc.currentCity = self.addressBtn.titleLabel.text;
+        [self.CurrentViewController.navigationController pushViewController:vc animated:YES];
+    }else{
+        [self showHUDWithText:@"请输入搜索内容" withYOffSet:0];
+    }
+    
 }
 
 -(void)selectCity:(NSString *)city{
     [self.addressBtn setTitle:city forState:UIControlStateNormal];
+    NSDictionary *dic = @{@"city":city};
+    [[NSNotificationCenter defaultCenter]postNotificationName:@"changeHomeCity" object:dic];
 }
 
--(BOOL)textFieldShouldReturn:(UITextField *)textField{
-    TWProductListViewController *vc = [[TWProductListViewController alloc]init];
-    vc.type= @"1";
-    [self.CurrentViewController.navigationController pushViewController:vc animated:YES];
-    
-    return YES;
-}
+//-(BOOL)textFieldShouldReturn:(UITextField *)textField{
+//    TWProductListViewController *vc = [[TWProductListViewController alloc]init];
+//    vc.type= @"1";
+//    [self.CurrentViewController.navigationController pushViewController:vc animated:YES];
+//
+//    return YES;
+//}
 
 -(void)setCurrentCity:(NSString *)currentCity{
     _currentCity = currentCity;
     
     [self.addressBtn setTitle:currentCity forState:UIControlStateNormal];
+}
+
+-(void)setHotCityArr:(NSArray *)hotCityArr{
+    _hotCityArr = hotCityArr;
 }
 
 /*

@@ -14,6 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 //1.待支付，2.待收货，3.已完成 4.默认
 @property (nonatomic , copy)NSString *type;
 
+@property (nonatomic , copy)NSString *ordersn;
+
 @end
 
 NS_ASSUME_NONNULL_END

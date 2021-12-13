@@ -105,6 +105,12 @@
     
 }
 
+-(void)setOrderListModel:(OrderListModel *)orderListModel{
+    self.addressLab.text = orderListModel.address;
+    self.nameLab.text = orderListModel.pay_name;
+    self.phoneLab.text = orderListModel.mobile;
+}
+
 /*
 // Only override drawRect: if you perform custom drawing.
 // An empty implementation adversely affects performance during animation.

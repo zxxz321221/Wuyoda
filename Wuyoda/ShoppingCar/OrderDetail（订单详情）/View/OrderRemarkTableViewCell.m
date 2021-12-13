@@ -7,12 +7,6 @@
 
 #import "OrderRemarkTableViewCell.h"
 
-@interface OrderRemarkTableViewCell ()
-
-@property (nonatomic , retain)UITextField *remarkField;
-
-@end
-
 @implementation OrderRemarkTableViewCell
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier{

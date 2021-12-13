@@ -53,7 +53,7 @@
 -(void)setModel:(HomeCityModel *)model{
     _model = model;
     self.titleLab.text = model.city;
-    [self.imgV sd_setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@",HTTP,model.cover]]];
+    [self.imgV sd_setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@",model.cover]]];
 }
 
 @end

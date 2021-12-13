@@ -13,6 +13,7 @@
 #import "OrderInfoViewController.h"
 #import "OrderDetailViewController.h"
 #import "ShopCartModel.h"
+#import "BankModel.h"
 
 @interface ShoppingCarViewController ()<UITableViewDelegate,UITableViewDataSource,updateCartNumDelegate>
 
@@ -30,15 +31,6 @@
 
 -(void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
-    
-//    [self.tableView reloadData];
-//    if (self.shoppingCartArr.count) {
-//        self.tableView.hidden = NO;
-//        self.bottomV.hidden = NO;
-//    }else{
-//        self.tableView.hidden = YES;
-//        self.bottomV.hidden = YES;
-//    }
     
     [self getDataFromServer];
 }
@@ -105,8 +97,8 @@
         make.height.mas_offset(kWidth(60));
     }];
     
-    
 }
+
 
 -(void)getDataFromServer{
     NSDictionary *dic = @{@"m_id":[UserInfoModel getUserInfoModel].member_id,@"api_token":[RegisterModel getUserInfoModel].user_token};
@@ -175,16 +167,67 @@
 }
 
 -(void)likeGoodsClicked:(UIButton *)sender{
-    [self.view showHUDWithText:@"添加收藏成功" withYOffSet:0];
+    
+    NSString *cartIDStr = @"";
+    for (int i = 0; i<self.shoppingCartArr.count; i++) {
+        ShopCartModel *model = [self.shoppingCartArr objectAtIndex:i];
+        
+        if ([model.isSelect isEqualToString:@"1"]) {
+            if (!cartIDStr.length) {
+                cartIDStr = model.uid;
+            }else{
+                cartIDStr = [cartIDStr stringByAppendingFormat:@",%@",model.uid];
+            }
+        }
+    }
+    
+    if (cartIDStr.length) {
+        NSDictionary *dic = @{@"cart_id":cartIDStr,@"m_uid":[UserInfoModel getUserInfoModel].uid,@"api_token":[RegisterModel getUserInfoModel].user_token};
+        [FJNetTool postWithParams:dic url:Special_favorite_add loading:YES success:^(id responseObject) {
+            BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
+            if ([baseModel.code isEqualToString:CODE0]) {
+                [self.view showHUDWithText:baseModel.msg withYOffSet:0];
+            }
+        } failure:^(NSError *error) {
+            
+        }];
+    }else{
+        [self.view showHUDWithText:@"请选择商品" withYOffSet:0];
+    }
 }
 
 -(void)deleteGoodsClicked:(UIButton *)sender{
+    NSString *cartIDStr = @"";
+    for (int i = 0; i<self.shoppingCartArr.count; i++) {
+        ShopCartModel *model = [self.shoppingCartArr objectAtIndex:i];
+        
+        if ([model.isSelect isEqualToString:@"1"]) {
+            if (!cartIDStr.length) {
+                cartIDStr = model.uid;
+            }else{
+                cartIDStr = [cartIDStr stringByAppendingFormat:@",%@",model.uid];
+            }
+        }
+    }
+    
+    if (cartIDStr.length) {
+        NSDictionary *dic = @{@"cart_id":cartIDStr,@"api_token":[RegisterModel getUserInfoModel].user_token};
+        [FJNetTool postWithParams:dic url:Special_cart_del loading:YES success:^(id responseObject) {
+            BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
+            if ([baseModel.code isEqualToString:CODE0]) {
+                [self.view showHUDWithText:baseModel.msg withYOffSet:0];
+                [self getDataFromServer];
+            }
+        } failure:^(NSError *error) {
+            
+        }];
+    }else{
+        [self.view showHUDWithText:@"请选择商品" withYOffSet:0];
+    }
     
 }
 
 -(void)editShoppintCartClicked:(UIButton *)sender{
-//    OrderCancelViewController *vc = [[OrderCancelViewController alloc]init];
-//    [self.navigationController pushViewController:vc animated:YES];
     sender.selected = !sender.isSelected;
     if (sender.isSelected) {
         self.bottomV.likeBtn.hidden = NO;
@@ -270,7 +313,7 @@
     BOOL selectAll = YES;
     for (int i = 0; i<self.shoppingCartArr.count; i++) {
         ShopCartModel *model = [self.shoppingCartArr objectAtIndex:i];
-        CGFloat price = [model.ori_price floatValue];
+        CGFloat price = [model.total_price_show floatValue];
         NSInteger num = [model.cart_num integerValue];
         if (![model.isSelect isEqualToString:@"1"]) {
             selectAll = NO;
@@ -279,7 +322,7 @@
         }
     }
     
-    self.bottomV.priceLab.text = [NSString stringWithFormat:@"%.2f",allPrice];
+    self.bottomV.priceLab.text = [NSString stringWithFormat:@"￥%.2f",allPrice];
     self.bottomV.selectBtn.selected = selectAll;
 }
 

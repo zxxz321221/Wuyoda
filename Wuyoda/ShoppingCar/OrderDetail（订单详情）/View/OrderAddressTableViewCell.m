@@ -37,16 +37,17 @@
         make.left.top.width.equalTo(self.contentView);
         make.height.mas_offset(kWidth(1));
     }];
-    UIImageView *addressImgV = [[UIImageView alloc]initWithImage:kGetImage(@"")];
+    UIImageView *addressImgV = [[UIImageView alloc]initWithImage:kGetImage(@"地址")];
     [self.contentView addSubview:addressImgV];
     [addressImgV mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_offset(kWidth(10));
         make.centerY.equalTo(self.contentView);
-        make.width.height.mas_offset(kWidth(16));
+        make.width.mas_offset(kWidth(16));
+        make.height.mas_offset(kWidth(20));
     }];
     
     self.nameLab = [[UILabel alloc]init];
-    self.nameLab.text = @"张三";
+    //self.nameLab.text = @"张三";
     self.nameLab.textColor = [ColorManager BlackColor];
     self.nameLab.font = kFont(14);
     [self.contentView addSubview:self.nameLab];
@@ -56,7 +57,7 @@
     }];
     
     self.phoneLab = [[UILabel alloc]init];
-    self.phoneLab.text = @"156****1245";
+    //self.phoneLab.text = @"156****1245";
     self.phoneLab.textColor = [ColorManager BlackColor];
     self.phoneLab.font = kFont(14);
     [self.contentView addSubview:self.phoneLab];
@@ -66,7 +67,7 @@
     }];
     
     self.addressLab = [[UILabel alloc]init];
-    self.addressLab.text = @"辽宁省大连市沙河口区中山路588-24-8";
+    //self.addressLab.text = @"辽宁省大连市沙河口区中山路588-24-8";
     self.addressLab.textColor = [ColorManager BlackColor];
     self.addressLab.font = kFont(14);
     [self.contentView addSubview:self.addressLab];
@@ -96,9 +97,12 @@
 
 -(void)setModel:(AddressModel *)model{
     _model = model;
-    self.nameLab.text = model.name;
-    self.phoneLab.text = model.mobile;
-    self.addressLab.text = [NSString stringWithFormat:@"%@%@%@%@",model.province,model.city,model.county,model.address];
+    if (model.uid.length) {
+        self.nameLab.text = model.name;
+        self.phoneLab.text = model.mobile;
+        self.addressLab.text = [NSString stringWithFormat:@"%@%@%@%@%@",model.province,model.city,model.county,model.address,model.zipcode];
+    }
+    
 }
 
 - (void)awakeFromNib {

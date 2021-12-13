@@ -11,6 +11,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface AttractionDetailRecommendTableViewCell : UITableViewCell
 
+@property (nonatomic  , retain)NSArray *otherArr;
+
 @end
 
 NS_ASSUME_NONNULL_END

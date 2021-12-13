@@ -13,6 +13,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic , copy) NSString *currentCity;
 
+@property (nonatomic , retain)NSMutableArray *hotCityArr;
+
+@property (nonatomic , retain)NSArray *allCityArr;
+
 @end
 
 NS_ASSUME_NONNULL_END

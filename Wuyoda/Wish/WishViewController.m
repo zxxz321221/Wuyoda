@@ -8,6 +8,11 @@
 #import "WishViewController.h"
 #import "WishListTableViewCell.h"
 #import "WishAttractionViewController.h"
+#import "WishModel.h"
+#import "WishBottomView.h"
+#import "FootprintViewController.h"
+#import "ProductDetailViewController.h"
+#import "HomeModel.h"
 
 @interface WishViewController ()<UITableViewDelegate,UITableViewDataSource>
 
@@ -15,9 +20,20 @@
 
 @property (nonatomic , retain)UITableView *tableView;
 
+@property (nonatomic , retain)NSMutableArray *wishArr;
+
+@property (nonatomic , assign)BOOL isEdit;
+
+@property (nonatomic , retain)WishBottomView *bottomV;
+
 @end
 
 @implementation WishViewController
+
+-(void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:animated];
+    [self getDataFromServer];
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -109,6 +125,13 @@
         make.top.mas_offset(kWidth(18));
     }];
     
+    UIButton *historyBtn = [[UIButton alloc]init];
+    [historyBtn addTarget:self action:@selector(toMyFootPrintClicked:) forControlEvents:UIControlEventTouchUpInside];
+    [myHistoryV addSubview:historyBtn];
+    [historyBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.top.width.height.equalTo(myHistoryV);
+    }];
+    
     UILabel *historyGoods = [[UILabel alloc]init];
     historyGoods.text = @"最近浏览的商品";
     historyGoods.textColor = [ColorManager Color7F7F7F];
@@ -131,12 +154,108 @@
         make.left.width.bottom.equalTo(self.view);
         make.top.equalTo(myAddressV.mas_bottom).mas_offset(kWidth(20));
     }];
+    
+    self.bottomV = [[WishBottomView alloc]init];
+    self.bottomV.backgroundColor = [ColorManager WhiteColor];
+    self.bottomV.hidden = YES;
+    [self.bottomV.selectBtn addTarget:self action:@selector(selectedAllClicked:) forControlEvents:UIControlEventTouchUpInside];
+    [self.bottomV.deleteBtn addTarget:self action:@selector(deleteGoodsClicked:) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:self.bottomV];
+    [self.bottomV mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.bottom.left.width.equalTo(self.view);
+        make.height.mas_offset(kWidth(60));
+    }];
 }
 
+-(void)getDataFromServer{
+    
+    NSDictionary *dic = @{@"m_uid":[UserInfoModel getUserInfoModel].uid,@"api_token":[RegisterModel getUserInfoModel].user_token};
+    
+    [FJNetTool postWithParams:dic url:Special_favorites loading:YES success:^(id responseObject) {
+        BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
+        if ([baseModel.code isEqualToString:CODE0]) {
+            self.wishArr = [WishModel mj_objectArrayWithKeyValuesArray:responseObject[@"data"]];
+            self.isEdit = NO;
+            self.bottomV.hidden = YES;
+            [self.tableView reloadData];
+        }else{
+            [self.view showHUDWithText:baseModel.msg withYOffSet:0];
+        }
+    } failure:^(NSError *error) {
+            
+    }];
+}
+
+-(void)selectedAllClicked:(UIButton *)sender{
+    sender.selected = !sender.isSelected;
+    
+    for (int i = 0; i<self.wishArr.count; i++) {
+        WishModel *model = [self.wishArr objectAtIndex:i];
+        if (sender.isSelected) {
+            model.isSelect = @"1";
+        }else{
+            model.isSelect = @"0";
+        }
+        [self.wishArr replaceObjectAtIndex:i withObject:model];
+    }
+    
+    [self.tableView reloadData];
+}
+
+-(void)deleteGoodsClicked:(UIButton *)sender{
+    NSString *cartIDStr = @"";
+    for (int i = 0; i<self.wishArr.count; i++) {
+        WishModel *model = [self.wishArr objectAtIndex:i];
+        
+        if ([model.isSelect isEqualToString:@"1"]) {
+            if (!cartIDStr.length) {
+                cartIDStr = model.f_uid;
+            }else{
+                cartIDStr = [cartIDStr stringByAppendingFormat:@",%@",model.f_uid];
+            }
+        }
+    }
+    
+    if (cartIDStr.length) {
+        NSDictionary *dic = @{@"f_uid":cartIDStr,@"m_uid":[UserInfoModel getUserInfoModel].uid,@"api_token":[RegisterModel getUserInfoModel].user_token};
+        [FJNetTool postWithParams:dic url:Special_favorite_del loading:YES success:^(id responseObject) {
+            BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
+            if ([baseModel.code isEqualToString:CODE0]) {
+                [self.view showHUDWithText:baseModel.msg withYOffSet:0];
+                [self getDataFromServer];
+            }
+        } failure:^(NSError *error) {
+            
+        }];
+    }else{
+        [self.view showHUDWithText:@"请选择商品" withYOffSet:0];
+    }
+    
+}
 
 -(void)toMyWishAttractionClicked:(id)sender{
     WishAttractionViewController *vc = [[WishAttractionViewController alloc]init];
     [self.navigationController pushViewController:vc animated:YES];
+}
+-(void)toMyFootPrintClicked:(id)sender{
+    FootprintViewController *vc = [[FootprintViewController alloc]init];
+    [self.navigationController pushViewController:vc animated:YES];
+}
+
+-(void)editWishListClicked:(UIButton *)sender{
+    self.isEdit = !self.isEdit;
+    if (self.isEdit) {
+        [self.tableView mas_updateConstraints:^(MASConstraintMaker *make) {
+                make.bottom.mas_offset(kWidth(-60));
+        }];
+        self.bottomV.hidden = NO;
+    }else{
+        [self.tableView mas_updateConstraints:^(MASConstraintMaker *make) {
+                make.bottom.equalTo(self.view);
+        }];
+        self.bottomV.hidden = YES;
+    }
+    [self.tableView reloadData];
 }
 
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -145,8 +264,10 @@
         cell = [[WishListTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:NSStringFromClass([WishListTableViewCell class])];
     }
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    cell.model = [self.wishArr objectAtIndex:indexPath.row];
+    cell.isEdit = self.isEdit;
     
-    cell.imgName = [NSString stringWithFormat:@"home_special_good%ld",indexPath.row+1];
+    //cell.imgName = [NSString stringWithFormat:@"home_special_good%ld",indexPath.row+1];
     
     return cell;
 }
@@ -156,7 +277,7 @@
 }
 
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
-    return 2;
+    return self.wishArr.count;
 }
 
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -176,7 +297,7 @@
     UIView *headerV = [[UIView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kWidth(33))];
     headerV.backgroundColor = [ColorManager WhiteColor];
     UILabel *goodsLab = [[UILabel alloc]init];
-    goodsLab.text = @"2个商品";
+    goodsLab.text = [NSString stringWithFormat:@"%ld个商品",self.wishArr.count];
     goodsLab.textColor = [ColorManager BlackColor];
     goodsLab.font = kFont(12);
     [headerV addSubview:goodsLab];
@@ -186,9 +307,14 @@
     }];
     
     UIButton *editBtn = [[UIButton alloc]init];
-    [editBtn setTitle:@"分享/编辑" forState:UIControlStateNormal];
+    if (self.isEdit) {
+        [editBtn setTitle:@"取消" forState:UIControlStateNormal];
+    }else{
+        [editBtn setTitle:@"分享/编辑" forState:UIControlStateNormal];
+    }
     [editBtn setTitleColor:[ColorManager MainColor] forState:UIControlStateNormal];
     editBtn.titleLabel.font = kFont(14);
+    [editBtn addTarget:self action:@selector(editWishListClicked:) forControlEvents:UIControlEventTouchUpInside];
     [headerV addSubview:editBtn];
     [editBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.right.mas_offset(kWidth(-20));
@@ -200,6 +326,24 @@
     return headerV;
 }
 
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    if (self.isEdit) {
+        WishModel *model = [self.wishArr objectAtIndex:indexPath.row];
+        if ([model.isSelect isEqualToString:@"1"]) {
+            model.isSelect = @"0";
+        }else{
+            model.isSelect = @"1";
+        }
+        [self.wishArr replaceObjectAtIndex:indexPath.row withObject:model];
+        [self.tableView reloadData];
+    }else{
+        WishModel *wishModel = [self.wishArr objectAtIndex:indexPath.row];
+        ProductDetailViewController *vc = [[ProductDetailViewController alloc]init];
+        vc.uid = wishModel.m_uid;
+        vc.supplier_id = wishModel.supplier_id;
+        [self.navigationController pushViewController:vc animated:YES];
+    }
+}
 
 /*
 #pragma mark - Navigation

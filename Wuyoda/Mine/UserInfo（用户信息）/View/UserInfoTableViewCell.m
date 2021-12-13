@@ -42,8 +42,8 @@
     self.manBtn = [[UIButton alloc]init];
     [self.manBtn setTitle:@"男士" forState:UIControlStateNormal];
     [self.manBtn setTitleColor:[ColorManager Color777777] forState:UIControlStateNormal];
-    [self.manBtn setImage:kGetImage(@"") forState:UIControlStateNormal];
-    [self.manBtn setImage:kGetImage(@"") forState:UIControlStateSelected];
+    [self.manBtn setImage:kGetImage(@"选中") forState:UIControlStateNormal];
+    [self.manBtn setImage:kGetImage(@"选择") forState:UIControlStateSelected];
     self.manBtn.titleLabel.font = kFont(14);
     [self.contentView addSubview:self.manBtn];
     [self.manBtn mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -56,8 +56,8 @@
     self.womenBtn = [[UIButton alloc]init];
     [self.womenBtn setTitle:@"女士" forState:UIControlStateNormal];
     [self.womenBtn setTitleColor:[ColorManager Color777777] forState:UIControlStateNormal];
-    [self.womenBtn setImage:kGetImage(@"") forState:UIControlStateNormal];
-    [self.womenBtn setImage:kGetImage(@"") forState:UIControlStateSelected];
+    [self.womenBtn setImage:kGetImage(@"选中") forState:UIControlStateNormal];
+    [self.womenBtn setImage:kGetImage(@"选择") forState:UIControlStateSelected];
     self.womenBtn.titleLabel.font = kFont(14);
     [self.contentView addSubview:self.womenBtn];
     [self.womenBtn mas_makeConstraints:^(MASConstraintMaker *make) {

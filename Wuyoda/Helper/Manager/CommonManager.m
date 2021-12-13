@@ -76,12 +76,21 @@
  
  @return 当前年月日
  */
-+ (NSString *)getCurrentDateOfYearMonthDay {
-    NSDate *date = [NSDate date];
++ (NSString *)getCurrentDateOfYearMonthDay:(NSDate *)date {
+    //NSDate *date = [NSDate date];
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
     [formatter setDateStyle:NSDateFormatterMediumStyle];
     [formatter setTimeStyle:NSDateFormatterShortStyle];
-    [formatter setDateFormat:@"yyyy/MM/dd"];
+    [formatter setDateFormat:@"yyyy-MM-dd"];
+    return [formatter stringFromDate:date];
+}
+
++ (NSString *)getCurrentDateOfYearMonth:(NSDate *)date {
+    //NSDate *date = [NSDate date];
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    [formatter setDateStyle:NSDateFormatterMediumStyle];
+    [formatter setTimeStyle:NSDateFormatterShortStyle];
+    [formatter setDateFormat:@"yyyy-MM"];
     return [formatter stringFromDate:date];
 }
 
@@ -201,6 +210,15 @@
     }
     return resultStr;
 }
+
++ (NSString *)getPriceType:(NSString *)type{
+    if ([type isEqualToString:@"2"]) {
+        return @"NT$";
+    }else{
+        return @"￥";
+    }
+}
+
 +(void)addSingleSidesShadowToView:(UIView *)theView withColor:(UIColor*)theColor{
     theView.layer.shadowColor = [UIColor colorWithRed:0/255.0 green:70/255.0 blue:160/255.0 alpha:0.35].CGColor;
     theView.layer.shadowOffset = CGSizeMake(0,10);
