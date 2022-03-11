@@ -33,7 +33,7 @@
 
 -(void)createUI{
     self.imgV = [[UIImageView alloc]init];
-    self.imgV.backgroundColor = [ColorManager RandomColor];
+    self.imgV.backgroundColor = [ColorManager ColorF2F2F2];
     self.imgV.layer.cornerRadius = kWidth(10);
     self.imgV.layer.masksToBounds = YES;
     [self.contentView addSubview:self.imgV];
@@ -44,41 +44,41 @@
         make.height.mas_offset(kWidth(206));
     }];
     
-    self.logoLab = [[UILabel alloc]init];
-    self.logoLab.text = @"知名品牌";
-    self.logoLab.textColor = [ColorManager WhiteColor];
-    self.logoLab.font = kFont(14);
-    self.logoLab.textAlignment = NSTextAlignmentCenter;
-    self.logoLab.backgroundColor = [ColorManager BlackColor];
-    self.logoLab.layer.cornerRadius = kWidth(5);
-    self.logoLab.layer.masksToBounds = YES;
-    [self.contentView addSubview:self.logoLab];
-    [self.logoLab mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_offset(kWidth(20));
-        make.top.equalTo(self.imgV.mas_bottom).mas_offset(kWidth(8));
-        make.width.mas_offset(kWidth(71));
-        make.height.mas_offset(kWidth(24));
-    }];
-    
-    self.introLab = [[UILabel alloc]init];
-    self.introLab.text = @"日本煎饼的美味绝技";
-    self.introLab.textColor = [ColorManager BlackColor];
-    self.introLab.font = kFont(14);
-    [self.contentView addSubview:self.introLab];
-    [self.introLab mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.equalTo(self.logoLab.mas_right).mas_offset(kWidth(9));
-        make.centerY.equalTo(self.logoLab);
-        make.right.mas_offset(kWidth(-20));
-    }];
+//    self.logoLab = [[UILabel alloc]init];
+//    self.logoLab.text = @"知名品牌";
+//    self.logoLab.textColor = [ColorManager WhiteColor];
+//    self.logoLab.font = kFont(14);
+//    self.logoLab.textAlignment = NSTextAlignmentCenter;
+//    self.logoLab.backgroundColor = [ColorManager BlackColor];
+//    self.logoLab.layer.cornerRadius = kWidth(5);
+//    self.logoLab.layer.masksToBounds = YES;
+//    [self.contentView addSubview:self.logoLab];
+//    [self.logoLab mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.left.mas_offset(kWidth(20));
+//        make.top.equalTo(self.imgV.mas_bottom).mas_offset(kWidth(8));
+//        make.width.mas_offset(kWidth(71));
+//        make.height.mas_offset(kWidth(24));
+//    }];
+//
+//    self.introLab = [[UILabel alloc]init];
+//    self.introLab.text = @"日本煎饼的美味绝技";
+//    self.introLab.textColor = [ColorManager BlackColor];
+//    self.introLab.font = kFont(14);
+//    [self.contentView addSubview:self.introLab];
+//    [self.introLab mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.left.equalTo(self.logoLab.mas_right).mas_offset(kWidth(9));
+//        make.centerY.equalTo(self.logoLab);
+//        make.right.mas_offset(kWidth(-20));
+//    }];
     
     self.nameLab = [[UILabel alloc]init];
-    self.nameLab.text = @"小林煎饼礼盒";
+    //self.nameLab.text = @"小林煎饼礼盒";
     self.nameLab.textColor = [ColorManager BlackColor];
     self.nameLab.font = kBoldFont(16);
     [self.contentView addSubview:self.nameLab];
     [self.nameLab mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_offset(kWidth(20));
-        make.top.equalTo(self.logoLab.mas_bottom).mas_offset(kWidth(8));
+        make.top.equalTo(self.imgV.mas_bottom).mas_offset(kWidth(8));
         make.right.mas_offset(kWidth(-20));
     }];
     
@@ -91,7 +91,7 @@
     }];
     
     self.priceLab = [[UILabel alloc]init];
-    self.priceLab.text = @"￥394";
+    //self.priceLab.text = @"￥394";
     self.priceLab.textColor = [ColorManager ColorD8001B];
     self.priceLab.font = kBoldFont(16);
     [self.contentView addSubview:self.priceLab];
@@ -122,23 +122,23 @@
         make.centerY.equalTo(self.oldPriceLab);
     }];
     
-    self.discountLab = [[UILabel alloc]init];
-    self.discountLab.text = @"5折 · 仅限今晚";
-    self.discountLab.textColor = [ColorManager ColorD8001B];
-    self.discountLab.font = kBoldFont(12);
-    self.discountLab.textAlignment = NSTextAlignmentCenter;
-    self.discountLab.backgroundColor = [ColorManager ColorF5D3D7];
-    self.discountLab.layer.cornerRadius = kWidth(5);
-    self.discountLab.layer.masksToBounds = YES;
-    [self.contentView addSubview:self.discountLab];
-    [self.discountLab mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.equalTo(self.unitLab.mas_right).mas_offset(kWidth(8));
-        make.centerY.equalTo(self.unitLab);
-        make.width.mas_offset(kWidth(99));
-        make.height.mas_offset(kWidth(24));
-    }];
+//    self.discountLab = [[UILabel alloc]init];
+//    self.discountLab.text = @"5折 · 仅限今晚";
+//    self.discountLab.textColor = [ColorManager ColorD8001B];
+//    self.discountLab.font = kBoldFont(12);
+//    self.discountLab.textAlignment = NSTextAlignmentCenter;
+//    self.discountLab.backgroundColor = [ColorManager ColorF5D3D7];
+//    self.discountLab.layer.cornerRadius = kWidth(5);
+//    self.discountLab.layer.masksToBounds = YES;
+//    [self.contentView addSubview:self.discountLab];
+//    [self.discountLab mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.left.equalTo(self.unitLab.mas_right).mas_offset(kWidth(8));
+//        make.centerY.equalTo(self.unitLab);
+//        make.width.mas_offset(kWidth(99));
+//        make.height.mas_offset(kWidth(24));
+//    }];
     
-    self.tagsArr = [[NSMutableArray alloc]initWithObjects:@"严选食材",@"安心购",@"特价",@"达人推荐",@"伴手礼", nil];
+//    self.tagsArr = [[NSMutableArray alloc]initWithObjects:@"严选食材",@"安心购",@"特价",@"达人推荐",@"伴手礼", nil];
     
 }
 

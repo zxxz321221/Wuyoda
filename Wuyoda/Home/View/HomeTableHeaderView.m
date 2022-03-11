@@ -58,6 +58,7 @@
     self.liveBtn.layer.cornerRadius = kWidth(5);
     self.liveBtn.layer.borderColor = [ColorManager WhiteColor].CGColor;
     self.liveBtn.layer.borderWidth = kWidth(1);
+    [self.liveBtn addTarget:self action:@selector(liveClicked:) forControlEvents:UIControlEventTouchUpInside];
     [self addSubview:self.liveBtn];
     [self.liveBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_offset(kWidth(30));
@@ -148,7 +149,7 @@
         [self.CurrentViewController.navigationController pushViewController:vc animated:YES];
     }
     if (sender.tag == 400) {
-
+        [self showHUDWithText:@"敬请期待" withYOffSet:0];
     }
 }
 
@@ -164,6 +165,9 @@
 -(void)setAllCityArr:(NSArray *)allCityArr{
     _allCityArr = allCityArr;
     self.addressView.allCityArr = allCityArr;
+}
+-(void)liveClicked:(id)sender{
+    [self showHUDWithText:@"敬请期待" withYOffSet:0];
 }
 /*
 // Only override drawRect: if you perform custom drawing.

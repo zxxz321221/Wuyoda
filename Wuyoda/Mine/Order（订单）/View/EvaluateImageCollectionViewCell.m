@@ -20,7 +20,7 @@
 
 -(void)createUI{
     self.imgV = [[UIImageView alloc]init];
-    self.imgV.backgroundColor = [ColorManager RandomColor];
+    self.imgV.backgroundColor = [ColorManager ColorF2F2F2];
     [self.contentView addSubview:self.imgV];
     [self.imgV mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.top.mas_offset(0);

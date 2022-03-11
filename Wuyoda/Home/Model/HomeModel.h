@@ -19,6 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic , copy)NSString *county;
 @property (nonatomic , copy)NSString *cover;
 @property (nonatomic , copy)NSString *province;
+@property (nonatomic , copy)NSString *title_cover;
 @property (nonatomic , copy)NSString *uid;
 
 @end
@@ -38,6 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic , copy)NSString *down_payment_org;
 @property (nonatomic , copy)NSString *filter_attr;
 @property (nonatomic , copy)NSString *g_uid;
+@property (nonatomic , retain)NSArray *gallery;
 @property (nonatomic , copy)NSString *goods_advance;
 @property (nonatomic , copy)NSString *goods_brand;
 @property (nonatomic , copy)NSString *goods_category;
@@ -68,6 +70,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic , copy)NSString *supplier_cat3;
 @property (nonatomic , copy)NSString *supplier_id;
 @property (nonatomic , copy)NSString *taxes_types;
+@property (nonatomic , copy)NSString *thsp;
 @property (nonatomic , copy)NSString *twmp;
 @property (nonatomic , copy)NSString *type;
 @property (nonatomic , copy)NSString *uid;

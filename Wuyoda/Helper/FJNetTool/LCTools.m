@@ -396,52 +396,45 @@ cannelClick:(void(^)())cannelClick
 
 }
 + (NSData *)resetSizeOfImageData:(UIImage *)sourceImage maxSize:(NSInteger)maxSize {
-    //先判断当前质量是否满足要求，不满足再进行压缩
-    __block NSData *finallImageData = UIImageJPEGRepresentation(sourceImage,1.0);
-    NSUInteger sizeOrigin   = finallImageData.length;
-    NSUInteger sizeOriginKB = sizeOrigin / 1000;
-    
-    if (sizeOriginKB <= maxSize) {
-        return finallImageData;
-    }
-    
-    //获取原图片宽高比
-    CGFloat sourceImageAspectRatio = sourceImage.size.width/sourceImage.size.height;
-    //先调整分辨率
-    CGSize defaultSize = CGSizeMake(1024, 1024/sourceImageAspectRatio);
-    UIImage *newImage = [self newSizeImage:defaultSize image:sourceImage];
-    
-    finallImageData = UIImageJPEGRepresentation(newImage,1.0);
-    
-    //保存压缩系数
-    NSMutableArray *compressionQualityArr = [NSMutableArray array];
-    CGFloat avg   = 1.0/250;
-    CGFloat value = avg;
-    for (int i = 250; i >= 1; i--) {
-        value = i*avg;
-        [compressionQualityArr addObject:@(value)];
-    }
-    
-    /*
-     调整大小
-     说明：压缩系数数组compressionQualityArr是从大到小存储。
-     */
-    //思路：使用二分法搜索
-    finallImageData = [self halfFuntion:compressionQualityArr image:newImage sourceData:finallImageData maxSize:maxSize];
-    //如果还是未能压缩到指定大小，则进行降分辨率
-    while (finallImageData.length == 0) {
-        //每次降100分辨率
-        CGFloat reduceWidth = 100.0;
-        CGFloat reduceHeight = 100.0/sourceImageAspectRatio;
-        if (defaultSize.width-reduceWidth <= 0 || defaultSize.height-reduceHeight <= 0) {
-            break;
+    //首先判断原图大小是否在要求内，如果满足要求则不进行压缩，over
+        CGFloat compression = 1;
+        NSData *data = UIImageJPEGRepresentation(sourceImage, compression);
+    if (data.length < maxSize) return UIImageJPEGRepresentation(sourceImage, compression);
+        //原图大小超过范围，先进行“压处理”，这里 压缩比 采用二分法进行处理，6次二分后的最小压缩比是0.015625，已经够小了
+        CGFloat max = 1;
+        CGFloat min = 0;
+        for (int i = 0; i < 6; ++i) {
+            compression = (max + min) / 2;
+            data = UIImageJPEGRepresentation(sourceImage, compression);
+            if (data.length < maxSize * 0.9) {
+                min = compression;
+            } else if (data.length > maxSize) {
+                max = compression;
+            } else {
+                break;
+            }
         }
-        defaultSize = CGSizeMake(defaultSize.width-reduceWidth, defaultSize.height-reduceHeight);
-        UIImage *image = [self newSizeImage:defaultSize
-                                      image:[UIImage imageWithData:UIImageJPEGRepresentation(newImage,[[compressionQualityArr lastObject] floatValue])]];
-        finallImageData = [self halfFuntion:compressionQualityArr image:image sourceData:UIImageJPEGRepresentation(image,1.0) maxSize:maxSize];
-    }
-    return finallImageData;
+        //判断“压处理”的结果是否符合要求，符合要求就over
+        UIImage *resultImage = [UIImage imageWithData:data];
+    if (data.length < maxSize) return UIImageJPEGRepresentation(resultImage, compression);
+        
+        //缩处理，直接用大小的比例作为缩处理的比例进行处理，因为有取整处理，所以一般是需要两次处理
+        NSUInteger lastDataLength = 0;
+        while (data.length > maxSize && data.length != lastDataLength) {
+            lastDataLength = data.length;
+            //获取处理后的尺寸
+            CGFloat ratio = (CGFloat)maxSize / data.length;
+            CGSize size = CGSizeMake((NSUInteger)(resultImage.size.width * sqrtf(ratio)),
+                                     (NSUInteger)(resultImage.size.height * sqrtf(ratio)));
+            //通过图片上下文进行处理图片
+            UIGraphicsBeginImageContext(size);
+            [resultImage drawInRect:CGRectMake(0, 0, size.width, size.height)];
+            resultImage = UIGraphicsGetImageFromCurrentImageContext();
+            UIGraphicsEndImageContext();
+            //获取处理后图片的大小
+            data = UIImageJPEGRepresentation(resultImage, compression);
+        }
+    return UIImageJPEGRepresentation(resultImage, compression);
 }
 #pragma mark 调整图片分辨率/尺寸（等比例缩放）
 + (UIImage *)newSizeImage:(CGSize)size image:(UIImage *)sourceImage {

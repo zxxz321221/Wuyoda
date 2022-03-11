@@ -21,8 +21,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic , copy)NSString *goods_table;
 @property (nonatomic , copy)NSString *m_uid;
 @property (nonatomic , copy)NSString *module;
+@property (nonatomic , copy)NSString *money_type;
 @property (nonatomic , copy)NSString *supplier_id;
 @property (nonatomic , copy)NSString *t;
+@property (nonatomic , copy)NSString *isup;
 @property (nonatomic , copy)NSString *isSelect;
 
 @end

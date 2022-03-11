@@ -14,6 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 //1.付款成功，2.收货成功，3.评价成功
 @property (nonatomic , copy)NSString *type;
 
+@property (nonatomic , copy)NSString *ordersn;
+
 @end
 
 NS_ASSUME_NONNULL_END

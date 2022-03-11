@@ -6,6 +6,7 @@
 //
 
 #import "PaySuccessViewController.h"
+#import "OrderInfoViewController.h"
 
 @interface PaySuccessViewController ()
 
@@ -18,6 +19,10 @@
     // Do any additional setup after loading the view.
     
     FJNormalNavView *nav = [[FJNormalNavView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kHeight_NavBar) controller:self titleStr:@""];
+    nav.isInitBackBtn = YES;
+    nav.block = ^{
+        [self.navigationController popToRootViewControllerAnimated:YES];
+    };
     [self.view addSubview:nav];
     
     UIImageView *imgV = [[UIImageView alloc]initWithImage:kGetImage(@"选中")];
@@ -69,7 +74,6 @@
         make.width.mas_offset(kWidth(100));
         make.height.mas_offset(kWidth(30));
     }];
-    
     if ([self.type isEqualToString:@"2"]) {
         successLab.text = @"收货成功";
         [orderBtn setTitle:@"立即评价" forState:UIControlStateNormal];
@@ -85,7 +89,12 @@
 }
 
 -(void)orderClicked{
-    
+    if ([self.type isEqualToString: @"1"]) {
+        OrderInfoViewController *vc = [[OrderInfoViewController alloc]init];
+        vc.type = @"3";
+        vc.ordersn = self.ordersn;
+        [self.navigationController pushViewController:vc animated:YES];
+    }
 }
 
 /*

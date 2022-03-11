@@ -79,7 +79,31 @@
     
     self.goodsArr = [[NSMutableArray alloc]init];
     
-    [self getDataFromServer];
+    if (self.buyAgainDic) {
+        self.addressModel = [AddressModel mj_objectWithKeyValues:self.buyAgainDic[@"data"][@"address"]];
+        self.cartListDic = self.buyAgainDic[@"data"][@"cart_list"];
+        NSArray *allKey = [self.cartListDic allKeys];
+        for (int i = 0; i<allKey.count; i++) {
+            NSString *key = [allKey objectAtIndex:i];
+            NSArray *goodsArr = [ShopCartModel mj_objectArrayWithKeyValuesArray:self.cartListDic[key]];
+            [self.goodsArr addObjectsFromArray:goodsArr];
+        }
+        
+        NSDictionary *cartInfoDic = self.buyAgainDic[@"data"][@"cart_info"];
+        self.orderModel = [OrderModel mj_objectWithKeyValues:cartInfoDic[cartInfoDic.allKeys.firstObject]];
+        NSDictionary *shipDic = [self.orderModel.yunfei valueForKey:@"ship_list"];
+        self.shipList = [shipDic valueForKey:shipDic.allKeys.firstObject];
+        self.currentShipDic = nil;
+        self.allPriceDic = nil;
+        //self.currentShipDic = [self.shipList firstObject];
+//            self.footerV.allPriceLab.text = [NSString stringWithFormat:@"%@%@",self.orderModel.money_sign,self.orderModel.total_price];
+//            self.footerV.goodAllPriceLab.text = [NSString stringWithFormat:@"%@%@",self.orderModel.money_sign,self.orderModel.total_price];
+        self.bottomV.allPriceLab.text = [NSString stringWithFormat:@"￥%.2f",[self.orderModel.total_price floatValue]];
+        [self.tableView reloadData];
+    }else{
+        [self getDataFromServer];
+    }
+   
 }
 
 -(void)getDataFromServer{
@@ -120,8 +144,11 @@
             //self.currentShipDic = [self.shipList firstObject];
 //            self.footerV.allPriceLab.text = [NSString stringWithFormat:@"%@%@",self.orderModel.money_sign,self.orderModel.total_price];
 //            self.footerV.goodAllPriceLab.text = [NSString stringWithFormat:@"%@%@",self.orderModel.money_sign,self.orderModel.total_price];
-            self.bottomV.allPriceLab.text = [NSString stringWithFormat:@"￥%@",self.orderModel.total_price];
+            self.bottomV.allPriceLab.text = [NSString stringWithFormat:@"￥%.2f",[self.orderModel.total_price floatValue]];
             [self.tableView reloadData];
+        }else{
+            [self.view showHUDWithText:baseModel.msg withYOffSet:0];
+            [self.navigationController popViewControllerAnimated:YES];
         }
         
     } failure:^(NSError *error) {
@@ -152,6 +179,15 @@
 }
 
 -(void)payClicked{
+    if (!self.addressModel.uid.length) {
+        [self.view showHUDWithText:@"请选择地址" withYOffSet:0];
+        return;
+    }
+    if (!self.currentShipDic) {
+        [self.view showHUDWithText:@"请选择快递方式" withYOffSet:0];
+        return;
+    }
+    
     PayViewController *vc = [[PayViewController alloc]init];
     vc.cartListDic = self.cartListDic;
     vc.memo = self.remarkTextF.text;

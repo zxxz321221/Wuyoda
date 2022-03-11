@@ -40,7 +40,7 @@
     [self addSubview:bgV];
     
     self.goodImgV = [[UIImageView alloc]init];
-    self.goodImgV.backgroundColor = [ColorManager RandomColor];
+    self.goodImgV.backgroundColor = [ColorManager ColorF2F2F2];
     self.goodImgV.layer.cornerRadius = kWidth(5);
     [bgV addSubview:self.goodImgV];
     [self.goodImgV mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -59,7 +59,7 @@
     }];
     
     self.logisticsImgV = [[UIImageView alloc]init];
-    self.logisticsImgV.backgroundColor = [ColorManager RandomColor];
+    self.logisticsImgV.backgroundColor = [ColorManager ColorF2F2F2];
     self.logisticsImgV.layer.cornerRadius = kWidth(15);
     [bgV addSubview:self.logisticsImgV];
     [self.logisticsImgV mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -103,7 +103,13 @@
 
 -(void)logisticsNumCopyClicked:(UIButton *)sender{
     UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-    pasteboard.string = self.logisticsNumLab.text;
+    pasteboard.string = self.model.expressCode;
+}
+
+-(void)setModel:(LogisticsModel *)model{
+    _model = model;
+    self.statusLab.text = model.status;
+    self.logisticsNumLab.text = [NSString stringWithFormat:@"%@ %@",model.expressType,model.expressCode];
 }
 
 /*

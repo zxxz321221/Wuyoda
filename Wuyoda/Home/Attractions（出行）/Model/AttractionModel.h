@@ -16,6 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic , copy)NSString *cover;
 @property (nonatomic , copy)NSString *domain_id;
 @property (nonatomic , copy)NSString *hot;
+@property (nonatomic , copy)NSString *introduction;
 @property (nonatomic , copy)NSString *is_domain;
 @property (nonatomic , copy)NSString *ps_id;
 @property (nonatomic , copy)NSString *register_date;
@@ -25,6 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic , copy)NSString *scenic_td;
 @property (nonatomic , copy)NSString *scenic_title;
 @property (nonatomic , copy)NSString *uid;
+@property (nonatomic , retain)NSArray *scenic_file;
 
 
 @end

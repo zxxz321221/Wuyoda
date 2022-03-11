@@ -98,6 +98,9 @@
                 if (self.delegate && [self.delegate respondsToSelector:@selector(changeOrderAddress)]) {
                     [self.delegate changeOrderAddress];
                 }
+                [self.navigationController popViewControllerAnimated:YES];
+            }else{
+                [self.view showHUDWithText:baseModel.msg withYOffSet:0];
             }
         } failure:^(NSError *error) {
             
@@ -119,7 +122,13 @@
     }
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     
-    cell.model = [self.addressArr objectAtIndex:indexPath.row];
+    AddressModel *model = [self.addressArr objectAtIndex:indexPath.row];
+    cell.model = model;
+//    if ([model.uid isEqualToString:self.orderListModel.addressid]) {
+//        cell.selected = YES;
+//    }else{
+//        cell.selected = NO;
+//    }
     
     return cell;
     

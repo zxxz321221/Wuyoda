@@ -111,9 +111,6 @@
     self.dateStr = [self.dateArr objectAtIndex:row];
 }
 
--(void)setShipList:(NSArray *)shipList{
-    
-}
 
 -(void)setDateArr:(NSArray *)dateArr{
     _dateArr = dateArr;

@@ -79,6 +79,12 @@
     }
 }
 
+-(void)setSurplus:(NSInteger)surplus{
+    NSInteger minute = surplus/60;
+    NSInteger second = surplus % 60;
+    self.infoLab.text = [NSString stringWithFormat:@"%.2ld：%.2ld后订单关闭，请及时付款",minute,second];
+}
+
 /*
 // Only override drawRect: if you perform custom drawing.
 // An empty implementation adversely affects performance during animation.

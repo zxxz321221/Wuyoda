@@ -25,6 +25,8 @@
 
 @property (nonatomic , retain)UIButton *addBtn;
 
+@property (nonatomic , retain)UILabel *statusLab;
+
 @end
 
 @implementation ShoppingCarTableViewCell
@@ -59,7 +61,7 @@
     }];
     
     self.imgV = [[UIImageView alloc]init];
-    self.imgV.backgroundColor = [ColorManager RandomColor];
+    self.imgV.backgroundColor = [ColorManager ColorF2F2F2];
     self.imgV.layer.masksToBounds = YES;
     self.imgV.layer.cornerRadius = kWidth(10);
     [self.imgV setImage:kGetImage(@"good_detail_top")];
@@ -146,6 +148,16 @@
         make.centerY.equalTo(self.addBtn);
         make.width.height.mas_offset(kWidth(26));
     }];
+    
+    self.statusLab = [[UILabel alloc]init];
+    self.statusLab.text = @"该商品已下架，无法购买";
+    self.statusLab.textColor = [ColorManager MainColor];
+    self.statusLab.font = kBoldFont(12);
+    [bgV addSubview:self.statusLab];
+    [self.statusLab mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.bottom.mas_offset(kWidth(-10));
+        make.left.mas_offset(kWidth(95));
+    }];
 }
 
 
@@ -153,21 +165,57 @@
     _model = model;
     self.nameLab.text = model.goods_name;
     [self.imgV sd_setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@",model.goods_file1]]];
-    if (model.isSelect.length && [model.isSelect isEqualToString:@"1"]) {
-        [self.selectImgV setImage:kGetImage(@"选中")];
-    }else{
-        [self.selectImgV setImage:kGetImage(@"选择")];
-    }
     self.oldPriceLab.text = [NSString stringWithFormat:@"%@%@",[CommonManager getPriceType:model.money_type],model.ori_price];
     self.priceLab.text = [NSString stringWithFormat:@"%@%@",[CommonManager getPriceType:model.money_type],model.cart_price];
     self.numLab.text = model.cart_num;
+    
+    if ([model.isup isEqualToString:@"1"]) {
+        
+        if ([model.goods_stock integerValue] < [model.cart_num integerValue]) {
+            self.statusLab.text = @"该商品库存不足";
+            self.statusLab.hidden = NO;
+        }else{
+            self.statusLab.hidden = YES;
+        }
+    }else{
+        self.statusLab.text = @"该商品已下架，无法购买";
+        self.statusLab.hidden = NO;
+    }
+    
+    
+    
+}
+
+-(void)setIsEdit:(BOOL)isEdit{
+    if (isEdit) {
+        if (self.model.isEdit.length && [self.model.isEdit isEqualToString:@"1"]) {
+            [self.selectImgV setImage:kGetImage(@"选中")];
+        }else{
+            [self.selectImgV setImage:kGetImage(@"选择")];
+        }
+    }else{
+        if (self.model.isSelect.length && [self.model.isSelect isEqualToString:@"1"]) {
+            [self.selectImgV setImage:kGetImage(@"选中")];
+        }else{
+            [self.selectImgV setImage:kGetImage(@"选择")];
+        }
+    }
 }
 
 -(void)changeCartNumClicked:(UIButton *)sender{
+    
+    if ([self.model.isup isEqualToString:@"0"]) {
+        [self.contentView showHUDWithText:@"商品已下架" withYOffSet:0];
+        return;
+    }
+    
     NSInteger num = [self.model.cart_num integerValue];
     if (sender == self.addBtn) {
         num += 1;
     }else{
+        if (num < 2) {
+            return;
+        }
         num -= 1;
     }
     NSDictionary *dic = @{@"cart_id":self.model.uid,@"num":[NSString stringWithFormat:@"%ld",num],@"api_token":[RegisterModel getUserInfoModel].user_token};

@@ -68,6 +68,7 @@
     HomeCityModel *model = [self.cityArr objectAtIndex:indexPath.row];
     CityDetailViewController *vc = [[CityDetailViewController alloc]init];
     vc.cityID = model.uid;
+    vc.title = model.city;
     [self.CurrentViewController.navigationController pushViewController:vc animated:YES];
 }
 

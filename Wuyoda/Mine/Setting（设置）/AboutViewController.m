@@ -85,7 +85,7 @@
         vc.type = 4;
     }
     if (indexPath.row == 1) {
-        
+        vc.type = 6;
     }
     if (indexPath.row == 2) {
         vc.type = 5;

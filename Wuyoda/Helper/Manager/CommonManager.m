@@ -99,8 +99,7 @@
 
  @return 当前年月日时分秒
  */
-+ (NSString *)timeGetCurrentDateOfYearMonthDayHourMinutesSecond {
-    NSDate *date = [NSDate date];
++ (NSString *)timeGetCurrentDateOfYearMonthDayHourMinutesSecond:(NSDate *)date {
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
     [formatter setDateStyle:NSDateFormatterMediumStyle];
     [formatter setTimeStyle:NSDateFormatterShortStyle];
@@ -179,13 +178,18 @@
 }
 
 //判断未登录跳登录
-+ (BOOL)isLogin:(UIViewController *)viewCotroller {
-    RegisterModel *model = [RegisterModel getUserInfoModel];
++ (BOOL)isLogin:(UIViewController *)viewCotroller isPush:(BOOL)isPush{
+    UserInfoModel *model = [UserInfoModel getUserInfoModel];
     if (!model) {
-        LoginViewController *VC = [[LoginViewController alloc] init];
-//        VC.modalPresentationStyle = UIModalPresentationFullScreen;
-        [viewCotroller.navigationController pushViewController:VC animated:YES];
-        [viewCotroller presentViewController:VC animated:YES completion:nil];
+        if (isPush) {
+            LoginViewController *VC = [[LoginViewController alloc] init];
+            VC.modalPresentationStyle = UIModalPresentationFullScreen;
+            //[viewCotroller.navigationController pushViewController:VC animated:YES];
+            FJBaseNavigationController *nav = [[FJBaseNavigationController alloc]initWithRootViewController:VC];
+            nav.modalPresentationStyle = UIModalPresentationFullScreen;
+            [viewCotroller presentViewController:nav animated:YES completion:nil];
+        }
+        
         return NO;
     }
     return YES;
@@ -212,8 +216,18 @@
 }
 
 + (NSString *)getPriceType:(NSString *)type{
-    if ([type isEqualToString:@"2"]) {
+    if ([type isEqualToString:@"1"]) {
+        return @"￡";
+    }else if ([type isEqualToString:@"2"]) {
         return @"NT$";
+    }else if ([type isEqualToString:@"3"]) {
+        return @"$";
+    }else if ([type isEqualToString:@"4"]) {
+        return @"HK$";
+    }else if ([type isEqualToString:@"5"]) {
+        return @"PY¥";
+    }else if ([type isEqualToString:@"6"]) {
+        return @"₩";
     }else{
         return @"￥";
     }

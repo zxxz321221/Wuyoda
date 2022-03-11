@@ -35,7 +35,7 @@
     [self.infoTextField mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerY.equalTo(self.contentView);
         make.left.mas_offset(kWidth(98));
-        make.right.mas_offset(kWidth(-94));
+        make.right.mas_offset(kWidth(-70));
         make.height.mas_offset(kWidth(24));
     }];
     

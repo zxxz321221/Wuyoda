@@ -62,7 +62,7 @@
     }];
     
     self.timeLab = [[UILabel alloc]init];
-    self.timeLab.text = @"08-29  09：56";
+    //self.timeLab.text = @"08-29  09：56";
     self.timeLab.textColor = [ColorManager Color999999];
     self.timeLab.font = kFont(12);
     [self.contentView addSubview:self.timeLab];
@@ -72,7 +72,7 @@
     }];
     
     self.infoLab = [[UILabel alloc]init];
-    self.infoLab.text = @"快件离开武汉已发往沈阳";
+    //self.infoLab.text = @"快件离开武汉已发往沈阳";
     self.infoLab.textColor = [ColorManager Color999999];
     self.infoLab.font = kFont(12);
     [self.contentView addSubview:self.infoLab];
@@ -80,6 +80,11 @@
         make.left.equalTo(self.pointV.mas_right).mas_offset(kWidth(20));
         make.top.equalTo(self.timeLab.mas_bottom).mas_offset(kWidth(5));
     }];
+}
+
+-(void)setModel:(LogisticsModel *)model{
+    self.timeLab.text = model.updateTime;
+    self.infoLab.text = model.action;
 }
 
 - (void)awakeFromNib {

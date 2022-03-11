@@ -6,12 +6,13 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "HomeSearchField.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface AttractionsListNavView : UIView
 
-@property (nonatomic , retain)UITextField *searchField;
+@property (nonatomic , retain)HomeSearchField *searchField;
 
 @end
 

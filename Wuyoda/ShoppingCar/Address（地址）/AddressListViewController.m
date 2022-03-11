@@ -73,11 +73,11 @@
         if ([baseModel.code isEqualToString:CODE0]) {
             self.addressArr = [AddressModel mj_objectArrayWithKeyValuesArray:responseObject[@"data"]];
             [self.tableView reloadData];
-            if (self.addressArr.count) {
-                if (self.delegate && [self.delegate respondsToSelector:@selector(selectAddress:)]) {
-                    [self.delegate selectAddress:self.addressArr[0]];
-                }
-            }
+//            if (self.addressArr.count) {
+//                if (self.delegate && [self.delegate respondsToSelector:@selector(selectAddress:)]) {
+//                    [self.delegate selectAddress:self.addressArr[0]];
+//                }
+//            }
             
         }
     } failure:^(NSError *error) {
@@ -88,6 +88,7 @@
 -(void)addAddressClicked{
     AddressInfoViewController *vc = [[AddressInfoViewController alloc]init];
     vc.type = @"1";
+    vc.delegate = self;
     [self.navigationController pushViewController:vc animated:YES];
 }
 

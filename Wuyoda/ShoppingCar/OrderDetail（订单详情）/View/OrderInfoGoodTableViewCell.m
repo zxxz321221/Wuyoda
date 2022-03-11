@@ -46,7 +46,7 @@
     [self.contentView addSubview:goodBGV];
     
     self.goodImgV = [[UIImageView alloc]init];
-    self.goodImgV.backgroundColor = [ColorManager RandomColor];
+    self.goodImgV.backgroundColor = [ColorManager ColorF2F2F2];
     self.goodImgV.layer.cornerRadius = kWidth(10);
     [goodBGV addSubview:self.goodImgV];
     [self.goodImgV mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -55,7 +55,7 @@
     }];
     
     self.goodNameLab = [[UILabel alloc]init];
-    self.goodNameLab.text = @"【酱职人】国产黑豆荫油礼盒组...";
+    //self.goodNameLab.text = @"【酱职人】国产黑豆荫油礼盒组...";
     self.goodNameLab.textColor = [ColorManager BlackColor];
     self.goodNameLab.font = kFont(14);
     self.goodNameLab.numberOfLines = 2;
@@ -68,7 +68,7 @@
     }];
     
     self.goodPriceLab = [[UILabel alloc]init];
-    self.goodPriceLab.text = @"￥349.00";
+    //self.goodPriceLab.text = @"￥349.00";
     self.goodPriceLab.textColor = [ColorManager BlackColor];
     self.goodPriceLab.font = kFont(14);
     [goodBGV addSubview:self.goodPriceLab];
@@ -108,7 +108,7 @@
     }];
     
     self.goodAllPriceLab = [[UILabel alloc]init];
-    self.goodAllPriceLab.text = @"￥349.00";
+    //self.goodAllPriceLab.text = @"￥349.00";
     self.goodAllPriceLab.textColor = [ColorManager Color333333];
     self.goodAllPriceLab.font = kFont(14);
     [self.contentView addSubview:self.goodAllPriceLab];
@@ -168,7 +168,7 @@
     }];
 
     self.allPriceLab = [[UILabel alloc]init];
-    self.allPriceLab.text = @"￥349.00";
+    //self.allPriceLab.text = @"￥349.00";
     self.allPriceLab.textColor = [UIColor redColor];
     self.allPriceLab.font = kFont(14);
     [self.contentView addSubview:self.allPriceLab];

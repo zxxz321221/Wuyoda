@@ -20,6 +20,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic , retain)ShopCartModel *model;
 
+@property (nonatomic , assign)BOOL isEdit;
+
 @property (nonatomic , weak)id <updateCartNumDelegate>delegate;
 
 @end

@@ -97,6 +97,10 @@ NSString *const Special_modify_address = @"mobile/Special/modify_address";
 NSString *const Special_bank = @"mobile/Special/bank";
 // 银行卡支付以及获取验证码
 NSString *const Special_umf_pay = @"mobile/Special/umf_pay";
+// 订单支付
+NSString *const Special_juhe_pay = @"mobile/Special/juhe_pay";
+// 订单支付结果
+NSString *const Special_pay_result= @"mobile/Special/pay_result";
 
 // 收获地址列表
 NSString *const Special_address_list = @"mobile/Special/address_list";
@@ -124,6 +128,8 @@ NSString *const Special_orders_list  = @"mobile/Special/orders_list";
 NSString *const Special_cancel_order  = @"mobile/Special/cancel_order";
 // 确认收货
 NSString *const Special_receiv  = @"mobile/Special/receiv";
+// 确认收货
+NSString *const Special_buy_again  = @"mobile/Special/buy_again";
 
 // 注销账号
 NSString *const Login_cancel  = @"mobile/Login/cancel";
@@ -135,6 +141,8 @@ NSString *const Store_deliveryfaq  = @"mobile/Store/deliveryfaq";
 NSString *const Store_return_policy  = @"mobile/Store/return_policy";
 // 公司介绍
 NSString *const Store_aboutus = @"mobile/Store/aboutus";
+// 品牌介绍
+NSString *const Store_brand_list = @"mobile/Store/brand_list";
 // 联系我们
 NSString *const Store_recruitment = @"mobile/Store/recruitment";
 
@@ -146,3 +154,6 @@ NSString *const Login_phone_save = @"mobile/Login/phone_save";
 NSString *const Login_email_save = @"mobile/Login/email_save";
 // 修改个人信息
 NSString *const Login_perfect = @"mobile/Login/perfect";
+
+// 物流信息
+NSString *const website_getOrderInfo = @"http://tms.ubonex.com/website/getOrderInfo.do";

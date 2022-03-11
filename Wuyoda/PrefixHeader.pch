@@ -133,6 +133,7 @@ _Pragma("clang diagnostic pop")
 #import "LoginViewController.h"
 #import "RegisterModel.h"
 #import "UserInfoModel.h"
+#import "LoginUsersModel.h"
 #import "CommonManager.h"
 #import "MYLabel.h"
 #import "UIImage+Blur.h"

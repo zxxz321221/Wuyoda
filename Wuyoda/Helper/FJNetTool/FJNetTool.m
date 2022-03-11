@@ -16,13 +16,20 @@
           [SVProgressHUD show];
       }
 
-    url = [NSString stringWithFormat:@"%@%@",HTTP,url];
+    if (![url containsString:@"http"]) {
+        url = [NSString stringWithFormat:@"%@%@",HTTP,url];
+    }
 
     [PPNetworkHelper GET:url parameters:params success:^(id responseObject) {
         if (success) {
-            success(responseObject);
+            NSError *err;
+            NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:responseObject
+                                                                options:NSJSONReadingMutableContainers
+                                                                  error:&err];
+            success(dic);
         }
         [self tocastWithResponseObject:responseObject with:url params:params loading:needloading];
+        [SVProgressHUD dismiss];
 
     } failure:^(NSError *error)
      {
@@ -50,8 +57,10 @@
 //        [SVProgressHUD showImage:[UIImage hx_animatedGIFWithData:gifData] status:@""];
         [SVProgressHUD show];
     }
-    url = [NSString stringWithFormat:@"%@%@",HTTP,url];
-
+    if (![url containsString:@"http"]) {
+        url = [NSString stringWithFormat:@"%@%@",HTTP,url];
+    }
+    
     [PPNetworkHelper POST:url parameters:params success:^(id responseObject) {
 
 

@@ -39,7 +39,7 @@
     }];
     
     self.nameLab = [[UILabel alloc]init];
-    self.nameLab.text = @"张三";
+    //self.nameLab.text = @"张三";
     self.nameLab.textColor = [ColorManager BlackColor];
     self.nameLab.font = kBoldFont(14);
     [self.contentView addSubview:self.nameLab];
@@ -49,7 +49,7 @@
     }];
     
     self.phoneLab = [[UILabel alloc]init];
-    self.phoneLab.text = @"156****1245";
+    //self.phoneLab.text = @"156****1245";
     self.phoneLab.textColor = [ColorManager BlackColor];
     self.phoneLab.font = kBoldFont(14);
     [self.contentView addSubview:self.phoneLab];
@@ -59,7 +59,7 @@
     }];
     
     self.addressLab = [[UILabel alloc]init];
-    self.addressLab.text = @"辽宁省大连市沙河口区中山路金玉577-5-2101";
+    //self.addressLab.text = @"辽宁省大连市沙河口区中山路金玉577-5-2101";
     self.addressLab.textColor = [ColorManager Color555555];
     self.addressLab.font = kFont(12);
     [self.contentView addSubview:self.addressLab];

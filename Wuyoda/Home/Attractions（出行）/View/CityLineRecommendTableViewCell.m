@@ -50,6 +50,11 @@
     }];
 }
 
+-(void)setModel:(CityTripModel *)model{
+    self.nameLab.text = model.trip_title;
+    self.recommendLab.text = model.trip_content;
+}
+
 - (void)awakeFromNib {
     [super awakeFromNib];
     // Initialization code

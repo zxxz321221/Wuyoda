@@ -18,7 +18,7 @@
 #import "AttractionModel.h"
 #import "HomeModel.h"
 
-@interface CityDetailViewController ()<UITableViewDelegate,UITableViewDataSource>
+@interface CityDetailViewController ()<UITableViewDelegate,UITableViewDataSource ,updateCityHeaderHeightDelegate>
 
 @property (nonatomic , retain)UITableView *tableView;
 
@@ -29,6 +29,8 @@
 @property (nonatomic , retain)NSArray *customArr;
 
 @property (nonatomic , retain)NSArray *eventArr;
+
+@property (nonatomic , retain)NSArray *tripArr;
 
 @property (nonatomic , retain)NSArray *goodsArr;
 
@@ -44,7 +46,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    FJNormalNavView *nav = [[FJNormalNavView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kHeight_NavBar) controller:self titleStr:@""];
+    FJNormalNavView *nav = [[FJNormalNavView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kHeight_NavBar) controller:self titleStr:self.title];
     [self.view addSubview:nav];
     
     self.tableView = [[UITableView alloc]initWithFrame:CGRectMake(0, kHeight_NavBar, kScreenWidth, kScreenHeight-kHeight_NavBar-kHeight_SafeArea) style:UITableViewStyleGrouped];
@@ -59,6 +61,7 @@
     self.tableView.backgroundColor = [ColorManager WhiteColor];
     
     self.headerV = [[CityDetailHeaderView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kWidth(560))];
+    self.headerV.delegate = self;
     self.tableView.tableHeaderView = self.headerV;
     
     [self.view addSubview:self.tableView];
@@ -76,18 +79,24 @@
             self.cityModel = [CityDetailModel mj_objectWithKeyValues:responseObject[@"data"]];
             self.customArr = [CityCustomModel mj_objectArrayWithKeyValuesArray:responseObject[@"data"][@"custom"]];
             self.eventArr = [CityEventModel mj_objectArrayWithKeyValuesArray:responseObject[@"data"][@"event"]];
+            self.tripArr = [CityTripModel mj_objectArrayWithKeyValuesArray:responseObject[@"data"][@"trip"]];
             self.goodsArr = [HomeShopModel mj_objectArrayWithKeyValuesArray:responseObject[@"data"][@"goods_table"]];
             self.attractionArr = [AttractionModel mj_objectArrayWithKeyValuesArray:responseObject[@"data"][@"scenic"]];
             self.headerV.model = self.cityModel;
             
-            CGFloat textH = [UILabel getHeightByWidth:kWidth(335) title:self.cityModel.city_content font:kFont(16)];
-            self.headerV.frame = CGRectMake(0, 0, kScreenWidth, textH+kWidth(195));
+//            CGFloat textH = [UILabel getHeightByWidth:kWidth(335) title:self.cityModel.city_content font:kFont(16)];
+//            self.headerV.frame = CGRectMake(0, 0, kScreenWidth, textH+kWidth(195));
             
             [self.tableView reloadData];
         }
     } failure:^(NSError *error) {
         
     }];
+}
+
+-(void)updateCityHeaderHeight:(CGFloat)height{
+    self.headerV.frame = CGRectMake(0, 0, kScreenWidth, kWidth(195)+height);
+    [self.tableView reloadData];
 }
 
 -(void)pushAttractionsVC{
@@ -115,6 +124,8 @@
         }
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         
+        cell.model = [self.eventArr objectAtIndex:indexPath.row];
+        
         return cell;
     }else if (indexPath.section == 2){
         CityLineRecommendTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:NSStringFromClass([CityLineRecommendTableViewCell class]) forIndexPath:indexPath];
@@ -122,6 +133,8 @@
             cell = [[CityLineRecommendTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:NSStringFromClass([CityLineRecommendTableViewCell class])];
         }
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        
+        cell.model = [self.tripArr objectAtIndex:indexPath.row];
         
         return cell;
     }else if (indexPath.section == 3){
@@ -131,11 +144,7 @@
         }
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         
-        if (indexPath.row == 0) {
-            cell.attractionName = @"夜市文化";
-        }else{
-            cell.attractionName = @"旗津海鲜";
-        }
+        cell.model = [self.customArr objectAtIndex:indexPath.row];
         
         return cell;
     }else{
@@ -153,17 +162,17 @@
 }
 
 -(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
-    return self.sectionArr.count;
+    return 5;
 }
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
     if (section == 0) {
         return self.attractionArr.count;
     }else if (section == 1){
-        return 0;
+        return self.eventArr.count;
     }else if (section == 2){
-        return 0;
+        return self.tripArr.count;
     }else if (section == 3){
-        return 2;
+        return self.customArr.count;
     }else{
         return 1;
     }
@@ -171,19 +180,57 @@
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
     if (indexPath.section == 0) {
+        if (!self.attractionArr.count) {
+            return 0.001;
+        }
         return kWidth(102);
     }else if (indexPath.section == 1){
+        if (!self.eventArr.count) {
+            return 0.001;
+        }
         return kWidth(36);
     }else if (indexPath.section == 2){
-        return kWidth(90);
+        if (!self.tripArr.count) {
+            return 0.001;
+        }
+        CityTripModel *model = [self.tripArr objectAtIndex:indexPath.row];
+        CGFloat textH = [UILabel getHeightByWidth:kWidth(343) title:model.trip_content font:kFont(14)];
+        return kWidth(50) + textH;
     }else if (indexPath.section == 3){
+        if (!self.customArr.count) {
+            return 0.001;
+        }
         return kWidth(100);
+    }else{
+        if (!self.goodsArr.count) {
+            return 0.001;
+        }
+        return kWidth(170);
     }
-    return kWidth(170);
+    
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
-    if (section == 1 || section == 2) {
-        return 0.001;
+
+    if (section == 0) {
+        if (!self.attractionArr.count) {
+            return 0.001;
+        }
+    }else if (section == 1){
+        if (!self.eventArr.count) {
+            return 0.001;
+        }
+    }else if (section == 2){
+        if (!self.tripArr.count) {
+            return 0.001;
+        }
+    }else if (section == 3){
+        if (!self.customArr.count) {
+            return 0.001;
+        }
+    }else{
+        if (!self.goodsArr.count) {
+            return 0.001;
+        }
     }
     return kWidth(58);
 }
@@ -198,6 +245,11 @@
     [headerV addSubview:bgV];
     UILabel *titleLab = [[UILabel alloc]init];
     titleLab.text = [self.sectionArr objectAtIndex:section];
+    if (section == 4) {
+        if (!self.goodsArr.count) {
+            titleLab.text = @"";
+        }
+    }
     titleLab.textColor = [ColorManager Color333333];
     titleLab.font = kBoldFont(16);
     [bgV addSubview:titleLab];
@@ -209,6 +261,14 @@
     if (section == 0) {
         UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(pushAttractionsVC)];
         [headerV addGestureRecognizer:tap];
+        
+        UIImageView *moreImgView = [[UIImageView alloc]initWithImage:kGetImage(@"更多")];
+        [headerV addSubview:moreImgView];
+        [moreImgView mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.right.mas_offset(kWidth(-15));
+            make.centerY.equalTo(titleLab);
+            make.width.height.mas_offset(kWidth(16));
+        }];
     }
     
     UIView *line = [[UIView alloc]initWithFrame:CGRectMake(0, kWidth(49), kScreenWidth, kWidth(1))];
@@ -229,9 +289,9 @@
         [self.navigationController pushViewController:vc animated:YES];
     }
     if (indexPath.section == 3) {
-        AttractionDetailViewController *vc = [[AttractionDetailViewController alloc]init];
-        
-        [self.navigationController pushViewController:vc animated:YES];
+//        AttractionDetailViewController *vc = [[AttractionDetailViewController alloc]init];
+//        vc.scenic_id = @"";
+//        [self.navigationController pushViewController:vc animated:YES];
     }
 }
 

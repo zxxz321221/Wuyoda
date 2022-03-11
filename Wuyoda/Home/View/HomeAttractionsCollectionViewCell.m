@@ -27,9 +27,10 @@
 
 -(void)createUI{
     self.imgV = [[UIImageView alloc]init];
-    self.imgV.backgroundColor = [ColorManager RandomColor];
+    self.imgV.backgroundColor = [ColorManager ColorF2F2F2];
     self.imgV.layer.cornerRadius = kWidth(5);
     self.imgV.layer.masksToBounds = YES;
+    self.imgV.contentMode = UIViewContentModeScaleAspectFill;
     [self.contentView addSubview:self.imgV];
     [self.imgV mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.top.width.height.equalTo(self.contentView);

@@ -11,6 +11,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface LogisticsViewController : FJBaseViewController
 
+@property (nonatomic , copy)NSString *orderNum;
+
 @end
 
 NS_ASSUME_NONNULL_END

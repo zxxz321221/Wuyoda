@@ -13,6 +13,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic , retain)NSMutableArray *cartArr;
 
+@property (nonatomic , retain)NSDictionary *buyAgainDic;
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -24,20 +24,20 @@
 @property (nonatomic , retain)UITextField *phoneField;
 @property (nonatomic , retain)UITextField *idCardField;
 @property (nonatomic , retain)UITextField *bankField;
-@property (nonatomic , retain)UITextField *endNumField;
-@property (nonatomic , retain)UITextField *codeField;
+//@property (nonatomic , retain)UITextField *endNumField;
+//@property (nonatomic , retain)UITextField *codeField;
 
-@property (nonatomic , copy)NSString *payType;
-@property (nonatomic , copy)NSString *paymentumf_id;
-@property (nonatomic , retain)BankModel *currentBankModel;
-@property (nonatomic , copy)NSString *yearStr;
-@property (nonatomic , copy)NSString *monthStr;
-
-@property (nonatomic , retain)NSArray *yinlianArr;
-@property (nonatomic , retain)NSArray *xinyongkaArr;
-
-@property (nonatomic , retain)BankCardListView *bankListView;
-@property (nonatomic , retain)PayYearOrMonthView *dateView;
+//@property (nonatomic , copy)NSString *payType;
+//@property (nonatomic , copy)NSString *paymentumf_id;
+//@property (nonatomic , retain)BankModel *currentBankModel;
+//@property (nonatomic , copy)NSString *yearStr;
+//@property (nonatomic , copy)NSString *monthStr;
+//
+//@property (nonatomic , retain)NSArray *yinlianArr;
+//@property (nonatomic , retain)NSArray *xinyongkaArr;
+//
+//@property (nonatomic , retain)BankCardListView *bankListView;
+//@property (nonatomic , retain)PayYearOrMonthView *dateView;
 
 @end
 
@@ -58,119 +58,157 @@
     
     [self.view addSubview:self.tableView];
     
-    self.titleArr = @[@"订单编号",@"支付方式",@"姓名",@"电话",@"身份证号",@"支持银行",@"银行卡号",@"验证码"];
-    self.placeholderArr = @[@"",@"",@"请输入您的姓名",@"请输入电话号码",@"请输入身份证号",@"",@"请输入银行卡号",@"请输入验证码"];
-    self.payType = @"DEBIT_CARD";
-    self.yearStr = @"21";
-    self.monthStr = @"01";
-    [self getBankListFromServer];
+    self.titleArr = @[@"订单编号",@"姓名",@"电话",@"身份证号",@"银行卡号"];
+    self.placeholderArr = @[@"",@"请输入您的姓名",@"请输入电话号码",@"请输入身份证号",@"请输入银行卡号"];
+//    self.payType = @"DEBIT_CARD";
+//    self.yearStr = @"21";
+//    self.monthStr = @"01";
+//    [self getBankListFromServer];
 }
 
--(void)getBankListFromServer{
-    [FJNetTool postWithParams:@{@"api_token":[RegisterModel getUserInfoModel].user_token} url:Special_bank loading:YES success:^(id responseObject) {
-        BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
-        if ([baseModel.code isEqualToString:CODE0]) {
-            
-            NSString *CREDIT_CARDStr = responseObject[@"data"][@"CREDIT_CARD"];
-            
-            NSData *CREDIT_CARDData = [CREDIT_CARDStr dataUsingEncoding:NSUTF8StringEncoding];
-            NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:CREDIT_CARDData
-                                                                options:NSJSONReadingMutableContainers
-                                                                  error:nil];
-            self.xinyongkaArr = [BankModel mj_objectArrayWithKeyValuesArray:dic[@"banks"]];
-            
-            NSString *DEBIT_CARDStr = responseObject[@"data"][@"DEBIT_CARD"];
-            
-            NSData *DEBIT_CARDData = [DEBIT_CARDStr dataUsingEncoding:NSUTF8StringEncoding];
-            NSDictionary *dic2 = [NSJSONSerialization JSONObjectWithData:DEBIT_CARDData
-                                                                options:NSJSONReadingMutableContainers
-                                                                  error:nil];
-            self.yinlianArr = [BankModel mj_objectArrayWithKeyValuesArray:dic2[@"banks"]];
-            self.payType = @"DEBIT_CARD";
-            self.currentBankModel = [self.yinlianArr firstObject];
-            [self.tableView reloadData];
-            
-        }
-    } failure:^(NSError *error) {
-        
-    }];
-}
-//赵祥
--(void)getPayCodeClicked:(UIButton *)sender{
-    if ([self checkInfoEmpty]) {
-        NSMutableDictionary *dic = [[NSMutableDictionary alloc]init];
-        [dic setValue:[UserInfoModel getUserInfoModel].member_id forKey:@"m_id"];
-        [dic setValue:self.payInfoModel.uid forKey:@"order_id"];
-        [dic setValue:self.payInfoModel.original_price forKey:@"total_price"];
-        [dic setValue:self.payType forKey:@"payment_method"];
-        [dic setValue:self.nameField.text forKey:@"payer_name"];
-        [dic setValue:self.phoneField.text forKey:@"payer_phone"];
-        [dic setValue:self.idCardField.text forKey:@"citizen_id"];
-        [dic setValue:self.currentBankModel.code forKey:@"bank_code"];
-        [dic setValue:self.bankField.text forKey:@"bank_number"];
-        [dic setValue:@"pay_send" forKey:@"apitype"];
-        if ([self.payType isEqualToString:@"CREDIT_CARD"]) {
-            [dic setValue:[NSString stringWithFormat:@"%@%@",self.yearStr,self.monthStr] forKey:@"bank_valid_date"];
-            [dic setValue:self.endNumField.text forKey:@"safe_code"];
-        }
-        NSLog(@"sendDic:%@",dic);
-        
-        [FJNetTool postWithParams:dic url:Special_umf_pay loading:YES success:^(id responseObject) {
-            [self.view showHUDWithText:@"发送验证码成功" withYOffSet:0];
-            self.paymentumf_id = responseObject[@"paymentumf_id"];
-        } failure:^(NSError *error) {
-            
-        }];
-    }
-}
+//-(void)getBankListFromServer{
+//    [FJNetTool postWithParams:@{@"api_token":[RegisterModel getUserInfoModel].user_token} url:Special_bank loading:YES success:^(id responseObject) {
+//        BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
+//        if ([baseModel.code isEqualToString:CODE0]) {
+//
+//            NSString *CREDIT_CARDStr = responseObject[@"data"][@"CREDIT_CARD"];
+//
+//            NSData *CREDIT_CARDData = [CREDIT_CARDStr dataUsingEncoding:NSUTF8StringEncoding];
+//            NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:CREDIT_CARDData
+//                                                                options:NSJSONReadingMutableContainers
+//                                                                  error:nil];
+//            self.xinyongkaArr = [BankModel mj_objectArrayWithKeyValuesArray:dic[@"banks"]];
+//
+//            NSString *DEBIT_CARDStr = responseObject[@"data"][@"DEBIT_CARD"];
+//
+//            NSData *DEBIT_CARDData = [DEBIT_CARDStr dataUsingEncoding:NSUTF8StringEncoding];
+//            NSDictionary *dic2 = [NSJSONSerialization JSONObjectWithData:DEBIT_CARDData
+//                                                                options:NSJSONReadingMutableContainers
+//                                                                  error:nil];
+//            self.yinlianArr = [BankModel mj_objectArrayWithKeyValuesArray:dic2[@"banks"]];
+//            self.payType = @"DEBIT_CARD";
+//            self.currentBankModel = [self.yinlianArr firstObject];
+//            [self.tableView reloadData];
+//
+//        }
+//    } failure:^(NSError *error) {
+//
+//    }];
+//}
+
+//-(void)getPayCodeClicked:(UIButton *)sender{
+//    if ([self checkInfoEmpty]) {
+//        NSMutableDictionary *dic = [[NSMutableDictionary alloc]init];
+//        [dic setValue:[UserInfoModel getUserInfoModel].member_id forKey:@"m_id"];
+//        [dic setValue:self.payInfoModel.uid forKey:@"order_id"];
+//        [dic setValue:self.payInfoModel.original_price forKey:@"total_price"];
+//        [dic setValue:self.payType forKey:@"payment_method"];
+//        [dic setValue:self.nameField.text forKey:@"payer_name"];
+//        [dic setValue:self.phoneField.text forKey:@"payer_phone"];
+//        [dic setValue:self.idCardField.text forKey:@"citizen_id"];
+//        [dic setValue:self.currentBankModel.code forKey:@"bank_code"];
+//        [dic setValue:self.bankField.text forKey:@"bank_number"];
+//        [dic setValue:@"pay_send" forKey:@"apitype"];
+//        if ([self.payType isEqualToString:@"CREDIT_CARD"]) {
+//            [dic setValue:[NSString stringWithFormat:@"%@%@",self.yearStr,self.monthStr] forKey:@"bank_valid_date"];
+//            [dic setValue:self.endNumField.text forKey:@"safe_code"];
+//        }
+//        NSLog(@"sendDic:%@",dic);
+//
+//        [FJNetTool postWithParams:dic url:Special_umf_pay loading:YES success:^(id responseObject) {
+//            [self.view showHUDWithText:@"发送验证码成功" withYOffSet:0];
+//            self.paymentumf_id = responseObject[@"paymentumf_id"];
+//        } failure:^(NSError *error) {
+//
+//        }];
+//    }
+//}
 
 -(void)payOrderClicked:(UIButton *)sender{
     if ([self checkInfoEmpty]) {
         NSMutableDictionary *dic = [[NSMutableDictionary alloc]init];
-        [dic setValue:[UserInfoModel getUserInfoModel].member_id forKey:@"m_id"];
-        [dic setValue:self.payInfoModel.uid forKey:@"order_id"];
+        [dic setValue:[UserInfoModel getUserInfoModel].uid forKey:@"m_uid"];
+        [dic setValue:self.payInfoModel.ordersn forKey:@"ordersn"];
         [dic setValue:self.payInfoModel.original_price forKey:@"total_price"];
-        [dic setValue:self.payType forKey:@"payment_method"];
         [dic setValue:self.nameField.text forKey:@"payer_name"];
-        [dic setValue:self.phoneField.text forKey:@"payer_phone"];
         [dic setValue:self.idCardField.text forKey:@"citizen_id"];
-        [dic setValue:self.currentBankModel.code forKey:@"bank_code"];
+        [dic setValue:self.phoneField.text forKey:@"payer_phone"];
         [dic setValue:self.bankField.text forKey:@"bank_number"];
-        [dic setValue:@"pay_execute" forKey:@"apitype"];
-        [dic setValue:self.codeField.text forKey:@"execute_verifypo"];
-        [dic setValue:self.paymentumf_id forKey:@"paymentumf_id"];
+        [dic setValue:[RegisterModel getUserInfoModel].user_token forKey:@"api_token"];
         
-        if ([self.payType isEqualToString:@"CREDIT_CARD"]) {
-            [dic setValue:[NSString stringWithFormat:@"%@%@",self.yearStr,self.monthStr] forKey:@"bank_valid_date"];
-            [dic setValue:self.endNumField.text forKey:@"safe_code"];
-        }
-        NSLog(@"payDic:%@",dic);
-        
-        [FJNetTool postWithParams:dic url:Special_umf_pay loading:YES success:^(id responseObject) {
-            PaySuccessViewController *vc = [[PaySuccessViewController alloc]init];
-            [self.navigationController pushViewController:vc animated:YES];
+        [FJNetTool postWithParams:dic url:Special_juhe_pay loading:YES success:^(id responseObject) {
+            BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
+            if ([baseModel.code isEqualToString:CODE0]) {
+                FJWebViewController *vc = [[FJWebViewController alloc]init];
+                vc.url = baseModel.msg;
+                vc.ordersn = self.payInfoModel.ordersn;
+                [self.navigationController pushViewController:vc animated:YES];
+            }else{
+                [self.view showHUDWithText:baseModel.msg withYOffSet:0];
+            }
         } failure:^(NSError *error) {
             
         }];
     }
 }
--(void)showBankListView{
-    self.bankListView = [[BankCardListView alloc]initWithFrame:CGRectMake(0, kHeight_NavBar, kScreenWidth, kScreenHeight-kHeight_NavBar)];
-    
-    if ([self.payType isEqualToString:@""]) {
-        self.bankListView.bankArr = self.yinlianArr;
-    }else{
-        self.bankListView.bankArr = self.xinyongkaArr;
-    }
-    self.bankListView.delegate = self;
-    [self.bankListView show];
-    [self.view addSubview:self.bankListView];
-}
--(void)selectPayBank:(BankModel *)model{
-    self.currentBankModel = model;
-    [self.bankListView close];
-    [self.tableView reloadData];
-}
+//{
+//    "api_token" = 11a0c5ce1fe5d77ec30aa361b338da49;
+//    "bank_number" = 6257080018600105;
+//    "citizen_id" = 440202199808170918;
+//    "m_uid" = 40815;
+//    ordersn = OD164058991593;
+//    "payer_name" = "\U5f20\U4e09";
+//    "payer_phone" = 13511111111;
+//    "total_price" = "314.28";
+//}
+
+//-(void)payOrderClicked:(UIButton *)sender{
+//    if ([self checkInfoEmpty]) {
+//        NSMutableDictionary *dic = [[NSMutableDictionary alloc]init];
+//        [dic setValue:[UserInfoModel getUserInfoModel].member_id forKey:@"m_id"];
+//        [dic setValue:self.payInfoModel.uid forKey:@"order_id"];
+//        [dic setValue:self.payInfoModel.original_price forKey:@"total_price"];
+//        [dic setValue:self.payType forKey:@"payment_method"];
+//        [dic setValue:self.nameField.text forKey:@"payer_name"];
+//        [dic setValue:self.phoneField.text forKey:@"payer_phone"];
+//        [dic setValue:self.idCardField.text forKey:@"citizen_id"];
+//        [dic setValue:self.currentBankModel.code forKey:@"bank_code"];
+//        [dic setValue:self.bankField.text forKey:@"bank_number"];
+//        [dic setValue:@"pay_execute" forKey:@"apitype"];
+//        [dic setValue:self.codeField.text forKey:@"execute_verifypo"];
+//        [dic setValue:self.paymentumf_id forKey:@"paymentumf_id"];
+//
+//        if ([self.payType isEqualToString:@"CREDIT_CARD"]) {
+//            [dic setValue:[NSString stringWithFormat:@"%@%@",self.yearStr,self.monthStr] forKey:@"bank_valid_date"];
+//            [dic setValue:self.endNumField.text forKey:@"safe_code"];
+//        }
+//        NSLog(@"payDic:%@",dic);
+//
+//        [FJNetTool postWithParams:dic url:Special_umf_pay loading:YES success:^(id responseObject) {
+//            PaySuccessViewController *vc = [[PaySuccessViewController alloc]init];
+//            [self.navigationController pushViewController:vc animated:YES];
+//        } failure:^(NSError *error) {
+//
+//        }];
+//    }
+//}
+//-(void)showBankListView{
+//    self.bankListView = [[BankCardListView alloc]initWithFrame:CGRectMake(0, kHeight_NavBar, kScreenWidth, kScreenHeight-kHeight_NavBar)];
+//
+//    if ([self.payType isEqualToString:@""]) {
+//        self.bankListView.bankArr = self.yinlianArr;
+//    }else{
+//        self.bankListView.bankArr = self.xinyongkaArr;
+//    }
+//    self.bankListView.delegate = self;
+//    [self.bankListView show];
+//    [self.view addSubview:self.bankListView];
+//}
+//-(void)selectPayBank:(BankModel *)model{
+//    self.currentBankModel = model;
+//    [self.bankListView close];
+//    [self.tableView reloadData];
+//}
 
 -(BOOL)checkInfoEmpty{
     if (!self.nameField.text.length) {
@@ -193,68 +231,68 @@
 //        [self.view showHUDWithText:@"请填写完整信息" withYOffSet:0];
 //        return NO;
 //    }
-    if (![self.payType isEqualToString:@"DEBIT_CARD"]) {
-        if (!self.endNumField.text.length) {
-            return NO;
-        }
-    }
+//    if (![self.payType isEqualToString:@"DEBIT_CARD"]) {
+//        if (!self.endNumField.text.length) {
+//            return NO;
+//        }
+//    }
     
     return YES;
 }
 
--(void)updatePayType:(NSString *)payType{
-    self.payType = payType;
-    if ([payType isEqualToString:@"DEBIT_CARD"]) {
-        self.currentBankModel = [self.yinlianArr firstObject];
-        self.titleArr = @[@"订单编号",@"支付方式",@"姓名",@"电话",@"身份证号",@"支持银行",@"银行卡号",@"验证码"];
-        self.placeholderArr = @[@"",@"",@"请输入您的姓名",@"请输入电话号码",@"请输入身份证号",@"",@"请输入银行卡号",@"请输入验证码"];
-        
-    }else{
-        self.currentBankModel = [self.xinyongkaArr firstObject];
-        self.titleArr = @[@"订单编号",@"支付方式",@"姓名",@"电话",@"身份证号",@"信用卡",@"信用卡号",@"后四位码",@"有效年月",@"验证码"];
-        self.placeholderArr = @[@"",@"",@"请输入您的姓名",@"请输入电话号码",@"请输入身份证号",@"",@"请输入信用卡号",@"请输入后四位码",@"",@"请输入验证码"];
-    }
-    
-//    NSMutableArray *reloadArr = [[NSMutableArray alloc]init];
-//    for (int i = 0; i<1; i++) {
-//        NSIndexPath *path = [NSIndexPath indexPathForRow:i+5 inSection:0];
-//        [reloadArr addObject:path];
+//-(void)updatePayType:(NSString *)payType{
+//    self.payType = payType;
+//    if ([payType isEqualToString:@"DEBIT_CARD"]) {
+//        self.currentBankModel = [self.yinlianArr firstObject];
+//        self.titleArr = @[@"订单编号",@"支付方式",@"姓名",@"电话",@"身份证号",@"支持银行",@"银行卡号",@"验证码"];
+//        self.placeholderArr = @[@"",@"",@"请输入您的姓名",@"请输入电话号码",@"请输入身份证号",@"",@"请输入银行卡号",@"请输入验证码"];
+//
+//    }else{
+//        self.currentBankModel = [self.xinyongkaArr firstObject];
+//        self.titleArr = @[@"订单编号",@"支付方式",@"姓名",@"电话",@"身份证号",@"信用卡",@"信用卡号",@"后四位码",@"有效年月",@"验证码"];
+//        self.placeholderArr = @[@"",@"",@"请输入您的姓名",@"请输入电话号码",@"请输入身份证号",@"",@"请输入信用卡号",@"请输入后四位码",@"",@"请输入验证码"];
 //    }
+//
+////    NSMutableArray *reloadArr = [[NSMutableArray alloc]init];
+////    for (int i = 0; i<1; i++) {
+////        NSIndexPath *path = [NSIndexPath indexPathForRow:i+5 inSection:0];
+////        [reloadArr addObject:path];
+////    }
+//
+////    [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:5 inSection:0]] withRowAnimation:UITableViewRowAnimationNone];
+//    [self.tableView reloadData];
+//}
 
-//    [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:5 inSection:0]] withRowAnimation:UITableViewRowAnimationNone];
-    [self.tableView reloadData];
-}
+//-(void)changeYearClicked:(UIButton *)sender{
+//    self.dateView = [[PayYearOrMonthView alloc]initWithFrame:CGRectMake(0, kHeight_NavBar, kScreenWidth, kScreenHeight-kHeight_NavBar)];
+//    NSArray *yearsArr = @[@"21",@"22",@"23",@"24",@"25",@"26",@"27",@"28",@"29",@"30",@"31",@"32",@"33",@"34",@"45",@"36"];
+//    self.dateView.dateArr = yearsArr;
+//    self.dateView.type = @"year";
+//    self.dateView.delegate = self;
+//    [self.dateView show];
+//    [self.view addSubview:self.dateView];
+//}
 
--(void)changeYearClicked:(UIButton *)sender{
-    self.dateView = [[PayYearOrMonthView alloc]initWithFrame:CGRectMake(0, kHeight_NavBar, kScreenWidth, kScreenHeight-kHeight_NavBar)];
-    NSArray *yearsArr = @[@"21",@"22",@"23",@"24",@"25",@"26",@"27",@"28",@"29",@"30",@"31",@"32",@"33",@"34",@"45",@"36"];
-    self.dateView.dateArr = yearsArr;
-    self.dateView.type = @"year";
-    self.dateView.delegate = self;
-    [self.dateView show];
-    [self.view addSubview:self.dateView];
-}
+//-(void)selectPayDate:(NSString *)date Type:(NSString *)type{
+//    if ([type isEqualToString:@"year"]) {
+//        self.yearStr = date;
+//    }else{
+//        self.monthStr = date;
+//
+//    }
+//    [self.dateView close];
+//    [self.tableView reloadData];
+//}
 
--(void)selectPayDate:(NSString *)date Type:(NSString *)type{
-    if ([type isEqualToString:@"year"]) {
-        self.yearStr = date;
-    }else{
-        self.monthStr = date;
-        
-    }
-    [self.dateView close];
-    [self.tableView reloadData];
-}
-
--(void)changeMonthClicked:(UIButton *)sender{
-    self.dateView = [[PayYearOrMonthView alloc]initWithFrame:CGRectMake(0, kHeight_NavBar, kScreenWidth, kScreenHeight-kHeight_NavBar)];
-    NSArray *monthArr = @[@"01",@"02",@"03",@"04",@"05",@"06",@"07",@"08",@"09",@"10",@"11",@"12"];
-    self.dateView.dateArr = monthArr;
-    self.dateView.type = @"month";
-    self.dateView.delegate = self;
-    [self.dateView show];
-    [self.view addSubview:self.dateView];
-}
+//-(void)changeMonthClicked:(UIButton *)sender{
+//    self.dateView = [[PayYearOrMonthView alloc]initWithFrame:CGRectMake(0, kHeight_NavBar, kScreenWidth, kScreenHeight-kHeight_NavBar)];
+//    NSArray *monthArr = @[@"01",@"02",@"03",@"04",@"05",@"06",@"07",@"08",@"09",@"10",@"11",@"12"];
+//    self.dateView.dateArr = monthArr;
+//    self.dateView.type = @"month";
+//    self.dateView.delegate = self;
+//    [self.dateView show];
+//    [self.view addSubview:self.dateView];
+//}
 
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     PayInfoTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:NSStringFromClass([PayInfoTableViewCell class])];
@@ -279,66 +317,71 @@
     if (indexPath.row == 0) {
         cell.infoLab.hidden = NO;
         cell.infoLab.text = self.payInfoModel.ordersn;
-    }else if (indexPath.row == 1) {
-        cell.payType = self.payType;
-        cell.yinlianBtn.hidden = NO;
-        cell.xinYongkaBtn.hidden = NO;
-        cell.delegate = self;
-    }else if (indexPath.row == 2) {
+    }
+//    else if (indexPath.row == 1) {
+//        cell.payType = self.payType;
+//        cell.yinlianBtn.hidden = NO;
+//        cell.xinYongkaBtn.hidden = NO;
+//        cell.delegate = self;
+//    }
+    else if (indexPath.row == 1) {
         cell.infoTextField.hidden = NO;
         cell.infoTextField.text = self.nameField.text;
         self.nameField = cell.infoTextField;
-    }else if (indexPath.row == 3) {
+    }else if (indexPath.row == 2) {
         cell.infoTextField.hidden = NO;
         cell.infoTextField.text = self.phoneField.text;
         self.phoneField = cell.infoTextField;
-    }else if (indexPath.row == 4) {
+    }else if (indexPath.row == 3) {
         cell.infoTextField.hidden = NO;
         cell.infoTextField.text = self.idCardField.text;
         self.idCardField = cell.infoTextField;
-    }else if (indexPath.row == 5) {
-        cell.infoLab.hidden = NO;
-        cell.infoLab.text = self.currentBankModel.name_zh;
-    }else if (indexPath.row == 6) {
+    }
+//    else if (indexPath.row == 4) {
+//        cell.infoLab.hidden = NO;
+//        cell.infoLab.text = self.currentBankModel.name_zh;
+//    }
+    else if (indexPath.row == 4) {
         cell.infoTextField.hidden = NO;
         cell.infoTextField.text = self.bankField.text;
         self.bankField = cell.infoTextField;
-    }else{
-        //cell.infoTextField.text = @"";
-        if ([self.payType isEqualToString:@"DEBIT_CARD"]) {
-            if (indexPath.row == 7) {
-                cell.infoTextField.hidden = NO;
-                cell.getCodeBtn.hidden = NO;
-                cell.infoTextField.text = @"";
-                self.codeField = cell.infoTextField;
-                [cell.getCodeBtn addTarget:self action:@selector(getPayCodeClicked:) forControlEvents:UIControlEventTouchUpInside];
-            }
-        }else{
-            if (indexPath.row == 7) {
-                cell.infoTextField.hidden = NO;
-                cell.infoTextField.text = self.endNumField.text;
-                self.endNumField = cell.infoTextField;
-            }
-            if (indexPath.row == 8) {
-                cell.yearBtn.hidden = NO;
-                cell.yearLab.hidden = NO;
-                cell.monthBtn.hidden = NO;
-                cell.monthLab.hidden = NO;
-                [cell.yearBtn setTitle:self.yearStr forState:UIControlStateNormal];
-                [cell.monthBtn setTitle:self.monthStr forState:UIControlStateNormal];
-                [cell.yearBtn addTarget:self action:@selector(changeYearClicked:) forControlEvents:UIControlEventTouchUpInside];
-                [cell.monthBtn addTarget:self action:@selector(changeMonthClicked:) forControlEvents:UIControlEventTouchUpInside];
-                
-            }
-            if (indexPath.row == 9) {
-                cell.infoTextField.hidden = NO;
-                cell.getCodeBtn.hidden = NO;
-                cell.infoTextField.text = @"";
-                self.codeField = cell.infoTextField;
-                [cell.getCodeBtn addTarget:self action:@selector(getPayCodeClicked:) forControlEvents:UIControlEventTouchUpInside];
-            }
-        }
     }
+//    else{
+//        //cell.infoTextField.text = @"";
+//        if ([self.payType isEqualToString:@"DEBIT_CARD"]) {
+//            if (indexPath.row == 7) {
+//                cell.infoTextField.hidden = NO;
+//                cell.getCodeBtn.hidden = NO;
+//                cell.infoTextField.text = @"";
+//                self.codeField = cell.infoTextField;
+//                [cell.getCodeBtn addTarget:self action:@selector(getPayCodeClicked:) forControlEvents:UIControlEventTouchUpInside];
+//            }
+//        }else{
+//            if (indexPath.row == 7) {
+//                cell.infoTextField.hidden = NO;
+//                cell.infoTextField.text = self.endNumField.text;
+//                self.endNumField = cell.infoTextField;
+//            }
+//            if (indexPath.row == 8) {
+//                cell.yearBtn.hidden = NO;
+//                cell.yearLab.hidden = NO;
+//                cell.monthBtn.hidden = NO;
+//                cell.monthLab.hidden = NO;
+//                [cell.yearBtn setTitle:self.yearStr forState:UIControlStateNormal];
+//                [cell.monthBtn setTitle:self.monthStr forState:UIControlStateNormal];
+//                [cell.yearBtn addTarget:self action:@selector(changeYearClicked:) forControlEvents:UIControlEventTouchUpInside];
+//                [cell.monthBtn addTarget:self action:@selector(changeMonthClicked:) forControlEvents:UIControlEventTouchUpInside];
+//
+//            }
+//            if (indexPath.row == 9) {
+//                cell.infoTextField.hidden = NO;
+//                cell.getCodeBtn.hidden = NO;
+//                cell.infoTextField.text = @"";
+//                self.codeField = cell.infoTextField;
+//                [cell.getCodeBtn addTarget:self action:@selector(getPayCodeClicked:) forControlEvents:UIControlEventTouchUpInside];
+//            }
+//        }
+//    }
     
     
     
@@ -386,16 +429,16 @@
     headerV.backgroundColor = [ColorManager ColorF2F2F2];
     return headerV;
 }
--(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
-    if (indexPath.row == 5) {
-        [self showBankListView];
-    }
-}
+//-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+//    if (indexPath.row == 5) {
+//        [self showBankListView];
+//    }
+//}
 
--(void)scrollViewDidScroll:(UIScrollView *)scrollView{
-    [self.bankListView removeFromSuperview];
-    [self.dateView removeFromSuperview];
-}
+//-(void)scrollViewDidScroll:(UIScrollView *)scrollView{
+//    [self.bankListView removeFromSuperview];
+//    [self.dateView removeFromSuperview];
+//}
 
 /*
 #pragma mark - Navigation

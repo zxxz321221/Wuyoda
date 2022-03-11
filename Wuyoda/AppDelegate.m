@@ -6,6 +6,7 @@
 //
 
 #import "AppDelegate.h"
+#import "WelcomeViewController.h"
 
 @interface AppDelegate ()
 
@@ -20,11 +21,21 @@
     if (@available(iOS 13.0, *)) {
       
         } else {
-          
+            BOOL isFirst = [[NSUserDefaults standardUserDefaults]objectForKey:@"isFirst"];
+            
             self.window = [[UIWindow alloc]initWithFrame:[UIScreen mainScreen].bounds];
-            self.window.rootViewController = [[FJTabBarViewController alloc]init];
+            
             self.window.backgroundColor = [UIColor whiteColor];
+            
+            
+            if (isFirst) {
+                self.window.rootViewController = [[FJTabBarViewController alloc]init];
+            }else{
+                WelcomeViewController *vc = [[WelcomeViewController alloc]init];
+                self.window.rootViewController = vc;
+            }
             [self.window makeKeyAndVisible];
+            
             
         }
     

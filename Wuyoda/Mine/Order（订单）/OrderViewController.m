@@ -38,13 +38,31 @@
     [self loadUI];
     [self loadControllers];
     
-    UIViewController *willShowVC = self.controllers[0];
+    
     NSInteger tag = 0;
+    if ([self.type isEqualToString:@"2"]) {
+        tag = 1;
+    }else if ([self.type isEqualToString:@"3"]) {
+        tag = 2;
+    }
+    else if ([self.type isEqualToString:@"4"]) {
+        tag = 3;
+    }
+    UIViewController *willShowVC = self.controllers[tag];
     // 添加控制器的 view 到 contentScrollerView 中
     willShowVC.view.frame = CGRectMake(tag*kScreenWidth, 0, kScreenWidth, kScreenHeight - kHeight_NavBar - kWidth(50));
     [self.scrollView addSubview:willShowVC.view];
 
-  [self.scrollView setContentOffset:CGPointMake(tag*kScreenWidth, 0) animated:NO ];
+  [self.scrollView setContentOffset:CGPointMake(tag*kScreenWidth, 0) animated:NO];
+    for (int i = 0; i < self.headerTitleArr.count; i++) {
+        UIButton *btn = [self.view viewWithTag:i+1000];
+        btn.selected = NO;
+        if (i == tag) {
+            btn.selected = YES;
+            self.headerLine.frame = CGRectMake(btn.center.x-kWidth(20), kWidth(36), kWidth(40), kWidth(4));
+        }
+    }
+    
     
 }
 
@@ -102,6 +120,7 @@
     self.scrollView.delegate = self;
     self.scrollView.pagingEnabled=YES;
     self.scrollView.bounces=NO;
+    self.scrollView.backgroundColor = [ColorManager ColorF2F2F2];
     self.scrollView.showsHorizontalScrollIndicator = NO;
     //self.headView = [[AdvancedHeadView alloc] initWithFrame:CGRectMake(0, kHeight_StatusBar, kScreenWidth, kWidth(64))];
     //[self.view addSubview:self.headView];

@@ -6,12 +6,15 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "LogisticsModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface LogisticsTableViewCell : UITableViewCell
 
 @property (nonatomic , retain)UIView *line;
+
+@property (nonatomic , retain)LogisticsModel *model;
 
 @end
 

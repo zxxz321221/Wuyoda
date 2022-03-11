@@ -66,6 +66,7 @@
         [FJNetTool postWithParams:dic url:Login_sendVerify loading:YES success:^(id responseObject) {
             BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
             if ([baseModel.code isEqualToString:CODE0]) {
+                [self startTime];
                 [self.view showHUDWithText:@"验证码发送成功" withYOffSet:0];
                 [self.codeBtn setTitle:@"重新发送" forState:UIControlStateNormal];
             }else{
@@ -84,11 +85,14 @@
     if (!self.codeField.text.length || !self.phoneField.text.length || !self.emailField.text.length) {
         [self.view showHUDWithText:@"请填写完整信息" withYOffSet:0];
     }else{
-        NSDictionary *dic = @{@"m_uid":[UserInfoModel getUserInfoModel].member_id,@"email":self.emailField.text,@"code":self.codeField.text,@"api_token":[RegisterModel getUserInfoModel].user_token};
+        NSDictionary *dic = @{@"m_uid":[UserInfoModel getUserInfoModel].uid,@"email":self.emailField.text,@"code":self.codeField.text,@"api_token":[RegisterModel getUserInfoModel].user_token};
         
-        [FJNetTool postWithParams:dic url:Login_pass_save loading:YES success:^(id responseObject) {
+        [FJNetTool postWithParams:dic url:Login_email_save loading:YES success:^(id responseObject) {
             BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
             if ([baseModel.code isEqualToString:CODE0]) {
+                UserInfoModel*userInfo = [UserInfoModel getUserInfoModel];
+                userInfo.member_email = self.emailField.text;
+                [UserInfoModel saveUserInfoModel:userInfo];
                 [self.view showHUDWithText:@"修改邮箱成功" withYOffSet:0];
                 [self.navigationController popViewControllerAnimated:YES];
             }else{
@@ -162,6 +166,39 @@
 
     return [UIView new];
 }
+
+-(void)startTime{
+    __block int timeout=59; //倒计时时间
+    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+    dispatch_source_t _timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0,queue);
+    dispatch_source_set_timer(_timer,dispatch_walltime(NULL, 0),1.0*NSEC_PER_SEC, 0); //每秒执行
+    
+    dispatch_source_set_event_handler(_timer, ^{
+        if(timeout<=0){ //倒计时结束，关闭
+            dispatch_source_cancel(_timer);
+            dispatch_async(dispatch_get_main_queue(), ^{
+                //设置界面的按钮显示 根据自己需求设置（倒计时结束后调用）
+                [self.codeBtn setTitle:@"重新发送" forState:UIControlStateNormal];
+                //设置不可点击
+                self.codeBtn.userInteractionEnabled = YES;
+                
+            });
+        }else{
+            int seconds = timeout % 60;
+            NSString *strTime = [NSString stringWithFormat:@"%d", seconds];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                //设置界面的按钮显示 根据自己需求设置
+                [self.codeBtn setTitle:[NSString stringWithFormat:@"%@s",strTime] forState:UIControlStateNormal];
+                //设置可点击
+                self.codeBtn.userInteractionEnabled = NO;
+            });
+            timeout--;
+        }
+    });
+    
+    dispatch_resume(_timer);
+}
+
 
 /*
 #pragma mark - Navigation

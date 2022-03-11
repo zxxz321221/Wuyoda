@@ -251,6 +251,7 @@
             registerModel.user_id = userModel.member_id;
             registerModel.user_token = userModel.token;
             [RegisterModel saveUserInfoModel:registerModel];
+            [LoginUsersModel saveLoginUsers:userModel];
             
             [self dismissViewControllerAnimated:YES completion:nil];
         }else{
@@ -267,6 +268,12 @@
 
 
 -(void)appleLoginClicked{
+    
+    if (!self.agreementBtn.isSelected) {
+        [self.view showHUDWithText:@"请同意用户协议" withYOffSet:0];
+        return;
+    }
+    
     if (@available(iOS 13.0, *)) {
             
             ASAuthorizationAppleIDProvider *appleIDProvider = [[ASAuthorizationAppleIDProvider alloc] init];
@@ -302,6 +309,7 @@
             registerModel.user_id = userModel.member_id;
             registerModel.user_token = userModel.token;
             [RegisterModel saveUserInfoModel:registerModel];
+            [LoginUsersModel saveLoginUsers:userModel];
             
             [self dismissViewControllerAnimated:YES completion:nil];
         }else{
@@ -309,7 +317,7 @@
             //未绑定手机号
             ChangePhoneViewController *vc = [[ChangePhoneViewController alloc]init];
             vc.type = @"3";
-            vc.unionid = appleUser;
+            vc.appleCode = appleUser;
             [self.navigationController pushViewController:vc animated:YES];
         }
     } failure:^(NSError *error) {

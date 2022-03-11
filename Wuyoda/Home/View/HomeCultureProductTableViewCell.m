@@ -29,7 +29,7 @@
 -(void)createUI{
     self.leftImageV = [[UIImageView alloc]init];
     [self.leftImageV setImage:kGetImage(@"home_culturel_good1")];
-    self.leftImageV.backgroundColor = [ColorManager RandomColor];
+    self.leftImageV.backgroundColor = [ColorManager ColorF2F2F2];
     self.leftImageV.layer.cornerRadius = kWidth(5);
     self.leftImageV.layer.masksToBounds = YES;
     [self.contentView addSubview:self.leftImageV];
@@ -41,7 +41,7 @@
     
     self.rightTopImageV = [[UIImageView alloc]init];
     [self.rightTopImageV setImage:kGetImage(@"home_culturel_good2")];
-    self.rightTopImageV.backgroundColor = [ColorManager RandomColor];
+    self.rightTopImageV.backgroundColor = [ColorManager ColorF2F2F2];
     self.rightTopImageV.layer.cornerRadius = kWidth(5);
     self.rightTopImageV.layer.masksToBounds = YES;
     [self.contentView addSubview:self.rightTopImageV];
@@ -54,7 +54,7 @@
     
     self.rightBottomImageV = [[UIImageView alloc]init];
     [self.rightBottomImageV setImage:kGetImage(@"home_culturel_good3")];
-    self.rightBottomImageV.backgroundColor = [ColorManager RandomColor];
+    self.rightBottomImageV.backgroundColor = [ColorManager ColorF2F2F2];
     self.rightBottomImageV.layer.cornerRadius = kWidth(5);
     self.rightBottomImageV.layer.masksToBounds = YES;
     [self.contentView addSubview:self.rightBottomImageV];

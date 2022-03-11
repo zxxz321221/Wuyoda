@@ -18,3 +18,7 @@
 @implementation CityEventModel
 
 @end
+
+@implementation CityTripModel
+
+@end

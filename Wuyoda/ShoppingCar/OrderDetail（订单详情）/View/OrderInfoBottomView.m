@@ -142,6 +142,15 @@
 -(void)setType:(NSString *)type{
     //1.待付款 2.待收货 3.已完成 4.已取消
     _type = type;
+    self.buyAgainBtn.hidden = YES;
+    self.payBtn.hidden = YES;
+    self.addressBtn.hidden = YES;
+    self.cancelBtn.hidden = YES;
+    self.doneTakeBtn.hidden = YES;
+    self.readLogisticsBtn.hidden = YES;
+    self.finishEvaluateBtn.hidden = YES;
+    self.deleteBtn.hidden = YES;
+    
     if ([type isEqualToString:@"1"]) {
         self.buyAgainBtn.hidden = YES;
         self.payBtn.hidden = NO;
@@ -172,16 +181,16 @@
         self.finishEvaluateBtn.hidden = NO;
         self.deleteBtn.hidden = NO;
     }
-//    if ([type isEqualToString:@"4"]) {
-//        self.buyAgainBtn.hidden = NO;
-//        self.payBtn.hidden = YES;
-//        self.addressBtn.hidden = YES;
-//        self.cancelBtn.hidden = YES;
-//        self.doneTakeBtn.hidden = YES;
-//        self.readLogisticsBtn.hidden = YES;
-//        self.finishEvaluateBtn.hidden = YES;
-//        self.deleteBtn.hidden = YES;
-//    }
+    if ([type isEqualToString:@"4"]) {
+        self.buyAgainBtn.hidden = NO;
+        self.payBtn.hidden = YES;
+        self.addressBtn.hidden = YES;
+        self.cancelBtn.hidden = YES;
+        self.doneTakeBtn.hidden = YES;
+        self.readLogisticsBtn.hidden = YES;
+        self.finishEvaluateBtn.hidden = YES;
+        self.deleteBtn.hidden = YES;
+    }
 }
 
 /*

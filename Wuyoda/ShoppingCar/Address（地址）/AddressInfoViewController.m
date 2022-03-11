@@ -100,20 +100,31 @@
 }
 
 -(void)saveAddressClicked{
+    if (!self.nameField.text.length || !self.addressField.text.length || !self.numField.text.length || !self.phoneField.text.length || !self.idNumField || !self.realNameField.text.length || !self.front_id || !self.reverse_id) {
+        [self.view showHUDWithText:@"请填写完整信息" withYOffSet:0];
+        return;
+    }
+    
+    if (self.idNumField.text.length > 20) {
+        [self.view showHUDWithText:@"请输入正确身份证号" withYOffSet:0];
+        return;
+    }
+    
+    [SVProgressHUD show];
+    
     if ([self.type isEqualToString:@"2"]) {
         [self editAddressFromServer];
     }else{
-        self.front_id = kGetImage(@"手办礼品1");
-        self.reverse_id = kGetImage(@"手办礼品2");
+//        self.front_id = kGetImage(@"手办礼品1");
+//        self.reverse_id = kGetImage(@"手办礼品2");
         
         NSDictionary *dic = @{@"consignee":self.nameField.text,@"province":self.proStr,@"city":self.cityStr,@"county":self.areaStr,@"address":[NSString stringWithFormat:@"%@",self.numField.text],@"mobile":self.phoneField.text,@"m_uid":[UserInfoModel getUserInfoModel].uid,@"is_buy":[NSString stringWithFormat:@"%d",self.is_buy],@"name":self.realNameField.text,@"card":self.idNumField.text,@"api_token":[RegisterModel getUserInfoModel].user_token};
         
         AFHTTPSessionManager *sessionManager = [AFHTTPSessionManager manager];
         sessionManager.responseSerializer = [AFHTTPResponseSerializer serializer];
-
         [sessionManager.responseSerializer setAcceptableContentTypes:[NSSet setWithObjects:@"application/json", @"text/html", @"text/json", @"text/plain", @"text/javascript", @"text/xml", @"image/*", nil]];
         [sessionManager POST:[NSString stringWithFormat:@"%@%@",HTTP,Special_address_add] parameters:dic headers:nil constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
-            NSData *data =UIImagePNGRepresentation(self.front_id);//把要上传的图片转成NSData
+            NSData *data = [LCTools resetSizeOfImageData:self.front_id maxSize:1024*80];
 
             //把要上传的文件转成NSData
             //NSString*path=[[NSBundlemainBundle]pathForResource:@"123"ofType:@"txt"];
@@ -124,8 +135,7 @@
             
             
 
-            NSData *data2 =UIImagePNGRepresentation(self.reverse_id);//把要上传的图片转成NSData
-
+            NSData *data2 = [LCTools resetSizeOfImageData:self.reverse_id maxSize:1024*80];//把要上传的图片转成NSData
             //把要上传的文件转成NSData
             //NSString*path=[[NSBundlemainBundle]pathForResource:@"123"ofType:@"txt"];
 
@@ -136,9 +146,13 @@
             } progress:^(NSProgress * _Nonnull uploadProgress) {
                 
             } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+                [SVProgressHUD dismiss];
+                NSError *err;
+                
                 NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:responseObject
                                                                     options:NSJSONReadingMutableContainers
-                                                                      error:nil];
+                                                                      error:&err];
+                
                 BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:dic];
                 if ([baseModel.code isEqualToString:CODE0]) {
                     if (self.delegate && [self.delegate respondsToSelector:@selector(updateAddressInfo)]) {
@@ -146,10 +160,12 @@
                         [self.view showHUDWithText:@"保存成功" withYOffSet:0];
                         [self.navigationController popViewControllerAnimated:YES];
                     }
+                }else{
+                    [self.view showHUDWithText:baseModel.msg withYOffSet:0];
                 }
                 
             } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-                
+                [SVProgressHUD dismiss];
             }];
         
     //    [FJNetTool postWithParams:dic url:Special_address_add loading:YES success:^(id responseObject) {
@@ -168,8 +184,8 @@
 
 -(void)editAddressFromServer{
     
-    self.front_id = kGetImage(@"手办礼品1");
-    self.reverse_id = kGetImage(@"手办礼品2");
+//    self.front_id = kGetImage(@"手办礼品1");
+//    self.reverse_id = kGetImage(@"手办礼品2");
     
     NSDictionary *dic = @{@"consignee":self.nameField.text,@"province":self.proStr,@"city":self.cityStr,@"county":self.areaStr,@"address":[NSString stringWithFormat:@"%@",self.numField.text],@"mobile":self.phoneField.text,@"m_uid":[UserInfoModel getUserInfoModel].uid,@"is_buy":[NSString stringWithFormat:@"%d",self.is_buy],@"name":self.realNameField.text,@"card":self.idNumField.text,@"api_token":[RegisterModel getUserInfoModel].user_token,@"uid":self.addressModel.uid};
     
@@ -180,7 +196,7 @@
 
     [sessionManager.responseSerializer setAcceptableContentTypes:[NSSet setWithObjects:@"application/json", @"text/html", @"text/json", @"text/plain", @"text/javascript", @"text/xml", @"image/*", nil]];
     [sessionManager POST:[NSString stringWithFormat:@"%@%@",HTTP,Special_address_edit] parameters:dic headers:nil constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
-        NSData *data =UIImagePNGRepresentation(self.front_id);//把要上传的图片转成NSData
+        NSData *data = [LCTools resetSizeOfImageData:self.front_id maxSize:1024*80];
 
         //把要上传的文件转成NSData
         //NSString*path=[[NSBundlemainBundle]pathForResource:@"123"ofType:@"txt"];
@@ -191,7 +207,7 @@
         
         
 
-        NSData *data2 =UIImagePNGRepresentation(self.reverse_id);//把要上传的图片转成NSData
+        NSData *data2 = [LCTools resetSizeOfImageData:self.reverse_id maxSize:1024*80];//把要上传的图片转成NSData
 
         //把要上传的文件转成NSData
         //NSString*path=[[NSBundlemainBundle]pathForResource:@"123"ofType:@"txt"];
@@ -203,7 +219,7 @@
         } progress:^(NSProgress * _Nonnull uploadProgress) {
             
         } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-            
+            [SVProgressHUD dismiss];
             NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:responseObject
                                                                 options:NSJSONReadingMutableContainers
                                                                   error:nil];
@@ -214,10 +230,12 @@
                     [self.view showHUDWithText:@"修改成功" withYOffSet:0];
                     [self.navigationController popViewControllerAnimated:YES];
                 }
+            }else{
+                [self.view showHUDWithText:baseModel.msg withYOffSet:0];
             }
             
         } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-            
+            [SVProgressHUD dismiss];
         }];
 }
 
@@ -289,6 +307,25 @@
         self.realNameField.text = self.addressModel.name;
         self.idNumField.text = self.addressModel.card;
         self.is_buy = self.addressModel.is_buy;
+        if (!self.front_id) {
+            [self.footerV.identifierimgV1 sd_setImageWithURL:[NSURL URLWithString:self.addressModel.front_ID] placeholderImage:kGetImage(@"上传身份证正面") completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
+                if (!error) {
+                    NSData *imageData = UIImagePNGRepresentation(image);
+                    
+                    self.front_id = image;
+                }
+                        
+            }];
+        }
+        if (!self.reverse_id) {
+            [self.footerV.identifierimgV2 sd_setImageWithURL:[NSURL URLWithString:self.addressModel.reverse_ID] placeholderImage:kGetImage(@"上传身份证反面") completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
+                if (!error) {
+                    self.reverse_id = image;
+                }
+                        
+            }];
+        }
+        
     }
     
     return cell;
@@ -361,13 +398,17 @@
     
     if ([self.idCardType isEqualToString:@"1"]) {
         self.front_id = image;
-        [self.footerV.identifierBtn1 setImage:image forState:UIControlStateNormal];
+        [self.footerV.identifierimgV1 setImage:image];
     }else{
         self.reverse_id = image;
-        [self.footerV.identifierBtn2 setImage:image forState:UIControlStateNormal];
+        [self.footerV.identifierimgV2 setImage:image];
     }
-    [self.tableView reloadData];
+    //[self.tableView reloadData];
     
+}
+
+-(void)setAddressModel:(AddressModel *)addressModel{
+    _addressModel = addressModel;
 }
 /*
 #pragma mark - Navigation

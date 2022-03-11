@@ -46,7 +46,7 @@
     }];
     
     self.priceLab = [[UILabel alloc]init];
-    self.priceLab.text = @"￥0";
+    self.priceLab.text = @"￥0.00";
     self.priceLab.textColor = [UIColor redColor];
     self.priceLab.font = kFont(14);
     [self addSubview:self.priceLab];

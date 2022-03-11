@@ -6,10 +6,13 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "CityDetailModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface CityHistoryTableViewCell : UITableViewCell
+
+@property (nonatomic , retain)CityEventModel *model;
 
 @end
 

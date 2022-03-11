@@ -14,7 +14,7 @@
 #import "ProductDetailRecommendTableViewCell.h"
 #import "HomeModel.h"
 
-@interface ProductDetailViewController ()<UITableViewDelegate,UITableViewDataSource>
+@interface ProductDetailViewController ()<UITableViewDelegate,UITableViewDataSource,updateProductIntroduceDelegate>
 
 @property (nonatomic , retain)UITableView *tableView;
 
@@ -26,6 +26,8 @@
 
 @property (nonatomic , retain)NSMutableArray *shopArr;
 @property (nonatomic , retain)HomeShopModel *storeModel;
+
+@property (nonatomic , assign)CGFloat webH;
 
 @end
 
@@ -49,7 +51,7 @@
     [self.tableView registerClass:[ProductDetailRecommendTableViewCell class] forCellReuseIdentifier:NSStringFromClass([ProductDetailRecommendTableViewCell class])];
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.tableView.backgroundColor = [ColorManager ColorF7F7F7];
-    self.tableHeaderV = [[ProductDetailHeaderView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kWidth(633))];
+    self.tableHeaderV = [[ProductDetailHeaderView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kWidth(453))];
     self.tableView.tableHeaderView = self.tableHeaderV;
     
     [self.view addSubview:self.tableView];
@@ -57,10 +59,11 @@
     self.tableFooterV = [[ProductDetailFooterView alloc]initWithFrame:CGRectMake(0, kScreenHeight-kWidth(96)-kHeight_SafeArea, kScreenWidth, kWidth(96)+kHeight_SafeArea)];
     [self.view addSubview:self.tableFooterV];
     
-    self.labArr = [[NSMutableArray alloc]initWithObjects:@"5.0评分 · 好极了 · 172条评论",@"超赞商品",@"低价优势",@"安心购",@"传统工艺",@"上选品质",@"礼盒系列", nil];
-    self.tableHeaderV.labelArr = self.labArr;
+//    self.labArr = [[NSMutableArray alloc]initWithObjects:@"5.0评分 · 好极了 · 172条评论",@"超赞商品",@"低价优势",@"安心购",@"传统工艺",@"上选品质",@"礼盒系列", nil];
+//    self.tableHeaderV.labelArr = self.labArr;
     
-    self.sectionArr = [[NSMutableArray alloc]initWithObjects:@"商品介绍",@"客人评价",@"",@"其他好东西", nil];
+    //self.sectionArr = [[NSMutableArray alloc]initWithObjects:@"商品介绍",@"客人评价",@"",@"其他好东西", nil];
+    self.sectionArr = [[NSMutableArray alloc]initWithObjects:@"商品介绍",@"其他好东西", nil];
     
     [self getDataFromServer];
     
@@ -68,6 +71,9 @@
 
 -(void)getDataFromServer{
     NSDictionary *dic = @{@"uid":self.uid,@"supplier_id":self.supplier_id,@"api_token":[RegisterModel getUserInfoModel].user_token};
+    if ([CommonManager isLogin:self isPush:NO]) {
+        dic = @{@"uid":self.uid,@"supplier_id":self.supplier_id,@"m_uid":[UserInfoModel getUserInfoModel].uid,@"api_token":[RegisterModel getUserInfoModel].user_token};
+    }
     [FJNetTool postWithParams:dic url:Store_Detail loading:YES success:^(id responseObject) {
         BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
         if ([baseModel.code isEqualToString:CODE0]) {
@@ -84,8 +90,17 @@
     }];
 }
 
+-(void)updateProductInftoduceHeight:(CGFloat)height{
+    self.webH = height;
+    NSLog(@"webHHHHH:%f",height);
+    [self.tableView beginUpdates];
+    //[tableview.delegate tableView:tableViewheightForRowAtIndexPath:indexPath];
+    [self.tableView endUpdates];
+
+}
+
 -(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
-    return 4;
+    return 2;
 }
 
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
@@ -100,27 +115,29 @@
         }
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         cell.model = self.storeModel;
+        cell.delegate = self;
         
         return cell;
     }
-    else if (indexPath.section == 1) {
-        ProductDetailEvaluateTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:NSStringFromClass([ProductDetailEvaluateTableViewCell class]) forIndexPath:indexPath];
-        if (!cell) {
-            cell = [[ProductDetailEvaluateTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:NSStringFromClass([ProductDetailEvaluateTableViewCell class])];
-        }
-        cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        
-        return cell;
-    }
-    else if (indexPath.section == 2) {
-        ProductDetailServerTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:NSStringFromClass([ProductDetailServerTableViewCell class]) forIndexPath:indexPath];
-        if (!cell) {
-            cell = [[ProductDetailServerTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:NSStringFromClass([ProductDetailServerTableViewCell class])];
-        }
-        cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        
-        return cell;
-    }else{
+//    else if (indexPath.section == 1) {
+//        ProductDetailEvaluateTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:NSStringFromClass([ProductDetailEvaluateTableViewCell class]) forIndexPath:indexPath];
+//        if (!cell) {
+//            cell = [[ProductDetailEvaluateTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:NSStringFromClass([ProductDetailEvaluateTableViewCell class])];
+//        }
+//        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+//
+//        return cell;
+//    }
+//    else if (indexPath.section == 2) {
+//        ProductDetailServerTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:NSStringFromClass([ProductDetailServerTableViewCell class]) forIndexPath:indexPath];
+//        if (!cell) {
+//            cell = [[ProductDetailServerTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:NSStringFromClass([ProductDetailServerTableViewCell class])];
+//        }
+//        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+//
+//        return cell;
+//    }
+    else{
         ProductDetailRecommendTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:NSStringFromClass([ProductDetailRecommendTableViewCell class]) forIndexPath:indexPath];
         if (!cell) {
             cell = [[ProductDetailRecommendTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:NSStringFromClass([ProductDetailRecommendTableViewCell class])];
@@ -134,14 +151,16 @@
 
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
     if (indexPath.section == 0) {
-        CGFloat textH = [UILabel getHeightByWidth:kWidth(335) title:self.storeModel.goods_advance font:kFont(14)];
-        return kWidth(65)+textH;
+        //CGFloat textH = [UILabel getHeightByWidth:kWidth(335) title:self.storeModel.goods_advance font:kFont(14)];
+        return kWidth(25)+self.webH;
         //return kWidth(260);
-    }else if (indexPath.section == 1){
-        return kWidth(196);
-    }else if (indexPath.section == 2){
-        return kWidth(64);
-    }else{
+    }
+//    else if (indexPath.section == 1){
+//        return kWidth(196);
+//    }else if (indexPath.section == 2){
+//        return kWidth(64);
+//    }
+    else{
         return kWidth(233)*2+kWidth(24);
     }
 }

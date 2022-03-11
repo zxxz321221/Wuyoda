@@ -35,7 +35,7 @@
     
     UIView *headerV = [[UIView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kWidth(179))];
     headerV.backgroundColor = [ColorManager ColorF2F2F2];
-    UIImageView *logoImgV = [[UIImageView alloc]initWithImage:kGetImage(@"")];
+    UIImageView *logoImgV = [[UIImageView alloc]initWithImage:kGetImage(@"appLogo")];
     [headerV addSubview:logoImgV];
     [logoImgV mas_makeConstraints:^(MASConstraintMaker *make) {
         make.center.equalTo(headerV);
@@ -57,6 +57,11 @@
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     
     cell.titleLab.text = [self.titleArr objectAtIndex:indexPath.row];
+    if (indexPath.row == 0) {
+        cell.versionLab.text = [[[NSBundle mainBundle]infoDictionary] objectForKey:@"CFBundleShortVersionString"];
+    }else{
+        cell.versionLab.text = @"";
+    }
     
     return cell;
     
@@ -90,6 +95,18 @@
     return [UIView new];
 }
 
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    if (indexPath.row == 1) {
+        [self.view showHUDWithText:@"敬请期待" withYOffSet:0];
+    }
+    if (indexPath.row == 2) {
+        [[SDImageCache sharedImageCache] clearDiskOnCompletion:^{
+            [self.view showHUDWithText:@"清除缓存成功" withYOffSet:0];
+        }];
+
+        [[SDImageCache sharedImageCache] clearMemory];//可有可无
+    }
+}
 
 /*
 #pragma mark - Navigation

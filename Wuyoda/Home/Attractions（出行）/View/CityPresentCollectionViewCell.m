@@ -34,7 +34,7 @@
 
 -(void)createUI{
     self.imgV = [[UIImageView alloc]init];
-    self.imgV.backgroundColor = [ColorManager RandomColor];
+    self.imgV.backgroundColor = [ColorManager ColorF2F2F2];
     [self.contentView addSubview:self.imgV];
     [self.imgV mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.top.mas_offset(0);
@@ -95,8 +95,8 @@
     _footPrintmodel = footPrintmodel;
     
     [self.imgV sd_setImageWithURL:[NSURL URLWithString:footPrintmodel.goods.goods_file1]];
-    self.priceLab.text = [NSString stringWithFormat:@"￥%@",footPrintmodel.goods.goods_sale_price];
-    NSMutableAttributedString *oldPrice = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"￥%@",footPrintmodel.goods.goods_sale_price_org]];
+    self.priceLab.text = [NSString stringWithFormat:@"%@%@",[CommonManager getPriceType:footPrintmodel.goods.money_type],footPrintmodel.goods.price];
+    NSMutableAttributedString *oldPrice = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@%@",[CommonManager getPriceType:footPrintmodel.goods.money_type],footPrintmodel.goods.goods_market_price_org]];
     [oldPrice addAttribute:NSStrikethroughStyleAttributeName value:@(NSUnderlinePatternSolid | NSUnderlineStyleSingle) range:NSMakeRange(0, oldPrice.length)];
     self.oldPriceLab.attributedText = oldPrice;
     

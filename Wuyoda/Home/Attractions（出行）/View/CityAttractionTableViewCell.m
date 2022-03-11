@@ -29,7 +29,7 @@
 
 -(void)createUI{
     self.imgV = [[UIImageView alloc]init];
-    self.imgV.backgroundColor = [ColorManager RandomColor];
+    self.imgV.backgroundColor = [ColorManager ColorF2F2F2];
     self.imgV.layer.cornerRadius = kWidth(5);
     [self.contentView addSubview:self.imgV];
     [self.imgV mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -39,7 +39,7 @@
     }];
     
     self.nameLab = [[UILabel alloc]init];
-    self.nameLab.text = @"逢甲夜市";
+    //self.nameLab.text = @"逢甲夜市";
     self.nameLab.textColor = [ColorManager Color333333];
     self.nameLab.font = kBoldFont(14);
     [self.contentView addSubview:self.nameLab];
@@ -49,7 +49,7 @@
     }];
     
     self.introLab = [[UILabel alloc]init];
-    self.introLab.text = @"湿地面积不大，包含潮溪、沼泽、沙滩、碎石、泥滩等丰富且复杂的湿地生态。生物物种差异度极高，是各种底栖生物、鱼贝类、鸟类、水禽类栖息的最佳场所。高美湿地是著名的观...";
+    //self.introLab.text = @"湿地面积不大，包含潮溪、沼泽、沙滩、碎石、泥滩等丰富且复杂的湿地生态。生物物种差异度极高，是各种底栖生物、鱼贝类、鸟类、水禽类栖息的最佳场所。高美湿地是著名的观...";
     self.introLab.textColor = [ColorManager Color333333];
     self.introLab.font = kFont(12);
     self.introLab.numberOfLines = 4;
@@ -65,7 +65,7 @@
 -(void)setModel:(AttractionModel *)model{
     [self.imgV sd_setImageWithURL:[NSURL URLWithString:model.cover]];
     self.nameLab.text = model.scenic_title;
-    self.introLab.text = model.scenic_content;
+    self.introLab.text = model.scenic_brief;
 }
 
 - (void)awakeFromNib {

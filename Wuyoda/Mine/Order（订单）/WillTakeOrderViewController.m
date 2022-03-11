@@ -146,7 +146,11 @@
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
 
-    return kWidth(206);
+    OrderListModel *listModel = [self.ordersArr objectAtIndex:indexPath.row];
+    NSDictionary *orderGoodDic = listModel.order_goods;
+    NSArray *allKey = orderGoodDic.allKeys;
+    
+    return kWidth(117)+kWidth(89)*allKey.count;
 }
 
 -(CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section{

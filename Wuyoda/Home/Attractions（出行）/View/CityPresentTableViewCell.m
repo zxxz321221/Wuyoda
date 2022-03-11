@@ -57,6 +57,11 @@
     return self.goodsArr.count;
 }
 
+- (void)setGoodsArr:(NSArray *)goodsArr{
+    _goodsArr = goodsArr;
+    [self.collectionV reloadData];
+}
+
 - (void)awakeFromNib {
     [super awakeFromNib];
     // Initialization code

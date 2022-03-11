@@ -7,11 +7,10 @@
 
 #import "AttractionDetailIntroTableViewCell.h"
 
-@interface AttractionDetailIntroTableViewCell ()
+@interface AttractionDetailIntroTableViewCell ()<WKUIDelegate,WKNavigationDelegate>
 
-@property (nonatomic , retain)UILabel *introLab;
-
-@property (nonatomic , retain)UIButton *moreBtn;
+@property (nonatomic , assign)CGFloat webH;
+@property (nonatomic , assign)BOOL webFinish;
 
 @end
 
@@ -26,36 +25,65 @@
 }
 
 -(void)createUI{
-    self.introLab = [[UILabel alloc]init];
-    self.introLab.text = @"浴场观看观海智慧步道、越野区、自然生态区等不同的休憩区；所以游客如织，即使是海水浴场不开放的季节，到此的游客亦不在身边。道路及峻伟的旗后山。\n尤其是每到傍晚时分，太阳当娱乐斜挂、彩空时，带着一波的浪花拍打着沙的乐音，情侣们谈情说爱及情趣等的浪漫地点。喜欢动力风筝的人就在此，还有游客在此落日余晖或远眺海上的船只。注意：旗津海水浴场有固定的戏水安全区域，请游客前往戏水时应先了解安全区域的规定，请勿在安全范围外的戏水范围内。";
-    self.introLab.textColor= [ColorManager BlackColor];
-    self.introLab.font = kFont(14);
-    self.introLab.numberOfLines = 0;
-    self.introLab.lineBreakMode = NSLineBreakByCharWrapping;
-    [self.contentView addSubview:self.introLab];
-    [self.introLab mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_offset(kWidth(20));
-        make.right.mas_offset(kWidth(-20));
-        make.top.mas_offset(kWidth(5));
-    }];
     
-    self.moreBtn = [[UIButton alloc]init];
-    [self.moreBtn setTitle:@"查看更多" forState:UIControlStateNormal];
-    [self.moreBtn setTitleColor:[ColorManager MainColor] forState:UIControlStateNormal];
-    self.moreBtn.titleLabel.font = kFont(14);
-    [self.contentView addSubview:self.moreBtn];
-    [self.moreBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_offset(kWidth(20));
-        make.bottom.mas_offset(-20);
-        make.width.mas_offset(kWidth(70));
-        make.height.mas_offset(kWidth(20));
-    }];
+    NSString *jScript = @"var meta = document.createElement('meta'); meta.setAttribute('name', 'viewport'); meta.setAttribute('content', 'width=device-width'); document.getElementsByTagName('head')[0].appendChild(meta);";
+            
+            WKUserScript *wkUScript = [[WKUserScript alloc] initWithSource:jScript injectionTime:WKUserScriptInjectionTimeAtDocumentEnd forMainFrameOnly:YES];
+            WKUserContentController *wkUController = [[WKUserContentController alloc] init];
+            [wkUController addUserScript:wkUScript];
+            
+            WKWebViewConfiguration *wkWebConfig = [[WKWebViewConfiguration alloc] init];
+            wkWebConfig.userContentController = wkUController;
+    
+    self.webView = [[WKWebView alloc] initWithFrame:CGRectZero configuration:wkWebConfig];
+    self.webView.navigationDelegate = self;
+    self.webView.UIDelegate = self;
+    self.webView.opaque = NO;
+    self.webView.multipleTouchEnabled = YES;
+    self.webView.scrollView.scrollEnabled = NO;
+    [self.webView.scrollView addObserver:self forKeyPath:@"contentSize" options:NSKeyValueObservingOptionNew context:nil];
+    //self.webView.backgroundColor = [UIColor redColor];
+    [self.contentView addSubview:self.webView];
+    
+    self.webFinish = NO;
 }
 
 -(void)setModel:(AttractionModel *)model{
     _model = model;
-    self.introLab.text = model.scenic_content;
+    if (model.scenic_content.length) {
+        NSString *headerString = @"<header><meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no'></header>";
+            [self.webView loadHTMLString:[headerString stringByAppendingString:model.scenic_content] baseURL:nil];
+    }
 }
+
+-(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context{
+    UIScrollView *scrollView = object;
+        //NSLog(@"%@", @(scrollView.contentOffset));
+    if (scrollView.contentOffset.y < 0 ) {
+        self.webFinish = YES;
+    }
+    if ([keyPath isEqualToString:@"contentSize"]) {
+        
+        CGFloat height = scrollView.contentSize.height;
+        NSInteger heightInt = height;
+        NSInteger currentH = self.webH;
+        if (heightInt-30 != currentH && !self.webFinish) {
+            NSLog(@"新闻加载完成网页高度：%ld--%ld",heightInt,currentH);
+            self.webH = height;
+//            self.webView.frame = CGRectMake(kWidth(20), kWidth(5), kScreenWidth-kWidth(40), height+30);
+//            if (self.delegate && [self.delegate respondsToSelector:@selector(updateProductInftoduceHeight:)]) {
+//                [self.delegate updateProductInftoduceHeight:height+30];
+//            }
+            self.webView.frame = CGRectMake(kWidth(20), kWidth(5), kScreenWidth-kWidth(40), height+30);
+            if (self.delegate && [self.delegate respondsToSelector:@selector(updateScenicInftoduceHeight:)]) {
+                [self.delegate updateScenicInftoduceHeight:height+30];
+            }
+
+        }
+        
+    }
+}
+
 
 - (void)awakeFromNib {
     [super awakeFromNib];

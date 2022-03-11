@@ -6,14 +6,20 @@
 //
 
 #import "AttractionDetailHeaderView.h"
+#import "BannerModel.h"
+#import "BannerImageView.h"
 
-@interface AttractionDetailHeaderView ()
+@interface AttractionDetailHeaderView ()<SDCycleScrollViewDelegate>
 
-@property (nonatomic , retain)UIScrollView *scrollV;
-@property (nonatomic , retain)UIImageView *attractionImgV;
+//@property (nonatomic , retain)UIScrollView *scrollV;
+//@property (nonatomic , retain)UIImageView *attractionImgV;
 @property (nonatomic , retain)UILabel *titleLab;
 @property (nonatomic , retain)UILabel *priceLab;
 @property (nonatomic , retain)UIView *tagsBGV;
+
+@property (nonatomic , retain)NSArray *bannerArr;
+@property (nonatomic, strong) UIView *bannerBGView;
+@property (nonatomic, strong) SDCycleScrollView *banner;
 
 @end
 
@@ -31,9 +37,14 @@
 -(void)createUI{
     self.backgroundColor = [ColorManager WhiteColor];
     
-    self.scrollV = [[UIScrollView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kWidth(330))];
-    self.scrollV.pagingEnabled = YES;
-    [self addSubview:self.scrollV];
+//    self.scrollV = [[UIScrollView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kWidth(330))];
+//    self.scrollV.pagingEnabled = YES;
+//    [self addSubview:self.scrollV];
+    
+    self.bannerBGView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, kWidth(330))];
+    [self addSubview:self.bannerBGView];
+    
+
     
 //    self.attractionImgV = [[UIImageView alloc]init];
 //    self.attractionImgV.backgroundColor = [ColorManager RandomColor];
@@ -64,7 +75,7 @@
     }];
     
     self.titleLab = [[UILabel alloc]init];
-    self.titleLab.text = @"旗津海水浴场周边3日游";
+    //self.titleLab.text = @"旗津海水浴场周边3日游";
     self.titleLab.textColor = [ColorManager BlackColor];
     self.titleLab.font = kBoldFont(18);
     [self addSubview:self.titleLab];
@@ -74,35 +85,35 @@
         make.top.mas_offset(kWidth(347));
     }];
     
-    self.priceLab = [[UILabel alloc]init];
-    self.priceLab.text = @"市场价门票：￥299";
-    self.priceLab.textColor = [ColorManager MainColor];
-    self.priceLab.font = kFont(16);
-    [self addSubview:self.priceLab];
-    [self.priceLab mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_offset(kWidth(20));
-        make.right.mas_offset(kWidth(-20));
-        make.top.equalTo(self.titleLab.mas_bottom).mas_offset(kWidth(9));
-    }];
+//    self.priceLab = [[UILabel alloc]init];
+//    self.priceLab.text = @"市场价门票：￥299";
+//    self.priceLab.textColor = [ColorManager MainColor];
+//    self.priceLab.font = kFont(16);
+//    [self addSubview:self.priceLab];
+//    [self.priceLab mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.left.mas_offset(kWidth(20));
+//        make.right.mas_offset(kWidth(-20));
+//        make.top.equalTo(self.titleLab.mas_bottom).mas_offset(kWidth(9));
+//    }];
+//
+//    self.tagsBGV = [[UIView alloc]init];
+//    [self addSubview:self.tagsBGV];
+//    [self.tagsBGV mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.left.mas_offset(kWidth(20));
+//        make.right.mas_offset(kWidth(-20));
+//        make.top.equalTo(self.priceLab.mas_bottom).mas_offset(kWidth(16));
+//        make.height.mas_offset(1);
+//    }];
+//
+//    UIView *line = [[UIView alloc] init];
+//    line.backgroundColor = [ColorManager ColorF7F7F7];
+//    [self addSubview:line];
+//    [line mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.left.right.top.equalTo(self);
+//        make.height.mas_offset(kWidth(1));
+//    }];
     
-    self.tagsBGV = [[UIView alloc]init];
-    [self addSubview:self.tagsBGV];
-    [self.tagsBGV mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_offset(kWidth(20));
-        make.right.mas_offset(kWidth(-20));
-        make.top.equalTo(self.priceLab.mas_bottom).mas_offset(kWidth(16));
-        make.height.mas_offset(1);
-    }];
-    
-    UIView *line = [[UIView alloc] init];
-    line.backgroundColor = [ColorManager ColorF7F7F7];
-    [self addSubview:line];
-    [line mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.right.top.equalTo(self);
-        make.height.mas_offset(kWidth(1));
-    }];
-    
-    self.tagsArr = [[NSMutableArray alloc]initWithObjects:@"热门景点",@"低价优势", nil];
+    //self.tagsArr = [[NSMutableArray alloc]initWithObjects:@"热门景点",@"低价优势", nil];
 }
 
 -(void)closeClicked{
@@ -110,7 +121,7 @@
 }
 
 -(void)shareClicked:(UIButton *)sender{
-    
+    [self showHUDWithText:@"敬请期待" withYOffSet:0];
 }
 
 -(void)setTagsArr:(NSMutableArray *)tagsArr{
@@ -152,12 +163,47 @@
 -(void)setModel:(AttractionModel *)model{
     _model = model;
     self.titleLab.text = model.scenic_title;
-    self.scrollV.contentSize = CGSizeMake(kScreenWidth, 0);
-    UIImageView *attractionImgV = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kWidth(330))];
-    attractionImgV.backgroundColor = [ColorManager RandomColor];
-    [attractionImgV sd_setImageWithURL:[NSURL URLWithString:model.cover]];
-    [self.scrollV addSubview:attractionImgV];
-    self.priceLab.text = [NSString stringWithFormat:@"市场价门票：￥%@",model.scenic_price];
+    self.bannerArr = [BannerModel mj_objectArrayWithKeyValuesArray:model.scenic_file];
+//    self.scrollV.contentSize = CGSizeMake(kScreenWidth, 0);
+//    UIImageView *attractionImgV = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kWidth(330))];
+//    attractionImgV.backgroundColor = [ColorManager RandomColor];
+//    [attractionImgV sd_setImageWithURL:[NSURL URLWithString:model.cover]];
+//    [self.scrollV addSubview:attractionImgV];
+//    self.priceLab.text = [NSString stringWithFormat:@"市场价门票：￥%@",model.scenic_price];
+}
+
+-(void)setBannerArr:(NSArray *)bannerArr{
+    _bannerArr = bannerArr;
+    NSMutableArray *picArr = [NSMutableArray array];
+//    [picArr addObjectsFromArray:bannerArr];
+    for (BannerModel *model in bannerArr) {
+        [picArr addObject:model.thumb];
+    }
+    self.banner = [SDCycleScrollView cycleScrollViewWithFrame:self.bannerBGView.bounds imageNamesGroup:picArr];
+    self.banner.delegate = self;
+    self.banner.autoScrollTimeInterval = 3;
+    self.banner.showPageControl = NO;
+//    self.banner.pageControlStyle = SDCycleScrollViewPageContolStyleAnimated;
+//    self.banner.pageControlBottomOffset = kWidth(10);
+//    self.banner.pageControlAliment = SDCycleScrollViewPageContolAlimentRight;
+//    self.banner.pageDotImage = kGetImage(@"Home_pageNoSe");
+//    self.banner.currentPageDotImage = kGetImage(@"Home_pageSe");
+    self.banner.spacingBetweenDots = kWidth(5);
+    self.banner.pageControlDotSize = CGSizeMake(kWidth(10), kWidth(5));
+    self.banner.backgroundColor = [UIColor whiteColor];
+    self.banner.placeholderImage = kGetImage(@"发现长条占位图");
+    self.banner.bannerImageViewContentMode = UIViewContentModeScaleAspectFill;
+    self.banner.clipsToBounds = YES;
+    [self.bannerBGView addSubview:self.banner];
+}
+
+#pragma mark - banner delegate
+- (void)cycleScrollView:(SDCycleScrollView *)cycleScrollView didSelectItemAtIndex:(NSInteger)index {
+    NSLog(@"轮播图点击%ld",index);
+    BannerImageView *bannerImgV = [[BannerImageView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kScreenHeight)];
+    bannerImgV.bannerArr= self.bannerArr;
+    bannerImgV.currentPage = index;
+    [self.CurrentViewController.navigationController.view addSubview:bannerImgV];
 }
 
 //-(void)setAttractionName:(NSString *)attractionName{

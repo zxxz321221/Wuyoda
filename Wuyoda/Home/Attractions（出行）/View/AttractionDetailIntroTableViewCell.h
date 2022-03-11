@@ -7,12 +7,23 @@
 
 #import <UIKit/UIKit.h>
 #import "AttractionModel.h"
+#import <WebKit/WebKit.h>
+
+@protocol updateScenicIntroduceDelegate <NSObject>
+
+-(void)updateScenicInftoduceHeight:(CGFloat)height;
+
+@end
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface AttractionDetailIntroTableViewCell : UITableViewCell
 
 @property (nonatomic , retain)AttractionModel *model;
+
+@property (nonatomic , retain)WKWebView *webView;
+
+@property (nonatomic , weak)id <updateScenicIntroduceDelegate>delegate;
 
 @end
 

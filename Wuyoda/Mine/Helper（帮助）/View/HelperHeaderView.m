@@ -48,6 +48,7 @@
     connectBtn.layer.cornerRadius = kWidth(5);
     connectBtn.layer.borderColor = [ColorManager WhiteColor].CGColor;
     connectBtn.layer.borderWidth = kWidth(1);
+    [connectBtn addTarget:self action:@selector(connectServiceClicked:) forControlEvents:UIControlEventTouchUpInside];
     [self addSubview:connectBtn];
     [connectBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_offset(kWidth(12));
@@ -55,6 +56,10 @@
         make.width.mas_offset(kWidth(70));
         make.height.mas_offset(kWidth(25));
     }];
+}
+
+-(void)connectServiceClicked:(id)sender{
+    [self showHUDWithText:@"敬请期待" withYOffSet:0];
 }
 
 /*

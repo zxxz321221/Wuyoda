@@ -41,8 +41,17 @@
         make.top.equalTo(titleLab.mas_bottom).mas_offset(kWidth(11));
     }];
     
+    self.identifierimgV1 = [[UIImageView alloc]initWithImage:kGetImage(@"上传身份证正面")];
+    [self addSubview:self.identifierimgV1];
+    [self.identifierimgV1 mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_offset(kWidth(24));
+        make.top.equalTo(tipLab.mas_bottom).mas_offset(kWidth(17));
+        make.width.mas_offset(kWidth(145));
+        make.height.mas_offset(kWidth(86));
+    }];
+    
     self.identifierBtn1 = [[UIButton alloc]init];
-    [self.identifierBtn1 setImage:kGetImage(@"上传身份证正面") forState:UIControlStateNormal];
+    //[self.identifierBtn1 setImage:kGetImage(@"上传身份证正面") forState:UIControlStateNormal];
     [self addSubview:self.identifierBtn1];
     [self.identifierBtn1 mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_offset(kWidth(24));
@@ -51,8 +60,16 @@
         make.height.mas_offset(kWidth(86));
     }];
     
+    self.identifierimgV2 = [[UIImageView alloc]initWithImage:kGetImage(@"上传身份证反面")];
+    [self addSubview:self.identifierimgV2];
+    [self.identifierimgV2 mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.right.mas_offset(kWidth(-24));
+        make.top.equalTo(tipLab.mas_bottom).mas_offset(kWidth(17));
+        make.width.mas_offset(kWidth(145));
+        make.height.mas_offset(kWidth(86));
+    }];
+    
     self.identifierBtn2 = [[UIButton alloc]init];
-    [self.identifierBtn2 setImage:kGetImage(@"上传身份证反面") forState:UIControlStateNormal];
     [self addSubview:self.identifierBtn2];
     [self.identifierBtn2 mas_makeConstraints:^(MASConstraintMaker *make) {
         make.right.mas_offset(kWidth(-24));

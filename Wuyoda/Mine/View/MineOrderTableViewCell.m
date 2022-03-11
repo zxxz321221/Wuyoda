@@ -8,6 +8,7 @@
 #import "MineOrderTableViewCell.h"
 #import "MineOrderCollectionViewCell.h"
 #import "SecurityCenterViewController.h"
+#import "FootprintViewController.h"
 #import "OrderViewController.h"
 #import "HelperViewController.h"
 
@@ -76,15 +77,24 @@
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
+    
+    if (![CommonManager isLogin:self.CurrentViewController isPush:YES]) {
+        return;
+    }
+    
     if (indexPath.row == 0) {
         OrderViewController *vc = [[OrderViewController alloc]init];
         [self.CurrentViewController.navigationController pushViewController:vc animated:YES];
     }
     if (indexPath.row == 1) {
-        
+        OrderViewController *vc = [[OrderViewController alloc]init];
+        vc.type = @"4";
+        [self.CurrentViewController.navigationController pushViewController:vc animated:YES];
     }
     if (indexPath.row == 2) {
-        
+        OrderViewController *vc = [[OrderViewController alloc]init];
+        vc.type = @"2";
+        [self.CurrentViewController.navigationController pushViewController:vc animated:YES];
     }
     if (indexPath.row == 3) {
         SecurityCenterViewController *vc = [[SecurityCenterViewController alloc]init];
@@ -95,7 +105,8 @@
         [self.CurrentViewController.navigationController pushViewController:vc animated:YES];
     }
     if (indexPath.row == 5) {
-        
+        FootprintViewController *vc = [[FootprintViewController alloc]init];
+        [self.CurrentViewController.navigationController pushViewController:vc animated:YES];
     }
 }
 

@@ -54,7 +54,7 @@
 
 -(void)doneClicked{
     if (self.cancelType.length) {
-        NSDictionary *dic = @{@"m_id":[UserInfoModel getUserInfoModel].member_id,@"uid":self.uid,@"cancel":self.cancelType};
+        NSDictionary *dic = @{@"m_id":[UserInfoModel getUserInfoModel].member_id,@"uid":self.uid,@"cancel":self.cancelType,@"api_token":[RegisterModel getUserInfoModel].user_token};
         [FJNetTool postWithParams:dic url:Special_cancel_order loading:YES success:^(id responseObject) {
             BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
             if ([baseModel.code isEqualToString:CODE0]) {

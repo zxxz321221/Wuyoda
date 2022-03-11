@@ -234,8 +234,9 @@
 }
 
 -(void)toMyWishAttractionClicked:(id)sender{
-    WishAttractionViewController *vc = [[WishAttractionViewController alloc]init];
-    [self.navigationController pushViewController:vc animated:YES];
+    [self.view showHUDWithText:@"敬请期待" withYOffSet:0];
+//    WishAttractionViewController *vc = [[WishAttractionViewController alloc]init];
+//    [self.navigationController pushViewController:vc animated:YES];
 }
 -(void)toMyFootPrintClicked:(id)sender{
     FootprintViewController *vc = [[FootprintViewController alloc]init];
@@ -336,12 +337,29 @@
         }
         [self.wishArr replaceObjectAtIndex:indexPath.row withObject:model];
         [self.tableView reloadData];
+        BOOL isAll = YES;
+        for (WishModel *model in self.wishArr) {
+            if (![model.isSelect isEqualToString:@"1"]) {
+                isAll = NO;
+                break;
+            }
+        }
+        if (isAll) {
+            self.bottomV.selectBtn.selected = YES;
+        }else{
+            self.bottomV.selectBtn.selected = NO;
+        }
     }else{
         WishModel *wishModel = [self.wishArr objectAtIndex:indexPath.row];
-        ProductDetailViewController *vc = [[ProductDetailViewController alloc]init];
-        vc.uid = wishModel.m_uid;
-        vc.supplier_id = wishModel.supplier_id;
-        [self.navigationController pushViewController:vc animated:YES];
+        if ([wishModel.isup isEqualToString:@"1"]) {
+            ProductDetailViewController *vc = [[ProductDetailViewController alloc]init];
+            vc.uid = wishModel.f_uid;
+            vc.supplier_id = wishModel.supplier_id;
+            [self.navigationController pushViewController:vc animated:YES];
+        }else{
+            [self.view showHUDWithText:@"商品已下架" withYOffSet:0];
+        }
+        
     }
 }
 

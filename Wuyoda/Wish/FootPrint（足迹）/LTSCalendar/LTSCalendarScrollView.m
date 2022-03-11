@@ -17,6 +17,7 @@
 #define CellIdentifier @"CellIdentifier"
 #import "CityPresentCollectionViewCell.h"
 #import "ShoppingCarBottomView.h"
+#import "ProductDetailViewController.h"
 @interface LTSCalendarScrollView()<UICollectionViewDelegate,UICollectionViewDataSource,FootHeaderDelegate>
 {
     BOOL status;//yes 编辑状态  no取消编辑
@@ -105,6 +106,7 @@
                     withReuseIdentifier:@"CollectionViewHeaderView"];
     [self.collectionView registerClass:[FootCollectionReusableView class] forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:@"foot"];
     [self addSubview:self.collectionView];
+    [self requestFootData:page Type:@"up"];
     
 //    self.collectionView.mj_header = [MJRefreshNormalHeader headerWithRefreshingBlock:^{
 //        page = 1;
@@ -135,6 +137,7 @@
     [self.bottomV.selectBtn addTarget:self action:@selector(selectedAllClicked:) forControlEvents:UIControlEventTouchUpInside];
     [self.bottomV.likeBtn addTarget:self action:@selector(likeGoodsClicked:) forControlEvents:UIControlEventTouchUpInside];
     [self.bottomV.deleteBtn addTarget:self action:@selector(deleteGoodsClicked:) forControlEvents:UIControlEventTouchUpInside];
+    self.bottomV.hidden = YES;
     self.bottomV.likeBtn.hidden = NO;
     self.bottomV.deleteBtn.hidden = NO;
     self.bottomV.cleaningBtn.hidden = YES;
@@ -199,20 +202,25 @@
 -(void)likeGoodsClicked:(UIButton *)sender{
     
     NSString *cartIDStr = @"";
+    BOOL hasDown = NO;
     for (int i = 0; i<self.goodsArr.count; i++) {
         
         NSArray *sectionGoodsArr = [self.goodsArr objectAtIndex:i];
         for (int j = 0; j<sectionGoodsArr.count; j++) {
             FootPrintModel *model = [sectionGoodsArr objectAtIndex:j];
             if ([model.isSelect isEqualToString:@"1"]) {
-                if (!cartIDStr.length) {
-                    cartIDStr = model.ID;
+                if ([model.goods.isup isEqualToString:@"1"]) {
+                    if (!cartIDStr.length) {
+                        cartIDStr = model.ID;
+                    }else{
+                        cartIDStr = [cartIDStr stringByAppendingFormat:@",%@",model.ID];
+                    }
                 }else{
-                    cartIDStr = [cartIDStr stringByAppendingFormat:@",%@",model.ID];
+                    hasDown = YES;
                 }
+                
             }
         }
-        
     }
     
     if (cartIDStr.length) {
@@ -220,7 +228,12 @@
         [FJNetTool postWithParams:dic url:Store_foot_add loading:YES success:^(id responseObject) {
             BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
             if ([baseModel.code isEqualToString:CODE0]) {
-                [self showHUDWithText:baseModel.msg withYOffSet:0];
+                if (hasDown) {
+                    [self showHUDWithText:[NSString stringWithFormat:@"%@,%@",baseModel.msg,@"部分下架商品无法加入心愿单"] withYOffSet:0];
+                }else{
+                    [self showHUDWithText:baseModel.msg withYOffSet:0];
+                }
+                
             }
         } failure:^(NSError *error) {
             
@@ -338,8 +351,9 @@
 //        nvc.platform = @"0";
 //
 //    }
+    FootPrintModel *footModel = [[self.goodsArr objectAtIndex:indexPath.section]objectAtIndex:indexPath.row];
     if (status) {
-        FootPrintModel *footModel = [[self.goodsArr objectAtIndex:indexPath.section] objectAtIndex:indexPath.row];
+         
         if ([footModel.isSelect isEqualToString:@"1"]) {
             footModel.isSelect = @"0";
         }else{
@@ -377,6 +391,15 @@
         }
         
         [self.collectionView reloadData];
+    }else{
+        if ([footModel.goods.isup isEqualToString:@"1"]) {
+            ProductDetailViewController *vc = [[ProductDetailViewController alloc]init];
+            vc.uid = footModel.goods.uid;
+            vc.supplier_id = footModel.goods.supplier_id;
+            [self.CurrentViewController.navigationController pushViewController:vc animated:YES];
+        }else{
+            [self showHUDWithText:@"商品已下架" withYOffSet:0];
+        }
     }
 }
 -(UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath{

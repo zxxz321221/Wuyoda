@@ -6,6 +6,7 @@
 //
 
 #import "SceneDelegate.h"
+#import "WelcomeViewController.h"
 
 @interface SceneDelegate ()
 
@@ -25,7 +26,16 @@
         self.window = [[UIWindow alloc] initWithWindowScene:windowScene];
         [self.window setWindowScene:windowScene];
         [self.window setBackgroundColor:[UIColor whiteColor]];
-        [self.window setRootViewController:[FJTabBarViewController new]];
+        //[self.window setRootViewController:[FJTabBarViewController new]];
+        BOOL isFirst = [[NSUserDefaults standardUserDefaults]objectForKey:@"isFirst"];
+        
+        if (isFirst) {
+            self.window.rootViewController = [[FJTabBarViewController alloc]init];
+        }else{
+            WelcomeViewController *vc = [[WelcomeViewController alloc]init];
+            self.window.rootViewController = vc;
+        }
+        
         [self.window makeKeyAndVisible];
     } else {
         // Fallback on earlier versions

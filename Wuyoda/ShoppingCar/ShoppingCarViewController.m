@@ -25,6 +25,8 @@
 
 @property (nonatomic , retain)NSMutableArray *shoppingCartArr;
 
+@property (nonatomic , assign)BOOL isEdit;
+
 @end
 
 @implementation ShoppingCarViewController
@@ -97,8 +99,18 @@
         make.height.mas_offset(kWidth(60));
     }];
     
+    
 }
 
+-(void)orderBuyAgainNotification:(NSNotification *)notification{
+    NSDictionary *orderDic = notification.object;
+    NSDictionary *cartListDic = orderDic[@"data"][@"cart_list"];
+    NSMutableArray *cartArr = [ShopCartModel mj_objectArrayWithKeyValuesArray:cartListDic[cartListDic.allKeys.firstObject]];
+    OrderDetailViewController *vc = [[OrderDetailViewController alloc]init];
+    vc.buyAgainDic = orderDic;
+    vc.cartArr = cartArr;
+    [self.navigationController pushViewController:vc animated:YES];
+}
 
 -(void)getDataFromServer{
     NSDictionary *dic = @{@"m_id":[UserInfoModel getUserInfoModel].member_id,@"api_token":[RegisterModel getUserInfoModel].user_token};
@@ -132,9 +144,16 @@
     for (int i = 0; i<self.shoppingCartArr.count; i++) {
         ShopCartModel *model = [self.shoppingCartArr objectAtIndex:i];
         if (sender.isSelected) {
-            model.isSelect = @"1";
+            if ([model.isup isEqualToString:@"1"]) {
+                model.isSelect = @"1";
+            }else{
+                model.isSelect = @"0";
+            }
+            
+            model.isEdit = @"1";
         }else{
             model.isSelect = @"0";
+            model.isEdit = @"0";
         }
         [self.shoppingCartArr replaceObjectAtIndex:i withObject:model];
     }
@@ -172,7 +191,7 @@
     for (int i = 0; i<self.shoppingCartArr.count; i++) {
         ShopCartModel *model = [self.shoppingCartArr objectAtIndex:i];
         
-        if ([model.isSelect isEqualToString:@"1"]) {
+        if ([model.isEdit isEqualToString:@"1"]) {
             if (!cartIDStr.length) {
                 cartIDStr = model.uid;
             }else{
@@ -201,7 +220,7 @@
     for (int i = 0; i<self.shoppingCartArr.count; i++) {
         ShopCartModel *model = [self.shoppingCartArr objectAtIndex:i];
         
-        if ([model.isSelect isEqualToString:@"1"]) {
+        if ([model.isEdit isEqualToString:@"1"]) {
             if (!cartIDStr.length) {
                 cartIDStr = model.uid;
             }else{
@@ -229,6 +248,7 @@
 
 -(void)editShoppintCartClicked:(UIButton *)sender{
     sender.selected = !sender.isSelected;
+    self.isEdit = !self.isEdit;
     if (sender.isSelected) {
         self.bottomV.likeBtn.hidden = NO;
         self.bottomV.deleteBtn.hidden = NO;
@@ -242,7 +262,8 @@
         self.bottomV.allTitleLab.hidden = NO;
         self.bottomV.priceLab.hidden = NO;
     }
-    
+    [self.tableView reloadData];
+    [self handleCartPrice];
 }
 
 -(void)updateCartNumwithModel:(ShopCartModel *)model{
@@ -267,7 +288,7 @@
     cell.backgroundColor = [ColorManager ColorF2F2F2];
     cell.delegate = self;
     cell.model = [self.shoppingCartArr objectAtIndex:indexPath.row];
-    
+    cell.isEdit = self.isEdit;
     return cell;
 }
 
@@ -296,16 +317,37 @@
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
 
     ShopCartModel *model = [self.shoppingCartArr objectAtIndex:indexPath.row];
-    if ([model.isSelect isEqualToString:@"1"]) {
-        model.isSelect = @"0";
-        
+    
+    if (self.isEdit) {
+        if ([model.isEdit isEqualToString:@"1"]) {
+            model.isEdit = @"0";
+            model.isSelect = @"0";
+            
+        }else{
+            model.isEdit = @"1";
+            if ([model.isup isEqualToString:@"1"]) {
+                model.isSelect = @"1";
+            }
+    
+        }
     }else{
-        model.isSelect = @"1";
+        if ([model.isSelect isEqualToString:@"1"]) {
+            model.isSelect = @"0";
+            model.isEdit = @"0";
+            
+        }else{
+            if ([model.isup isEqualToString:@"1"]) {
+                model.isSelect = @"1";
+                model.isEdit = @"1";
+            }
+            
+        }
+        
     }
-    [self.shoppingCartArr replaceObjectAtIndex:indexPath.row withObject:model];
+    [self handleCartPrice];
     [tableView reloadData];
     
-    [self handleCartPrice];
+    
 }
 
 -(void)handleCartPrice{
@@ -315,15 +357,27 @@
         ShopCartModel *model = [self.shoppingCartArr objectAtIndex:i];
         CGFloat price = [model.total_price_show floatValue];
         NSInteger num = [model.cart_num integerValue];
-        if (![model.isSelect isEqualToString:@"1"]) {
-            selectAll = NO;
+        if (self.isEdit) {
+            if (![model.isEdit isEqualToString:@"1"]) {
+                selectAll = NO;
+            }
+            self.bottomV.selectBtn.selected = selectAll;
         }else{
-            allPrice += (price *num);
+            if (![model.isSelect isEqualToString:@"1"] && [model.isup isEqualToString:@"1"]) {
+                selectAll = NO;
+            }else{
+                if ([model.isup isEqualToString:@"1"]) {
+                    allPrice += (price *num);
+                }
+                
+            }
+            self.bottomV.selectBtn.selected = selectAll;
         }
+        
     }
     
     self.bottomV.priceLab.text = [NSString stringWithFormat:@"￥%.2f",allPrice];
-    self.bottomV.selectBtn.selected = selectAll;
+    
 }
 
 

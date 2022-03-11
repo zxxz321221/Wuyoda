@@ -21,11 +21,12 @@
 -(void)createUI{
     self.backgroundColor = [ColorManager WhiteColor];
     
-    self.searchField = [[UITextField alloc]init];
+    self.searchField = [[HomeSearchField alloc]init];
     self.searchField.textColor = [ColorManager BlackColor];
     self.searchField.placeholder = @"请输入景点名称";
     self.searchField.font = kFont(14);
     self.searchField.backgroundColor = [ColorManager ColorF2F2F2];
+    self.searchField.returnKeyType = UIReturnKeySearch;
     self.searchField.layer.cornerRadius = kWidth(5);
     
     UIImageView *leftV = [[UIImageView alloc]initWithImage:kGetImage(@"定位")];

@@ -242,7 +242,7 @@
             registerModel.user_id = userModel.member_id;
             registerModel.user_token = userModel.token;
             [RegisterModel saveUserInfoModel:registerModel];
-            
+            [LoginUsersModel saveLoginUsers:userModel];
             [self dismissViewControllerAnimated:YES completion:nil];
         }else{
             [self.view showHUDWithText:model.msg withYOffSet:0];
@@ -290,7 +290,7 @@
             registerModel.user_id = userModel.member_id;
             registerModel.user_token = userModel.token;
             [RegisterModel saveUserInfoModel:registerModel];
-            
+            [LoginUsersModel saveLoginUsers:userModel];
             [self dismissViewControllerAnimated:YES completion:nil];
         }else{
             //未绑定手机号
@@ -340,14 +340,14 @@
             registerModel.user_id = userModel.member_id;
             registerModel.user_token = userModel.token;
             [RegisterModel saveUserInfoModel:registerModel];
-            
+            [LoginUsersModel saveLoginUsers:userModel];
             [self dismissViewControllerAnimated:YES completion:nil];
         }else{
             [self.view showHUDWithText:baseModel.msg withYOffSet:0];
             //未绑定手机号
             ChangePhoneViewController *vc = [[ChangePhoneViewController alloc]init];
             vc.type = @"3";
-            vc.unionid = appleUser;
+            vc.appleCode = appleUser;
             [self.navigationController pushViewController:vc animated:YES];
         }
     } failure:^(NSError *error) {

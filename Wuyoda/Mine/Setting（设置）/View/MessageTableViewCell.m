@@ -32,7 +32,7 @@
 
 -(void)createUI{
     self.iconImgV = [[UIImageView alloc]init];
-    self.iconImgV.backgroundColor = [ColorManager RandomColor];
+    self.iconImgV.backgroundColor = [ColorManager ColorF2F2F2];
     self.iconImgV.layer.cornerRadius = kWidth(28);
     self.iconImgV.layer.masksToBounds = YES;
     [self.contentView addSubview:self.iconImgV];

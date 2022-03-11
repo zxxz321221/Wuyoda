@@ -6,10 +6,13 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "CityDetailModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface CityLineRecommendTableViewCell : UITableViewCell
+
+@property (nonatomic , retain)CityTripModel *model;
 
 @end
 

@@ -7,8 +7,9 @@
 
 #import "UserInfoViewController.h"
 #import "UserInfoTableViewCell.h"
+#import "UserBirthdayView.h"
 
-@interface UserInfoViewController ()<UITableViewDelegate, UITableViewDataSource>
+@interface UserInfoViewController ()<UITableViewDelegate, UITableViewDataSource,UIImagePickerControllerDelegate,UINavigationControllerDelegate,UserInfoBirthdayDelegate>
 
 @property (nonatomic , retain)UITableView *tableView;
 
@@ -24,7 +25,9 @@
 
 @property (nonatomic , copy)NSString *nameStr;
 @property (nonatomic , copy)NSString *sexStr;
-@property (nonatomic , copy)NSString *birthdatStr;
+@property (nonatomic , copy)NSString *birthdayStr;
+
+@property (nonatomic , retain)UserBirthdayView *birthdayV;
 
 @end
 
@@ -51,8 +54,12 @@
     bgV.backgroundColor = [ColorManager WhiteColor];
     [headerV addSubview:bgV];
     self.iconImgV = [[UIImageView alloc]init];
-    self.iconImgV.backgroundColor = [ColorManager RandomColor];
+    self.iconImgV.backgroundColor = [ColorManager ColorF2F2F2];
     self.iconImgV.layer.cornerRadius = kWidth(40);
+    self.iconImgV.layer.masksToBounds = YES;
+    self.iconImgV.userInteractionEnabled = YES;
+    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(changeIconClicked)];
+    [self.iconImgV addGestureRecognizer:tap];
     [bgV addSubview:self.iconImgV];
     [self.iconImgV mas_makeConstraints:^(MASConstraintMaker *make) {
         make.center.equalTo(bgV);
@@ -75,14 +82,69 @@
         make.height.mas_offset(kWidth(48));
     }];
     self.tableView.tableFooterView = footerV;
-    self.sexStr = @"1";
+    
+    UserInfoModel *userInfo = [UserInfoModel getUserInfoModel];
+    
+    
+    self.nameStr = userInfo.member_name;
+    NSInteger time = [userInfo.member_birthday integerValue];
+    NSDate * myDate=[NSDate dateWithTimeIntervalSince1970:time];
+    self.birthdayStr =  [CommonManager getCurrentDateOfYearMonthDay:myDate];
+    [self.iconImgV sd_setImageWithURL:[NSURL URLWithString:userInfo.member_image] placeholderImage:kGetImage(@"normal_icon")];
+    self.sexStr = userInfo.member_sex;
     
     [self.view addSubview:self.tableView];
 }
 
 -(void)saveUserInfoClicked{
     
-    NSDictionary *dic = @{@"uid":[UserInfoModel getUserInfoModel].uid,@"member_name":self.nameField.text,@"mamber_sex":self.sexStr,@"mamber_birthday":self.birthdatStr};
+    if (!self.nameField.text.length || !self.sexStr.length || !self.birthdayStr.length) {
+        [self.view showHUDWithText:@"请填写完整信息" withYOffSet:0];
+        return;
+    }
+    
+    [SVProgressHUD show];
+    NSDictionary *dic = @{@"uid":[UserInfoModel getUserInfoModel].uid,@"member_name":self.nameField.text,@"mamber_sex":self.sexStr,@"mamber_birthday":self.birthdayStr,@"api_token":[RegisterModel getUserInfoModel].user_token};
+    
+    
+    
+    AFHTTPSessionManager *sessionManager = [AFHTTPSessionManager manager];
+    sessionManager.responseSerializer = [AFHTTPResponseSerializer serializer];
+
+    [sessionManager.responseSerializer setAcceptableContentTypes:[NSSet setWithObjects:@"application/json", @"text/html", @"text/json", @"text/plain", @"text/javascript", @"text/xml", @"image/*", nil]];
+    [sessionManager POST:[NSString stringWithFormat:@"%@%@",HTTP,Login_perfect] parameters:dic headers:nil constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
+
+        NSData *data =UIImageJPEGRepresentation(self.iconImgV.image, 0.3);//把要上传的图片转成NSData
+        //把要上传的文件转成NSData
+        //NSString*path=[[NSBundlemainBundle]pathForResource:@"123"ofType:@"txt"];
+
+        //NSData*fileData = [NSDatadataWithContentsOfFile:path];
+
+        [formData appendPartWithFileData:data name:@"member_image" fileName:@"member_image.png" mimeType:@"image/png"];//给定数据流的数据名，文件名，文件类型（以图片为例）
+        
+        } progress:^(NSProgress * _Nonnull uploadProgress) {
+            
+        } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+            [SVProgressHUD dismiss];
+            NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:responseObject
+                                                                options:NSJSONReadingMutableContainers
+                                                                  error:nil];
+            BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:dic];
+            if ([baseModel.code isEqualToString:CODE0]) {
+                UserInfoModel *userModel = [UserInfoModel mj_objectWithKeyValues:dic[@"data"]];
+                [UserInfoModel saveUserInfoModel:userModel];
+                [LoginUsersModel saveLoginUsers:userModel];
+                [self.view showHUDWithText:baseModel.msg withYOffSet:0];
+                [self.navigationController popViewControllerAnimated:YES];
+            }else{
+                [self.view showHUDWithText:@"修改信息失败" withYOffSet:0];
+            }
+            
+        } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+            [self.view showHUDWithText:@"网络连接异常，请检查后重试!" withYOffSet:0];
+            [SVProgressHUD dismiss];
+        }];
+
     
 //    [FJNetTool postWithParams:dic url:Login_perfect loading:YES success:^(id responseObject) {
 //        BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
@@ -95,16 +157,29 @@
 }
 
 -(void)changeSexClicked:(UIButton *)sender{
-    sender.selected = YES;
+    //sender.selected = YES;
     if (sender == self.manBtn) {
-        self.womenBtn.selected = NO;
+        //self.womenBtn.selected = NO;
         self.sexStr = @"1";
     }else{
-        self.manBtn.selected = NO;
+        //self.manBtn.selected = NO;
         self.sexStr = @"0";
     }
     
     [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:1 inSection:0]] withRowAnimation:UITableViewRowAnimationNone];
+}
+
+-(void)selectUserBirthday:(NSString *)birthday{
+    self.birthdayStr = birthday;
+    [self.birthdayV removeFromSuperview];
+    [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:2 inSection:0]] withRowAnimation:UITableViewRowAnimationNone];
+}
+
+-(void)changeIconClicked{
+    UIImagePickerController *imagePicker = [[UIImagePickerController alloc]init];
+    imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+    imagePicker.delegate = self;
+    [self presentViewController:imagePicker animated:YES completion:nil];
 }
 
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -149,7 +224,7 @@
         cell.womenBtn.hidden = YES;
         cell.infoTextField.hidden = NO;
         self.birthdayField = cell.infoTextField;
-        cell.infoTextField.text = self.birthdatStr;
+        cell.infoTextField.text = self.birthdayStr;
         self.birthdayField.userInteractionEnabled = NO;
     }
     
@@ -188,10 +263,22 @@
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     if (indexPath.row == 2) {
-        
+        self.birthdayV = [[UserBirthdayView alloc]initWithFrame:CGRectMake(0, kHeight_NavBar, kScreenWidth, kScreenHeight-kHeight_NavBar)];
+        self.birthdayV.delegate = self;
+        [self.birthdayV show];
+        [self.view addSubview:self.birthdayV];
     }
 }
 
+
+-(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary<UIImagePickerControllerInfoKey,id> *)info{
+    [picker dismissViewControllerAnimated:YES completion:nil];
+    
+    UIImage *image = [info objectForKey:UIImagePickerControllerOriginalImage];
+    
+    [self.iconImgV setImage:image];
+    
+}
 
 /*
 #pragma mark - Navigation

@@ -12,8 +12,8 @@
 @property (nonatomic , retain)UIImageView *imgV;
 @property (nonatomic , retain)UILabel *nameLab;
 @property (nonatomic , retain)UILabel *introLab;
-@property (nonatomic , retain)UIButton *likeBtn;
-@property (nonatomic , retain)UIButton *shareBtn;
+//@property (nonatomic , retain)UIButton *likeBtn;
+//@property (nonatomic , retain)UIButton *shareBtn;
 
 @end
 
@@ -29,7 +29,7 @@
 
 -(void)createUI{
     self.imgV = [[UIImageView alloc]init];
-    self.imgV.backgroundColor = [ColorManager RandomColor];
+    self.imgV.backgroundColor = [ColorManager ColorF2F2F2];
     self.imgV.layer.cornerRadius = kWidth(5);
     [self.contentView addSubview:self.imgV];
     [self.imgV mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -63,31 +63,31 @@
     }];
     
     
-    self.shareBtn = [[UIButton alloc]init];
-    [self.shareBtn setTitle:@"分享" forState:UIControlStateNormal];
-    [self.shareBtn setImage:kGetImage(@"") forState:UIControlStateNormal];
-    [self.shareBtn setTitleColor:[ColorManager Color333333] forState:UIControlStateNormal];
-    self.shareBtn.titleLabel.font = kFont(12);
-    [self.contentView addSubview:self.shareBtn];
-    [self.shareBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.right.mas_offset(kWidth(-20));
-        make.bottom.equalTo(self.imgV);
-        make.width.mas_offset(kWidth(48));
-        make.height.mas_offset(kWidth(17));
-    }];
-    
-    self.likeBtn = [[UIButton alloc]init];
-    [self.likeBtn setTitle:@"收藏" forState:UIControlStateNormal];
-    [self.likeBtn setImage:kGetImage(@"") forState:UIControlStateNormal];
-    [self.likeBtn setTitleColor:[ColorManager Color333333] forState:UIControlStateNormal];
-    self.likeBtn.titleLabel.font = kFont(12);
-    [self.contentView addSubview:self.likeBtn];
-    [self.likeBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.right.equalTo(self.shareBtn.mas_left).mas_offset(kWidth(-18));
-        make.bottom.equalTo(self.imgV);
-        make.width.mas_offset(kWidth(48));
-        make.height.mas_offset(kWidth(17));
-    }];
+//    self.shareBtn = [[UIButton alloc]init];
+//    [self.shareBtn setTitle:@"分享" forState:UIControlStateNormal];
+//    [self.shareBtn setImage:kGetImage(@"") forState:UIControlStateNormal];
+//    [self.shareBtn setTitleColor:[ColorManager Color333333] forState:UIControlStateNormal];
+//    self.shareBtn.titleLabel.font = kFont(12);
+//    [self.contentView addSubview:self.shareBtn];
+//    [self.shareBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.right.mas_offset(kWidth(-20));
+//        make.bottom.equalTo(self.imgV);
+//        make.width.mas_offset(kWidth(48));
+//        make.height.mas_offset(kWidth(17));
+//    }];
+//    
+//    self.likeBtn = [[UIButton alloc]init];
+//    [self.likeBtn setTitle:@"收藏" forState:UIControlStateNormal];
+//    [self.likeBtn setImage:kGetImage(@"") forState:UIControlStateNormal];
+//    [self.likeBtn setTitleColor:[ColorManager Color333333] forState:UIControlStateNormal];
+//    self.likeBtn.titleLabel.font = kFont(12);
+//    [self.contentView addSubview:self.likeBtn];
+//    [self.likeBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.right.equalTo(self.shareBtn.mas_left).mas_offset(kWidth(-18));
+//        make.bottom.equalTo(self.imgV);
+//        make.width.mas_offset(kWidth(48));
+//        make.height.mas_offset(kWidth(17));
+//    }];
     
     UIView *line = [[UIView alloc]init];
     line.backgroundColor = [ColorManager ColorF7F7F7];
@@ -101,7 +101,7 @@
 -(void)setModel:(AttractionModel *)model{
     [self.imgV sd_setImageWithURL:[NSURL URLWithString:model.cover]];
     self.nameLab.text = model.scenic_title;
-    self.introLab.text = model.scenic_content;
+    self.introLab.text = model.scenic_brief;
 }
 
 - (void)awakeFromNib {

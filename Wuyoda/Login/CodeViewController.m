@@ -7,6 +7,7 @@
 
 #import "CodeViewController.h"
 #import "VerCodeView.h"
+#import "ChangePassWordViewController.h"
 
 @interface CodeViewController ()
 
@@ -112,6 +113,7 @@
     [self.sendCodeBtn setTitleColor:[ColorManager Color666666] forState:UIControlStateNormal];
     self.sendCodeBtn.titleLabel.font = kFont(14);
     [self.sendCodeBtn addTarget:self action:@selector(sendCodeClicked:) forControlEvents:UIControlEventTouchUpInside];
+    self.sendCodeBtn.userInteractionEnabled = NO;
     [self.view addSubview:self.sendCodeBtn];
     [self.sendCodeBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_offset(kWidth(20));
@@ -134,6 +136,7 @@
         make.right.mas_offset(kWidth(-20));
         make.height.mas_offset(kWidth(42));
     }];
+    [self startTime];
 }
 
 -(void)sendCodeClicked:(UIButton *)sender{
@@ -143,6 +146,7 @@
     [FJNetTool postWithParams:dic url:Login_sendVerify loading:YES success:^(id responseObject) {
         BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
         if ([baseModel.code isEqualToString:CODE0]) {
+            [self startTime];
             [self.view showHUDWithText:@"发送验证码成功" withYOffSet:0];
         }else{
             [self.view showHUDWithText:baseModel.msg withYOffSet:0];
@@ -162,13 +166,21 @@
             BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
             if ([baseModel.code isEqualToString:CODE0]) {
                 UserInfoModel *userModel = [UserInfoModel mj_objectWithKeyValues:responseObject[@"data"]];
-                [UserInfoModel saveUserInfoModel:userModel];
+                
                 RegisterModel *registerModel = [RegisterModel getUserInfoModel];
                 registerModel.user_id = userModel.member_id;
                 registerModel.user_token = userModel.token;
                 [RegisterModel saveUserInfoModel:registerModel];
+                if (!userModel.member_pass.length) {
+                    ChangePassWordViewController *vc = [[ChangePassWordViewController alloc]init];
+                    vc.userInfo = userModel;
+                    [self.navigationController pushViewController:vc animated:YES];
+                }else{
+                    [LoginUsersModel saveLoginUsers:userModel];
+                    [UserInfoModel saveUserInfoModel:userModel];
+                    [self dismissViewControllerAnimated:YES completion:nil];
+                }
                 
-                [self dismissViewControllerAnimated:YES completion:nil];
             }else{
                 [self.view showHUDWithText:baseModel.msg withYOffSet:0];
             }
@@ -177,6 +189,38 @@
         }];
         
     }
+}
+
+-(void)startTime{
+    __block int timeout=59; //倒计时时间
+    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+    dispatch_source_t _timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0,queue);
+    dispatch_source_set_timer(_timer,dispatch_walltime(NULL, 0),1.0*NSEC_PER_SEC, 0); //每秒执行
+    
+    dispatch_source_set_event_handler(_timer, ^{
+        if(timeout<=0){ //倒计时结束，关闭
+            dispatch_source_cancel(_timer);
+            dispatch_async(dispatch_get_main_queue(), ^{
+                //设置界面的按钮显示 根据自己需求设置（倒计时结束后调用）
+                [self.sendCodeBtn setTitle:@"重新发送" forState:UIControlStateNormal];
+                //设置不可点击
+                self.sendCodeBtn.userInteractionEnabled = YES;
+                
+            });
+        }else{
+            int seconds = timeout % 60;
+            NSString *strTime = [NSString stringWithFormat:@"%d", seconds];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                //设置界面的按钮显示 根据自己需求设置
+                [self.sendCodeBtn setTitle:[NSString stringWithFormat:@"重新发送(%@s)",strTime] forState:UIControlStateNormal];
+                //设置可点击
+                self.sendCodeBtn.userInteractionEnabled = NO;
+            });
+            timeout--;
+        }
+    });
+    
+    dispatch_resume(_timer);
 }
 
 /*

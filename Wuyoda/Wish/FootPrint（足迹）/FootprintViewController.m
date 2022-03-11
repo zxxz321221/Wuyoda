@@ -47,6 +47,7 @@
     [super viewDidLoad];
     FJNormalNavView *nav = [[FJNormalNavView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kHeight_NavBar) controller:self titleStr:@"历史足迹"];
     [self.view addSubview:nav];
+    self.view.backgroundColor = [ColorManager WhiteColor];
     
     UIButton *editBtn = [[UIButton alloc]init];
     [editBtn setTitle:@"管理" forState:UIControlStateNormal];

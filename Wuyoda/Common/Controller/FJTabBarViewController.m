@@ -65,6 +65,8 @@
 
     MineViewController *mineVC = [[MineViewController alloc] init];
     [self setTabBarChildController:mineVC title:@"我的" image:@"我的" selectImage:@"我的拷贝"];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:shoppingCarVC selector:@selector(orderBuyAgainNotification:) name:@"orderBuyAgain" object:nil];
 
 }
 
@@ -87,6 +89,16 @@
     return baseNav;
 }
 
+- (BOOL)tabBarController:(UITabBarController *)tabBarController shouldSelectViewController:(UIViewController *)viewController{
+    if (viewController == [self.viewControllers objectAtIndex:1] || viewController == [self.viewControllers objectAtIndex:2]) {
+        if ([CommonManager isLogin:tabBarController isPush:YES]) {
+            return YES;
+        }else{
+            return NO;
+        }
+    }
+    return YES;
+}
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

@@ -6,10 +6,13 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "LogisticsModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface LogisticeHeaderView : UIView
+
+@property (nonatomic  , retain)LogisticsModel *model;
 
 @end
 

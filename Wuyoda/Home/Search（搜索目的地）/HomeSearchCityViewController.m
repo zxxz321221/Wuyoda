@@ -9,10 +9,11 @@
 #import "HomeSearchAllCityTableViewCell.h"
 #import "HomeSearchHotCityView.h"
 #import "TWProductListViewController.h"
+#import "HomeSearchField.h"
 
 @interface HomeSearchCityViewController ()<UITableViewDelegate,UITableViewDataSource,UITextFieldDelegate,HomeSearchHotCitySelectDelegate>
 
-@property (nonatomic , retain)UITextField *searchField;
+@property (nonatomic , retain)HomeSearchField *searchField;
 
 @property (nonatomic , retain)UIScrollView *areaScrollV;
 
@@ -23,6 +24,8 @@
 @property (nonatomic , retain)UITableView *tableView;
 
 @property (nonatomic , retain)HomeSearchHotCityView *tableHeaderV;
+
+@property (nonatomic , retain)NSMutableArray *showCityArr;
 
 @end
 
@@ -40,13 +43,13 @@
     [cancelBtn addTarget:self action:@selector(cancelClicked:) forControlEvents:UIControlEventTouchUpInside];
     [nav addSubview:cancelBtn];
     
-    self.searchField = [[UITextField alloc]init];
+    self.searchField = [[HomeSearchField alloc]init];
     self.searchField.placeholder = @"输入城市名称";
     self.searchField.textColor = [ColorManager BlackColor];
     self.searchField.font = kFont(16);
     self.searchField.backgroundColor = [ColorManager ColorF2F2F2];
     self.searchField.layer.cornerRadius = kWidth(5);
-    UIImageView *leftV = [[UIImageView alloc]initWithImage:kGetImage(@"")];
+    UIImageView *leftV = [[UIImageView alloc]initWithImage:kGetImage(@"搜索")];
     self.searchField.leftView = leftV;
     self.searchField.leftViewMode = UITextFieldViewModeAlways;
     self.searchField.returnKeyType = UIReturnKeyDone;
@@ -96,6 +99,8 @@
     self.tableView.tableHeaderView = self.tableHeaderV;
     
     [self.view addSubview:self.tableView];
+    
+    self.showCityArr = [self.allCityArr mutableCopy];
 }
 
 
@@ -103,8 +108,28 @@
     [self.navigationController popViewControllerAnimated:YES];
 }
 
--(BOOL)textFieldShouldReturn:(UITextField *)textField{
+//-(BOOL)textFieldShouldReturn:(UITextField *)textField{
+//    
+//    return YES;
+//}
+
+-(BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string{
+    NSString *inputWordStr = [textField.text stringByReplacingCharactersInRange:range withString:string];
+    NSLog(@"string:%@",inputWordStr);
+    if (inputWordStr.length) {
+        NSMutableArray *cityArr = [[NSMutableArray alloc]init];
+        for (int i = 0; i<self.allCityArr.count; i++) {
+            NSString *city = [self.allCityArr objectAtIndex:i];
+            if ([city containsString:inputWordStr]) {
+                [cityArr addObject:city];
+            }
+        }
+        self.showCityArr = cityArr;
+    }else{
+        self.showCityArr = [self.allCityArr mutableCopy];
+    }
     
+    [self.tableView reloadData];
     return YES;
 }
 
@@ -134,7 +159,7 @@
 }
 
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
-    return self.allCityArr.count;
+    return self.showCityArr.count;
 }
 
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -144,7 +169,7 @@
     }
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     
-    cell.cityLab.text = [self.allCityArr objectAtIndex:indexPath.row];
+    cell.cityLab.text = [self.showCityArr objectAtIndex:indexPath.row];
     
     return cell;
 }
@@ -183,7 +208,7 @@
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     if (self.delegate && [self.delegate respondsToSelector:@selector(selectCity:)]) {
-        [self.delegate selectCity:self.allCityArr[indexPath.row]];
+        [self.delegate selectCity:self.showCityArr[indexPath.row]];
         [self.navigationController popViewControllerAnimated:YES];
     }
 }

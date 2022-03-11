@@ -7,6 +7,7 @@
 
 #import "RemoveAccountViewController.h"
 #import "OrderCancelTableViewCell.h"
+#import "RemoveAccountIntroViewController.h"
 
 @interface RemoveAccountViewController ()<UITableViewDelegate, UITableViewDataSource>
 
@@ -57,7 +58,7 @@
 -(void)doneClicked{
     if (self.reason.length) {
         NSDictionary *dic = @{@"uid":[UserInfoModel getUserInfoModel].uid,@"cancel":self.reason,@"api_token":[RegisterModel getUserInfoModel].user_token};
-        
+
         [FJNetTool postWithParams:dic url:Login_cancel loading:YES success:^(id responseObject) {
             BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
             if ([baseModel.code isEqualToString:CODE0]) {
@@ -65,11 +66,17 @@
                 [self.navigationController popToRootViewControllerAnimated:YES];
             }
         } failure:^(NSError *error) {
-            
+
         }];
+//        RemoveAccountIntroViewController *vc = [[RemoveAccountIntroViewController alloc]init];
+//        vc.reason = self.reason;
+//        [self.navigationController pushViewController:vc animated:YES];
     }else{
         [self.view showHUDWithText:@"请选择注销原因" withYOffSet:0];
     }
+    
+    
+    
 }
 
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{

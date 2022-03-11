@@ -13,6 +13,7 @@
 #import "AboutViewController.h"
 #import "VersionViewController.h"
 #import "MessageViewController.h"
+#import "AccountListViewController.h"
 
 @interface SettingViewController ()<UITableViewDelegate, UITableViewDataSource>
 
@@ -52,7 +53,7 @@
     
     [self.view addSubview:self.tableView];
     
-    self.titleArr = @[@"账号管理",@"通知",@"货币",@"收款方式",@"发票信息管理",@"关于无忧达",@"1.0.0版本",@"账号注销",@"退出登录"];
+    self.titleArr = @[@"账号管理",@"通知",@"货币",@"收款方式",@"发票信息管理",@"关于无忧达",[NSString stringWithFormat:@"%@版本",[[[NSBundle mainBundle]infoDictionary] objectForKey:@"CFBundleShortVersionString"]],@"账号注销",@"退出登录"];
 }
 
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -95,6 +96,11 @@
 }
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    if (indexPath.row == 0 || indexPath.row == 7 || indexPath.row == 8) {
+        if (![CommonManager isLogin:self isPush:YES]) {
+            return;
+        }
+    }
     if (indexPath.row == 0) {
         AccountListViewController *vc = [[AccountListViewController alloc]init];
         [self.navigationController pushViewController:vc animated:YES];
@@ -104,14 +110,15 @@
         [self.navigationController pushViewController:vc animated:YES];
     }
     if (indexPath.row == 2) {
-        
+        [self.view showHUDWithText:@"敬请期待" withYOffSet:0];
     }
     if (indexPath.row == 3) {
-        BankCardTypeViewController *vc = [[BankCardTypeViewController alloc]init];
-        [self.navigationController pushViewController:vc animated:YES];
+//        BankCardTypeViewController *vc = [[BankCardTypeViewController alloc]init];
+//        [self.navigationController pushViewController:vc animated:YES];
+        [self.view showHUDWithText:@"敬请期待" withYOffSet:0];
     }
     if (indexPath.row == 4) {
-        
+        [self.view showHUDWithText:@"敬请期待" withYOffSet:0];
     }
     if (indexPath.row == 5) {
         AboutViewController *vc = [[AboutViewController alloc]init];
@@ -136,12 +143,14 @@
     //NSMutableAttributedString * str1 = [[NSMutableAttributedString alloc]initWithString:@"换个账号登录"];
     
     UIAlertAction *action1 = [UIAlertAction actionWithTitle:@"换个账号登录" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-        
+        AccountListViewController *vc = [[AccountListViewController alloc]init];
+        [self.navigationController pushViewController:vc animated:YES];
     }];
     
     [action1 setValue:[ColorManager Color008A70] forKey:@"_titleTextColor"];
     UIAlertAction *action2 = [UIAlertAction actionWithTitle:@"退出当前账号" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
         [UserInfoModel clearUserInfo];
+        [self.navigationController popToRootViewControllerAnimated:YES];
         
     }];
     [action2 setValue:[ColorManager Color008A70] forKey:@"_titleTextColor"];

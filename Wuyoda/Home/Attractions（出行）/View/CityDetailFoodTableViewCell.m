@@ -36,7 +36,7 @@
 -(void)createUI{
     
     self.imgV = [[UIImageView alloc]init];
-    self.imgV.backgroundColor = [ColorManager RandomColor];
+    self.imgV.backgroundColor = [ColorManager ColorF2F2F2];
     self.imgV.layer.cornerRadius = kWidth(5);
     [self.contentView addSubview:self.imgV];
     [self.imgV mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -46,7 +46,7 @@
     }];
     
     self.nameLab = [[UILabel alloc]init];
-    self.nameLab.text = @"纸箱王";
+    //self.nameLab.text = @"纸箱王";
     self.nameLab.textColor = [ColorManager Color333333];
     self.nameLab.font = kBoldFont(14);
     [self.contentView addSubview:self.nameLab];
@@ -56,7 +56,7 @@
     }];
     
     self.branchLab = [[UILabel alloc]init];
-    self.branchLab.text = @"（西屯路店）";
+    //self.branchLab.text = @"（西屯路店）";
     self.branchLab.textColor = [ColorManager Color333333];
     self.branchLab.font = kFont(13);
     [self.contentView addSubview:self.branchLab];
@@ -66,7 +66,7 @@
     }];
     
     self.tagLab = [[UILabel alloc]init];
-    self.tagLab.text = @"创意台湾菜";
+    //self.tagLab.text = @"创意台湾菜";
     self.tagLab.textColor = [ColorManager WhiteColor];
     self.tagLab.font = kFont(10);
     self.tagLab.backgroundColor = [ColorManager Color008A70];
@@ -74,14 +74,14 @@
     self.tagLab.textAlignment = NSTextAlignmentCenter;
     [self.contentView addSubview:self.tagLab];
     [self.tagLab mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.centerY.equalTo(self.branchLab);
+        make.centerY.equalTo(self.nameLab);
         make.left.equalTo(self.branchLab.mas_right).mas_offset(kWidth(6));
         make.width.mas_offset(kWidth(60));
         make.height.mas_offset(kWidth(18));
     }];
     
     self.introLab = [[UILabel alloc]init];
-    self.introLab.text = @"很有趣的创意餐厅，店内所有东西都是纸做的";
+    //self.introLab.text = @"很有趣的创意餐厅，店内所有东西都是纸做的";
     self.introLab.textColor = [ColorManager Color333333];
     self.introLab.font = kFont(12);
     [self.contentView addSubview:self.introLab];
@@ -92,7 +92,7 @@
     }];
     
     self.addressLab = [[UILabel alloc]init];
-    self.addressLab.text = @"位置：东海大学以北1.2公里";
+    //self.addressLab.text = @"位置：东海大学以北1.2公里";
     self.addressLab.textColor = [ColorManager Color333333];
     self.addressLab.font = kFont(12);
     [self.contentView addSubview:self.addressLab];
@@ -103,8 +103,23 @@
     
 }
 
--(void)setImgName:(NSString *)imgName{
-    [self.imgV setImage:kGetImage(imgName)];
+-(void)setModel:(CityCustomModel *)model{
+    [self.imgV sd_setImageWithURL:[NSURL URLWithString:model.cover] placeholderImage:nil];
+    self.nameLab.text = model.custom_title;
+    self.tagLab.text = model.custom_td;
+    CGFloat stringWidth = 0;
+    CGSize size = CGSizeMake(MAXFLOAT, MAXFLOAT);
+    
+    if (model.custom_td) {
+        
+        stringWidth = [model.custom_td boundingRectWithSize:size options:NSStringDrawingUsesLineFragmentOrigin attributes:nil context:nil].size.width;
+    }
+    [self.tagLab mas_updateConstraints:^(MASConstraintMaker *make) {
+        make.width.mas_offset(stringWidth+kWidth(5));
+    }];
+    //CGFloat tagW =
+    self.introLab.text = model.custom_brief;
+    self.addressLab.text = [NSString stringWithFormat:@"位置:%@",model.custom_position];
 }
 
 - (void)awakeFromNib {

@@ -10,9 +10,17 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@protocol updateCityHeaderHeightDelegate <NSObject>
+
+-(void)updateCityHeaderHeight:(CGFloat)height;
+
+@end
+
 @interface CityDetailHeaderView : UIView
 
 @property (nonatomic , retain)CityDetailModel *model;
+
+@property (nonatomic , weak)id <updateCityHeaderHeightDelegate>delegate;
 
 @end
 

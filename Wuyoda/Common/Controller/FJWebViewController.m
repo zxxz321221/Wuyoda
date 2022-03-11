@@ -9,11 +9,16 @@
 #import "FJWebViewController.h"
 #import <WebKit/WebKit.h>
 #import "MessageModel.h"
-@interface FJWebViewController ()<WKNavigationDelegate>
+#import "PaySuccessViewController.h"
+#import "WeakWebViewScriptMessageDelegate.h"
+
+@interface FJWebViewController ()<WKNavigationDelegate,WKScriptMessageHandler>
 @property (nonatomic,strong) WKWebView * myWebView;
 
 //顶部进度
 @property (nonatomic, strong) UIProgressView *myProgressView;
+
+@property (nonatomic,copy) NSString * payResultUrl;
 
 @end
 
@@ -29,7 +34,12 @@
 
     FJNormalNavView *nav = [[FJNormalNavView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, kHeight_NavBar) controller:self titleStr:self.title];
          [self.view addSubview:nav];
-
+    if (self.ordersn.length) {
+        nav.isInitBackBtn = YES;
+        nav.block = ^{
+            [self.navigationController popToRootViewControllerAnimated:YES];
+        };
+    }
 
     [self.view addSubview:self.myProgressView];
 
@@ -72,14 +82,18 @@
 
 #pragma mark - WKNavigationDelegate method
 // 如果不添加这个，那么wkwebview跳转不了AppStore
+//payresult=success?ordersn=xxxxx&userid=xxxxx
 - (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
 {
     if ([webView.URL.absoluteString hasPrefix:@"https://itunes.apple.com"]) {
         [[UIApplication sharedApplication] openURL:navigationAction.request.URL];
         decisionHandler(WKNavigationActionPolicyCancel);
-    }else {
-        decisionHandler(WKNavigationActionPolicyAllow);
+    }else if ([webView.URL.absoluteString containsString:@"orderId"] && [webView.URL.absoluteString containsString:@"payResult"] && [webView.URL.absoluteString containsString:@"/mobile/Receivepg/index"]){
+        
+        self.payResultUrl = webView.URL.absoluteString;
+
     }
+    decisionHandler(WKNavigationActionPolicyAllow);
 }
 
 #pragma mark - event response
@@ -107,6 +121,31 @@
     }
 }
 
+-(void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation{
+    if (self.payResultUrl.length) {
+        NSString *dataStr = [[self.payResultUrl componentsSeparatedByString:@"?"] lastObject];
+        NSArray *dataArr = [dataStr componentsSeparatedByString:@"&"];
+        NSString *orderId = @"";
+        BOOL isSuccess = NO;
+        
+        for (NSString *parameter in dataArr) {
+            if ([parameter hasPrefix:@"payResult"]) {
+                if ([parameter containsString:@"10"]) {
+                    isSuccess = YES;
+                }
+            }
+            
+            if ([parameter hasPrefix:@"orderId"]) {
+                orderId = [[parameter componentsSeparatedByString:@"="] lastObject];
+            }
+        }
+        
+        if (isSuccess && orderId.length) {
+            [self getOrderStatusFromServer:orderId];
+        }
+    }
+}
+
 #pragma mark - getter and setter
 - (UIProgressView *)myProgressView
 {
@@ -123,7 +162,26 @@
 {
     if(_myWebView == nil)
     {
-        _myWebView = [[WKWebView alloc] initWithFrame:CGRectZero];
+        
+        WKWebViewConfiguration *wkWebConfig = [[WKWebViewConfiguration alloc] init];
+        
+        NSString *jScript = @"var meta = document.createElement('meta'); meta.setAttribute('name', 'viewport'); meta.setAttribute('content', 'width=device-width'); document.getElementsByTagName('head')[0].appendChild(meta);";
+
+                WKUserScript *wkUScript = [[WKUserScript alloc] initWithSource:jScript injectionTime:WKUserScriptInjectionTimeAtDocumentEnd forMainFrameOnly:YES];
+                WKUserContentController *wkUController = [[WKUserContentController alloc] init];
+                [wkUController addUserScript:wkUScript];
+        
+        WeakWebViewScriptMessageDelegate *weakScriptMessageDelegate = [[WeakWebViewScriptMessageDelegate alloc] initWithDelegate:self];
+        [wkUController addScriptMessageHandler:weakScriptMessageDelegate  name:@"payResult"];
+
+            
+        WKPreferences *preferences = [WKPreferences new];
+        preferences.javaScriptCanOpenWindowsAutomatically = YES;
+        wkWebConfig.preferences = preferences;
+        
+                wkWebConfig.userContentController = wkUController;
+        
+        _myWebView = [[WKWebView alloc] initWithFrame:CGRectZero configuration:wkWebConfig];
         _myWebView.navigationDelegate = self;
         _myWebView.opaque = NO;
         _myWebView.multipleTouchEnabled = YES;
@@ -150,6 +208,8 @@
         url = Store_aboutus;
     }else if (self.type  == 5){
         url = Store_recruitment;
+    }else if (self.type  == 6){
+        url = Store_brand_list;
     }
     
     [FJNetTool postWithParams:pardic url:url loading:YES success:^(id responseObject) {
@@ -165,12 +225,9 @@
                 [self loadHtml:responseObject[@"data"][@"page_body"]];
                 
             }
-            if (self.type ==  3 || self.type == 4 || self.type == 5) {
-                NSArray *dataArr = responseObject[@"data"];
-                if (dataArr.count) {
-                    NSDictionary *dataDic = [dataArr firstObject];
-                    [self loadHtml:dataDic[@"page_body"]];
-                }
+            if (self.type ==  3 || self.type == 4 || self.type == 5 || self.type == 6) {
+                NSDictionary *dataDic = responseObject[@"data"];
+                [self loadHtml:dataDic[@"page_body"]];
             }
         }else{
             [self.view showHUDWithText:model.msg withYOffSet:0];
@@ -203,6 +260,26 @@
 
 }
 
+-(void)getOrderStatusFromServer:(NSString *)orderId{
+    NSDictionary *dic = @{@"ordersn":orderId,@"api_token":[RegisterModel getUserInfoModel].user_token};
+    
+    [FJNetTool postWithParams:dic url:Special_pay_result loading:YES success:^(id responseObject) {
+        BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
+        if ([baseModel.code isEqualToString:CODE0]) {
+            
+            PaySuccessViewController *vc = [[PaySuccessViewController alloc]init];
+            vc.type = @"1";
+            vc.ordersn = orderId;
+            [self.navigationController pushViewController:vc animated:YES];
+            
+        }else{
+            [self.view showHUDWithText:baseModel.msg withYOffSet:0];
+            [self.navigationController popToRootViewControllerAnimated:YES];
+        }
+    } failure:^(NSError *error) {
+        
+    }];
+}
 
 /*
 #pragma mark - Navigation

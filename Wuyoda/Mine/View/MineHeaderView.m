@@ -7,14 +7,13 @@
 
 #import "MineHeaderView.h"
 #import "UserInfoViewController.h"
+#import "LoginViewController.h"
 
 @interface MineHeaderView ()
 
-@property (nonatomic , retain)UILabel *nameLab;
+@property (nonatomic , retain)UIButton *loginBtn;
 
 @property (nonatomic , retain)UILabel *signLab;
-
-@property (nonatomic , retain)UIImageView *iconImgV;
 
 @property (nonatomic , retain)UIButton *infoBtn;
 
@@ -53,10 +52,9 @@
     }];
     
     self.iconImgV = [[UIImageView alloc]init];
-    self.iconImgV.backgroundColor = [ColorManager RandomColor];
+    self.iconImgV.backgroundColor = [ColorManager ColorE2E2E2];
     self.iconImgV.layer.cornerRadius = kWidth(28);
     self.iconImgV.layer.masksToBounds = YES;
-    [self.iconImgV setImage:kGetImage(@"normal_icon")];
     [self addSubview:self.iconImgV];
     [self.iconImgV mas_makeConstraints:^(MASConstraintMaker *make) {
         make.right.mas_offset(kWidth(-20));
@@ -77,6 +75,22 @@
         make.height.mas_offset(kWidth(20));
     }];
     
+    self.loginBtn = [[UIButton alloc]init];
+    [self.loginBtn setTitle:@"点击登录" forState:UIControlStateNormal];
+    [self.loginBtn setTitleColor:[ColorManager Color7F7F7F] forState:UIControlStateNormal];
+    self.loginBtn.titleLabel.font = kFont(12);
+    self.loginBtn.layer.cornerRadius = kWidth(3);
+    self.loginBtn.layer.borderColor = [ColorManager ColorE2E2E2].CGColor;
+    self.loginBtn.layer.borderWidth = kWidth(0.5);
+    [self.loginBtn addTarget:self action:@selector(loginClicked) forControlEvents:UIControlEventTouchUpInside];
+    [self addSubview:self.loginBtn];
+    [self.loginBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_offset(kWidth(32));
+        make.top.equalTo(self.nameLab.mas_bottom).mas_offset(kWidth(22));
+        make.width.mas_offset(kWidth(60));
+        make.height.mas_offset(kWidth(24));
+    }];
+    
     UIView *bottomLine = [[UIView alloc]init];
     bottomLine.backgroundColor = [ColorManager ColorF2F2F2];
     [self addSubview:bottomLine];
@@ -92,6 +106,21 @@
     [self.CurrentViewController.navigationController pushViewController:vc animated:YES];
 }
 
+-(void)loginClicked{
+    [CommonManager isLogin:self.CurrentViewController isPush:YES];
+}
+
+-(void)setIsLogin:(BOOL)isLogin{
+    if (isLogin) {
+        self.infoBtn.hidden = NO;
+        self.signLab.hidden = NO;
+        self.loginBtn.hidden = YES;
+    }else{
+        self.loginBtn.hidden = NO;
+        self.signLab.hidden = YES;
+        self.infoBtn.hidden = YES;
+    }
+}
 /*
 // Only override drawRect: if you perform custom drawing.
 // An empty implementation adversely affects performance during animation.

@@ -11,8 +11,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface AddressInfoFooterView : UIView
 
+@property (nonatomic ,retain)UIImageView *identifierimgV1;
 @property (nonatomic ,retain)UIButton *identifierBtn1;
 
+@property (nonatomic ,retain)UIImageView *identifierimgV2;
 @property (nonatomic ,retain)UIButton *identifierBtn2;
 
 @end

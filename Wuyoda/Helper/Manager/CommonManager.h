@@ -40,7 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
 
  @return 当前年月日时分秒
  */
-+ (NSString *)timeGetCurrentDateOfYearMonthDayHourMinutesSecond;
++ (NSString *)timeGetCurrentDateOfYearMonthDayHourMinutesSecond:(NSDate *)date;
 
 /**
  根据给定的日期返回该月的天数
@@ -58,7 +58,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (CGFloat)getStatusBarHight;
 
 //判断未登录跳登录
-+ (BOOL)isLogin:(UIViewController *)viewCotroller;
++ (BOOL)isLogin:(UIViewController *)viewCotroller isPush:(BOOL)isPush;
 
 // 数组转字符串
 + (NSString *)toReadableJSONString:(NSArray *)dataArr;

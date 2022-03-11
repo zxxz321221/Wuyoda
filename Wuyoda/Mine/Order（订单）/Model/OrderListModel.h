@@ -12,16 +12,17 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OrderListModel : BaseModel
 
 @property (nonatomic , copy)NSString *address;
-@property (nonatomic , copy)NSString *addtime;
+@property (nonatomic , copy)NSString *addressid;
+@property (nonatomic , assign)NSInteger addtime;
 @property (nonatomic , copy)NSString *admin_memo;
 @property (nonatomic , copy)NSString *cancel;
 @property (nonatomic , copy)NSString *card_source;
 @property (nonatomic , copy)NSString *checktime;
-@property (nonatomic , copy)NSString *code;
 @property (nonatomic , copy)NSString *consignee;
 @property (nonatomic , copy)NSString *delivery_code;
 @property (nonatomic , copy)NSString *discount;
 @property (nonatomic , copy)NSString *discount_name;
+@property (nonatomic , assign)NSInteger endtime;
 @property (nonatomic , copy)NSString *exp_code;
 @property (nonatomic , copy)NSString *from_user;
 @property (nonatomic , copy)NSString *goods_amount;
@@ -54,6 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic , copy)NSString *status_code;
 @property (nonatomic , copy)NSString *supplier_id;
 @property (nonatomic , copy)NSString *taobaoinfo;
+@property (nonatomic , assign)NSInteger time;
 @property (nonatomic , copy)NSString *total_price;
 @property (nonatomic , copy)NSString *uid;
 @property (nonatomic , copy)NSString *username;

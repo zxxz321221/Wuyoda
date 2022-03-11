@@ -49,7 +49,7 @@
     [self.contentView addSubview:goodBGV];
     
     self.goodImgV = [[UIImageView alloc]init];
-    self.goodImgV.backgroundColor = [ColorManager RandomColor];
+    self.goodImgV.backgroundColor = [ColorManager ColorF2F2F2];
     [self.goodImgV setImage:kGetImage(@"good_detail_top")];
     self.goodImgV.layer.cornerRadius = kWidth(10);
     [goodBGV addSubview:self.goodImgV];
@@ -59,7 +59,7 @@
     }];
     
     self.goodNameLab = [[UILabel alloc]init];
-    self.goodNameLab.text = @"【酱职人】国产黑豆荫油礼盒组...";
+    //self.goodNameLab.text = @"【酱职人】国产黑豆荫油礼盒组...";
     self.goodNameLab.textColor = [ColorManager BlackColor];
     self.goodNameLab.font = kFont(14);
     self.goodNameLab.numberOfLines = 2;
@@ -72,7 +72,7 @@
     }];
     
     self.goodPriceLab = [[UILabel alloc]init];
-    self.goodPriceLab.text = @"￥349.00";
+    //self.goodPriceLab.text = @"￥349.00";
     self.goodPriceLab.textColor = [ColorManager BlackColor];
     self.goodPriceLab.font = kFont(14);
     [goodBGV addSubview:self.goodPriceLab];

@@ -9,15 +9,9 @@
 
 @interface OrderListTableViewCell ()
 
-@property (nonatomic , retain)UIImageView *imgV;
+@property (nonatomic , retain)UIView *bgView;
 
 @property (nonatomic , retain)UILabel *statusLab;
-
-@property (nonatomic , retain)UILabel *titleLab;
-
-@property (nonatomic , retain)UILabel *specificationLab;
-
-@property (nonatomic , retain)UILabel *numLab;
 
 @property (nonatomic , retain)UILabel *priceLab;
 
@@ -36,72 +30,34 @@
 
 -(void)createUI{
     self.backgroundColor = [ColorManager ColorF2F2F2];
-    UIView *bgV = [[UIView alloc]init];
-    bgV.layer.cornerRadius = kWidth(10);
-    bgV.backgroundColor = [ColorManager WhiteColor];
-    [self.contentView addSubview:bgV];
-    [bgV mas_makeConstraints:^(MASConstraintMaker *make) {
+    self.bgView = [[UIView alloc]init];
+    self.bgView.layer.cornerRadius = kWidth(10);
+    self.bgView.backgroundColor = [ColorManager WhiteColor];
+    [self.contentView addSubview:self.bgView];
+    [self.bgView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.equalTo(self.contentView);
         make.top.mas_offset(kWidth(10));
         make.width.mas_offset(kWidth(350));
-        make.height.mas_offset(kWidth(196));
+        make.bottom.equalTo(self.contentView);
     }];
     
     self.statusLab = [[UILabel alloc]init];
     self.statusLab.text = @"已取消";
     self.statusLab.textColor = [ColorManager Color999999];
     self.statusLab.font = kFont(12);
-    [bgV addSubview:self.statusLab];
+    //self.statusLab.hidden = YES;
+    [self.bgView addSubview:self.statusLab];
     [self.statusLab mas_makeConstraints:^(MASConstraintMaker *make) {
         make.right.mas_offset(kWidth(-16));
         make.top.mas_offset(kWidth(14));
     }];
     
-    self.imgV = [[UIImageView alloc]init];
-    self.imgV.layer.cornerRadius = kWidth(5);
-    self.imgV.backgroundColor = [ColorManager RandomColor];
-    [bgV addSubview:self.imgV];
-    [self.imgV mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_offset(kWidth(15));
-        make.top.mas_offset(kWidth(40));
-        make.width.height.mas_offset(kWidth(79));
-    }];
-    
-    self.titleLab = [[UILabel alloc]init];
-    self.titleLab.text = @"【酱职人】国产黑豆荫油礼...";
-    self.titleLab.textColor = [ColorManager BlackColor];
-    self.titleLab.font = kFont(14);
-    [bgV addSubview:self.titleLab];
-    [self.titleLab mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.equalTo(self.imgV.mas_right).mas_offset(kWidth(14));
-        make.right.mas_offset(kWidth(-50));
-        make.top.mas_offset(kWidth(40));
-    }];
-    
-    self.specificationLab = [[UILabel alloc]init];
-    self.specificationLab.text = @"规格：200g/块";
-    self.specificationLab.textColor = [ColorManager Color999999];
-    self.specificationLab.font = kFont(12);
-    [bgV addSubview:self.specificationLab];
-    [self.specificationLab mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.equalTo(self.imgV.mas_right).mas_offset(kWidth(14));
-        make.top.equalTo(self.titleLab.mas_bottom).mas_offset(kWidth(24));
-    }];
-    self.numLab = [[UILabel alloc]init];
-    self.numLab.text = @"数量：1";
-    self.numLab.textColor = [ColorManager Color999999];
-    self.numLab.font = kFont(12);
-    [bgV addSubview:self.numLab];
-    [self.numLab mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.equalTo(self.imgV.mas_right).mas_offset(kWidth(14));
-        make.top.equalTo(self.specificationLab.mas_bottom).mas_offset(kWidth(3));
-    }];
     
     self.priceLab = [[UILabel alloc]init];
-    self.priceLab.text = @"￥349.00";
+    //self.priceLab.text = @"￥0.00";
     self.priceLab.textColor = [ColorManager Color333333];
     self.priceLab.font = kBoldFont(14);
-    [bgV addSubview:self.priceLab];
+    [self.bgView addSubview:self.priceLab];
     [self.priceLab mas_makeConstraints:^(MASConstraintMaker *make) {
         make.right.mas_offset(kWidth(-16));
         make.bottom.mas_offset(kWidth(-54));
@@ -111,13 +67,14 @@
     pticeTitleLab.text = @"合计";
     pticeTitleLab.textColor = [ColorManager Color666666];
     pticeTitleLab.font = kFont(14);
-    [bgV addSubview:pticeTitleLab];
+    [self.bgView addSubview:pticeTitleLab];
     [pticeTitleLab mas_makeConstraints:^(MASConstraintMaker *make) {
         make.right.equalTo(self.priceLab.mas_left);
         make.bottom.mas_offset(kWidth(-54));
     }];
     
-    [self createBottomBtn:bgV];
+    
+    [self createBottomBtn:self.bgView];
     
 }
 
@@ -288,14 +245,59 @@
 }
 
 -(void)setListModel:(OrderListModel *)listModel{
+    [self.bgView removeFromSuperview];
+    [self createUI];
     _listModel = listModel;
     NSDictionary *orderGoodDic = listModel.order_goods;
     NSArray *allKey = orderGoodDic.allKeys;
-    OrderGoodModel *goodModel = [OrderGoodModel mj_objectWithKeyValues:[orderGoodDic valueForKey:allKey.firstObject]];
-    [self.imgV sd_setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@",goodModel.goods_file1]]];
-    self.titleLab.text = goodModel.goods_name;
-    self.numLab.text = [NSString stringWithFormat:@"数量：%@",goodModel.buy_number];
-    self.priceLab.text = listModel.original_price;
+    for (int i = 0; i<allKey.count; i++) {
+        UIImageView *imgV = [[UIImageView alloc]initWithFrame:CGRectMake(kWidth(15), kWidth(40)+kWidth(89)*i, kWidth(79), kWidth(79))];
+        imgV.layer.cornerRadius = kWidth(5);
+        imgV.backgroundColor = [ColorManager ColorF2F2F2];
+        [self.bgView addSubview:imgV];
+        
+        UILabel *titleLab = [[UILabel alloc]init];
+        titleLab.textColor = [ColorManager BlackColor];
+        titleLab.font = kFont(14);
+        [self.bgView addSubview:titleLab];
+        [titleLab mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.left.equalTo(imgV.mas_right).mas_offset(kWidth(14));
+            make.right.mas_offset(kWidth(-50));
+            make.top.mas_offset(kWidth(40)+kWidth(89)*i);
+        }];
+        
+        UILabel *specificationLab = [[UILabel alloc]init];
+        //self.specificationLab.text = @"规格：200g/块";
+        specificationLab.text = @"件";
+        specificationLab.textColor = [ColorManager Color999999];
+        specificationLab.font = kFont(12);
+        [self.bgView addSubview:specificationLab];
+        [specificationLab mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.left.equalTo(imgV.mas_right).mas_offset(kWidth(14));
+            make.top.equalTo(titleLab.mas_bottom).mas_offset(kWidth(24));
+        }];
+        UILabel *numLab = [[UILabel alloc]init];
+        numLab.textColor = [ColorManager Color999999];
+        numLab.font = kFont(12);
+        [self.bgView addSubview:numLab];
+        [numLab mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.left.equalTo(imgV.mas_right).mas_offset(kWidth(14));
+            make.top.equalTo(specificationLab.mas_bottom).mas_offset(kWidth(3));
+        }];
+        
+        OrderGoodModel *goodModel = [OrderGoodModel mj_objectWithKeyValues:[orderGoodDic valueForKey:[allKey objectAtIndex:i]]];
+        [imgV sd_setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@",goodModel.goods_file1]]];
+        titleLab.text = goodModel.goods_name;
+        numLab.text = [NSString stringWithFormat:@"数量：%@",goodModel.buy_number];
+        
+    }
+    self.priceLab.text = listModel.order_amount;
+    self.statusLab.text = listModel.status;
+//    if ([listModel.status_code isEqualToString:@"2"]) {
+//        self.statusLab.hidden = NO;
+//    }else{
+//        self.statusLab.hidden = YES;
+//    }
 }
 
 - (void)awakeFromNib {

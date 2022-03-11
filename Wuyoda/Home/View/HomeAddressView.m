@@ -152,6 +152,7 @@
     codeSearchBtn.layer.cornerRadius = kWidth(5);
     [codeSearchBtn setImage:kGetImage(@"扫码") forState:UIControlStateNormal];
     codeSearchBtn.imageEdgeInsets = UIEdgeInsetsMake(0, 0, 0, kWidth(10));
+    [codeSearchBtn addTarget:self action:@selector(codeSearchClicked:) forControlEvents:UIControlEventTouchUpInside];
     [self addSubview:codeSearchBtn];
     [codeSearchBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(lineV2);
@@ -168,6 +169,7 @@
     photoSearchBtn.layer.cornerRadius = kWidth(5);
     [photoSearchBtn setImage:kGetImage(@"拍照搜索") forState:UIControlStateNormal];
     photoSearchBtn.imageEdgeInsets = UIEdgeInsetsMake(0, 0, 0, kWidth(10));
+    [photoSearchBtn addTarget:self action:@selector(phoneSearchClicked:) forControlEvents:UIControlEventTouchUpInside];
     [self addSubview:photoSearchBtn];
     [photoSearchBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.right.equalTo(lineV2);
@@ -210,6 +212,15 @@
     }
     
 }
+
+-(void)codeSearchClicked:(id)sender{
+    [self showHUDWithText:@"敬请期待" withYOffSet:0];
+}
+
+-(void)phoneSearchClicked:(id)sender{
+    [self showHUDWithText:@"敬请期待" withYOffSet:0];
+}
+
 
 -(void)selectCity:(NSString *)city{
     [self.addressBtn setTitle:city forState:UIControlStateNormal];

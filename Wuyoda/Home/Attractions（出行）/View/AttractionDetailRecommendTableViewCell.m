@@ -7,6 +7,8 @@
 
 #import "AttractionDetailRecommendTableViewCell.h"
 #import "AttractionDetailRecommendCollectionViewCell.h"
+#import "AttractionDetailViewController.h"
+#import "AttractionModel.h"
 
 @interface AttractionDetailRecommendTableViewCell ()<UICollectionViewDelegate,UICollectionViewDataSource>
 
@@ -54,6 +56,17 @@
 
 -(NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section{
     return self.otherArr.count;
+}
+-(void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
+    AttractionModel *model = [self.otherArr objectAtIndex:indexPath.row];
+    AttractionDetailViewController *vc = [[AttractionDetailViewController alloc]init];
+    vc.scenic_id = model.uid;
+    [self.CurrentViewController.navigationController pushViewController:vc animated:YES];
+}
+
+-(void)setOtherArr:(NSArray *)otherArr{
+    _otherArr = otherArr;
+    [self.collectionV reloadData];
 }
 
 - (void)awakeFromNib {

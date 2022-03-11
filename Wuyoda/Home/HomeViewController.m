@@ -45,12 +45,25 @@
     [super viewDidAppear:animated];
     
     if (![UserInfoModel getUserInfoModel].token) {
+//        LoginViewController *VC = [[LoginViewController alloc] init];
+//        FJBaseNavigationController *nav = [[FJBaseNavigationController alloc]initWithRootViewController:VC];
+//        nav.modalPresentationStyle = UIModalPresentationFullScreen;
+//        [self presentViewController:nav animated:YES completion:nil];
+    }
+    
+    
+}
+
+- (void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:animated];
+    BOOL isFirst = [[NSUserDefaults standardUserDefaults]objectForKey:@"isFirst"];
+    if (!isFirst) {
         LoginViewController *VC = [[LoginViewController alloc] init];
         FJBaseNavigationController *nav = [[FJBaseNavigationController alloc]initWithRootViewController:VC];
         nav.modalPresentationStyle = UIModalPresentationFullScreen;
         [self presentViewController:nav animated:YES completion:nil];
+        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"isFirst"];
     }
-    
 }
 
 -(void)getTokenFromServer{
@@ -143,7 +156,8 @@
     
     [self locate];
     
-    self.sectionArr = [[NSMutableArray alloc]initWithObjects:@{@"title":@"口碑推荐",@"sub":@"台湾名产贴心推荐，低至7折"},@{@"title":@"宝岛特色文创",@"sub":@"文创商品直接销售机会难得"},@{@"title":@"你可能也想去",@"sub":@"发现更多出行灵感"}, nil];
+    //self.sectionArr = [[NSMutableArray alloc]initWithObjects:@{@"title":@"口碑推荐",@"sub":@"台湾名产贴心推荐，低至7折"},@{@"title":@"宝岛特色文创",@"sub":@"文创商品直接销售机会难得"},@{@"title":@"你可能也想去",@"sub":@"发现更多出行灵感"}, nil];
+    self.sectionArr = [[NSMutableArray alloc]initWithObjects:@{@"title":@"口碑推荐",@"sub":@"台湾名产贴心推荐，低至7折"},@{@"title":@"你可能也想去",@"sub":@"发现更多出行灵感"}, nil];
     self.specialShopArr = [[NSMutableArray alloc]init];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeHomdeCity:) name:@"changeHomeCity" object:nil];
@@ -199,6 +213,11 @@
             NSLog(@"%@",self.currentCity); //这就是当前的城市
             NSLog(@"%@",placeMark.name);//具体地址:  xx市xx区xx街道
             self.tableHeaderV.currentCity = self.currentCity;
+            if ([placeMark.country isEqualToString:@"中国"]) {
+                if ([placeMark.locality isEqualToString:@"香港特别行政区"] || [placeMark.locality isEqualToString:@"澳门特别行政区"] || [placeMark.administrativeArea isEqualToString:@"台湾省"]) {
+                    
+                }
+            }
         }
         else if (error == nil && placemarks.count == 0) {
             NSLog(@"No location and error return");
@@ -240,6 +259,7 @@
 -(void)showMoreClicked:(UIButton *)sender{
     PreferentialGoodListViewController *vc = [[PreferentialGoodListViewController alloc]init];
     [self.navigationController pushViewController:vc animated:YES];
+
 }
 
 //-(void)scrollViewDidScroll:(UIScrollView *)scrollView{
@@ -247,7 +267,7 @@
 //}
 
 -(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
-    return 3;
+    return 2;
 }
 
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
@@ -268,15 +288,15 @@
         
         return cell;
     }
-    else if (indexPath.section == 1) {
-        HomeCultureProductTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:NSStringFromClass([HomeCultureProductTableViewCell class]) forIndexPath:indexPath];
-        if (!cell) {
-            cell = [[HomeCultureProductTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:NSStringFromClass([HomeCultureProductTableViewCell class])];
-        }
-        cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        
-        return cell;
-    }
+//    else if (indexPath.section == 1) {
+//        HomeCultureProductTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:NSStringFromClass([HomeCultureProductTableViewCell class]) forIndexPath:indexPath];
+//        if (!cell) {
+//            cell = [[HomeCultureProductTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:NSStringFromClass([HomeCultureProductTableViewCell class])];
+//        }
+//        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+//
+//        return cell;
+//    }
     else{
         HomeAttractionsTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:NSStringFromClass([HomeAttractionsTableViewCell class]) forIndexPath:indexPath];
         if (!cell) {
@@ -292,9 +312,11 @@
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
     if (indexPath.section == 0) {
         return kWidth(233)*2 + kWidth(50)+kWidth(24);
-    }else if (indexPath.section == 1){
-        return kWidth(200);
-    }else{
+    }
+//    else if (indexPath.section == 1){
+//        return kWidth(200);
+//    }
+    else{
         return kWidth(175);
     }
 }
@@ -339,7 +361,11 @@
         UIView *footerV = [[UIView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kWidth(68))];
         footerV.backgroundColor = [ColorManager WhiteColor];
         UIButton *moreBtn = [[UIButton alloc]init];
-        [moreBtn setTitle:@"显示更多台北市特惠商品" forState:UIControlStateNormal];
+        NSString *titleStr = @"显示更多特惠商品";
+        if (self.specialTypeArr.count) {
+            titleStr = [NSString stringWithFormat:@"显示更多%@特惠商品",[self.specialTypeArr objectAtIndex:self.specialTypeIndex]];
+        }
+        [moreBtn setTitle:titleStr forState:UIControlStateNormal];
         [moreBtn setTitleColor:[ColorManager BlackColor] forState:UIControlStateNormal];
         moreBtn.titleLabel.font = kFont(14);
         moreBtn.layer.cornerRadius = kWidth(5);

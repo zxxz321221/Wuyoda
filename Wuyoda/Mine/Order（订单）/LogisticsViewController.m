@@ -8,12 +8,15 @@
 #import "LogisticsViewController.h"
 #import "LogisticeHeaderView.h"
 #import "LogisticsTableViewCell.h"
+#import "LogisticsModel.h"
 
 @interface LogisticsViewController ()<UITableViewDelegate, UITableViewDataSource>
 
 @property (nonatomic , retain)UITableView *tableView;
 
 @property (nonatomic , retain)LogisticeHeaderView *headerV;
+
+@property (nonatomic , retain)NSArray *logisticeArr;
 
 @end
 
@@ -39,6 +42,35 @@
     
     [self.view addSubview:self.tableView];
     
+    [self getDataFromServer];
+    
+}
+
+-(void)getDataFromServer{
+    
+//    AFHTTPSessionManager *sessionManager = [AFHTTPSessionManager manager];
+//    sessionManager.requestSerializer = [AFJSONRequestSerializer serializer];
+//    sessionManager.responseSerializer = [AFHTTPResponseSerializer serializer];
+//
+//    [sessionManager.responseSerializer setAcceptableContentTypes:[NSSet setWithObjects:@"application/json", @"text/html", @"text/json", @"text/plain", @"text/javascript", @"text/xml", @"image/*", nil]];
+//    [sessionManager POST:website_getOrderInfo parameters:@{@"orderNum":self.orderNum} headers:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+//
+//        } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+//
+//        }];
+    
+    [FJNetTool getWithParams:@{@"orderNum":self.orderNum} url:website_getOrderInfo loading:YES success:^(id responseObject) {
+        
+        LogisticsModel *model = [LogisticsModel mj_objectWithKeyValues:responseObject];
+        if ([model.success isEqualToString:@"1"]) {
+            self.headerV.model = model;
+            self.logisticeArr = [LogisticsModel mj_objectArrayWithKeyValuesArray:responseObject[@"trackingList"]];
+            [self.tableView reloadData];
+        }
+            
+        } failure:^(NSError *error) {
+            
+        }];
 }
 
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -48,6 +80,7 @@
         cell = [[LogisticsTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:NSStringFromClass([LogisticsTableViewCell class])];
     }
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    cell.model = [self.logisticeArr objectAtIndex:indexPath.row];
     
     return cell;
     
@@ -57,7 +90,7 @@
 }
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
 
-    return 10;
+    return self.logisticeArr.count;
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
 

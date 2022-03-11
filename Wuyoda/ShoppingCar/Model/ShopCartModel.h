@@ -22,6 +22,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic , copy)NSString *goods_file1;
 @property (nonatomic , copy)NSString *goods_name;
 @property (nonatomic , copy)NSString *goods_table;
+@property (nonatomic , copy)NSString *goods_stock;
+@property (nonatomic , copy)NSString *isup;
 @property (nonatomic , copy)NSString *module;
 @property (nonatomic , copy)NSString *money_type;
 @property (nonatomic , copy)NSString *ori_price;
@@ -38,6 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic , copy)NSString *uid;
 @property (nonatomic , copy)NSString *url;
 @property (nonatomic , copy)NSString *isSelect;
+@property (nonatomic , copy)NSString *isEdit;
 
 @end
 

@@ -23,6 +23,21 @@
 
 @implementation MineViewController
 
+-(void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:animated];
+    if ([CommonManager isLogin:self isPush:NO]) {
+        UserInfoModel *userInfo = [UserInfoModel getUserInfoModel];
+        [self.headerV.iconImgV sd_setImageWithURL:[NSURL URLWithString:userInfo.member_image] placeholderImage:kGetImage(@"normal_icon")];
+        self.headerV.nameLab.text = userInfo.member_name;
+        self.headerV.isLogin = YES;
+    }else{
+        [self.headerV.iconImgV sd_setImageWithURL:[NSURL URLWithString:@""]];
+        self.headerV.nameLab.text = @"未登录";
+        self.headerV.isLogin = NO;
+    }
+    
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
@@ -135,6 +150,11 @@
     return headerV;
 }
 
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    if (indexPath.section == 1) {
+        [self.view showHUDWithText:@"敬请期待" withYOffSet:0];
+    }
+}
 /*
 #pragma mark - Navigation
 

@@ -101,6 +101,10 @@
 }
 
 -(void)addShoppingCartClicked:(UIButton *)sender{
+    
+    if (![CommonManager isLogin:self.CurrentViewController isPush:YES]) {
+        return;
+    }
 
     UserInfoModel *model = [UserInfoModel getUserInfoModel];
     NSDictionary *dic = @{@"goods_id":self.model.uid,@"ps_num":@"1",@"m_id":model.member_id,@"att_value":@"",@"refer_g_uid":@"",@"api_token":[RegisterModel getUserInfoModel].user_token};

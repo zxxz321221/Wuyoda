@@ -98,6 +98,22 @@
     [self.navigationController pushViewController:vc animated:YES];
 }
 
+-(void)buyAgainClicked:(UIButton *)sender{
+    OrderListModel *model = [self.ordersArr objectAtIndex:sender.tag];
+    NSDictionary *dic = @{@"m_id":[UserInfoModel getUserInfoModel].member_id,@"order_id":model.uid,@"addressid":model.addressid,@"api_token":[RegisterModel getUserInfoModel].user_token};
+    
+    [FJNetTool postWithParams:dic url:Special_buy_again loading:YES success:^(id responseObject) {
+        BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
+        [self.view showHUDWithText:baseModel.msg withYOffSet:0];
+        if ([baseModel.code isEqualToString:CODE0]) {
+            [self.tabBarController setSelectedIndex:2];
+            [self.navigationController popToViewController:self.navigationController.viewControllers.firstObject animated:NO];
+        }
+    } failure:^(NSError *error) {
+        
+    }];
+}
+
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     
     OrderListTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:NSStringFromClass([OrderListTableViewCell class])];
@@ -114,6 +130,8 @@
     
     cell.finishEvaluateBtn.tag = indexPath.row;
     [cell.finishEvaluateBtn addTarget:self action:@selector(evaluateClicked:) forControlEvents:UIControlEventTouchUpInside];
+    cell.buyAgainBtn.tag = indexPath.row;
+    [cell.buyAgainBtn addTarget:self action:@selector(buyAgainClicked:) forControlEvents:UIControlEventTouchUpInside];
     
     return cell;
     
@@ -127,7 +145,11 @@
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
 
-    return kWidth(206);
+    OrderListModel *listModel = [self.ordersArr objectAtIndex:indexPath.row];
+    NSDictionary *orderGoodDic = listModel.order_goods;
+    NSArray *allKey = orderGoodDic.allKeys;
+    
+    return kWidth(117)+kWidth(89)*allKey.count;
 }
 
 -(CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section{

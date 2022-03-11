@@ -50,7 +50,7 @@
     }];
     
     self.imgV = [[UIImageView alloc]init];
-    self.imgV.backgroundColor = [ColorManager RandomColor];
+    self.imgV.backgroundColor = [ColorManager ColorF2F2F2];
     self.imgV.layer.cornerRadius = kWidth(5);
     self.imgV.layer.masksToBounds = YES;
     [self.contentView addSubview:self.imgV];
@@ -98,7 +98,7 @@
     }];
     
     self.priceLab = [[UILabel alloc]init];
-    self.priceLab.text = @"￥615/盒";
+    self.priceLab.text = @"￥0.00/盒";
     self.priceLab.textColor = [ColorManager BlackColor];
     self.priceLab.font = kFont(14);
     [self.contentView addSubview:self.priceLab];
@@ -112,7 +112,7 @@
     [self.imgV sd_setImageWithURL:[NSURL URLWithString:model.goods_file1]];
     self.cityLab.text = model.belong_city;
     self.nameLab.text = model.goods_name;
-    self.priceLab.text = [NSString stringWithFormat:@"￥%@",model.goods_sale_price];
+    self.priceLab.text = [NSString stringWithFormat:@"%@%@",[CommonManager getPriceType:model.money_type],model.goods_sale_price];
     if ([model.isSelect isEqualToString:@"1"]) {
         [self.selectImgV setImage:kGetImage(@"选中")];
     }else{

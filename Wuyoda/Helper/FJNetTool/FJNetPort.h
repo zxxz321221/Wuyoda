@@ -98,6 +98,10 @@ extern NSString *const Special_modify_address;
 extern NSString *const Special_bank;
 // 银行卡列表
 extern NSString *const Special_umf_pay;
+// 订单支付
+extern NSString *const Special_juhe_pay;
+// 订单支付结果
+extern NSString *const Special_pay_result;
 
 // 收货地址列表
 extern NSString *const Special_address_list;
@@ -124,6 +128,9 @@ extern NSString *const Special_orders_list;
 extern NSString *const Special_cancel_order;
 // 确认收货
 extern NSString *const Special_receiv;
+// 再次购买
+extern NSString *const Special_buy_again;
+
 
 // 注销账号
 extern NSString *const Login_cancel;
@@ -135,6 +142,8 @@ extern NSString *const Store_deliveryfaq;
 extern NSString *const Store_return_policy;
 // 公司介绍
 extern NSString *const Store_aboutus;
+// 公司介绍
+extern NSString *const Store_brand_list;
 // 联系我们
 extern NSString *const Store_recruitment;
 
@@ -146,4 +155,8 @@ extern NSString *const Login_phone_save;
 extern NSString *const Login_email_save;
 // 修改邮箱
 extern NSString *const Login_perfect;
+
+// 物流信息
+extern NSString *const website_getOrderInfo;
+
 

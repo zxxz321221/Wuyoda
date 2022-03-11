@@ -11,9 +11,34 @@
 
 @interface SecurityPhoneViewController ()
 
+@property (nonatomic , retain)UILabel *phoneLab;
+@property (nonatomic , retain)UILabel *titleLab;
+
 @end
 
 @implementation SecurityPhoneViewController
+
+-(void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:animated];
+    UserInfoModel *userInfo = [UserInfoModel getUserInfoModel];
+    if (![self.type isEqualToString:@"2"]) {
+        if (userInfo.member_tel2.length) {
+            NSString *phoneStr = userInfo.member_tel2;
+            phoneStr = [phoneStr stringByReplacingCharactersInRange:NSMakeRange(3, 4) withString:@"****"];
+            self.phoneLab.text = phoneStr;
+        }
+    }else{
+        if (userInfo.member_email.length) {
+            self.titleLab.text = @"当前绑定邮箱";
+            self.phoneLab.text =userInfo.member_email;
+        }else{
+            self.titleLab.text = @"当前未绑定邮箱";
+            self.phoneLab.text = @"";
+        }
+    }
+    
+    
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -22,10 +47,14 @@
     FJNormalNavView *nav = [[FJNormalNavView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kHeight_NavBar) controller:self titleStr:@"手机号"];
     [self.view addSubview:nav];
     
+    UserInfoModel *userInfo = [UserInfoModel getUserInfoModel];
+    
+    
     UILabel *titleLab = [[UILabel alloc]init];
     titleLab.text = @"当前绑定手机号";
     titleLab.textColor = [ColorManager Color333333];
     titleLab.font = kFont(14);
+    self.titleLab = titleLab;
     [self.view addSubview:titleLab];
     [titleLab mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.equalTo(self.view);
@@ -33,9 +62,14 @@
     }];
     
     UILabel *phoneLab = [[UILabel alloc]init];
-    phoneLab.text = @"183****9031";
+    NSString *phoneStr = userInfo.member_tel2;
+    if (userInfo.member_tel2.length) {
+        phoneStr = [phoneStr stringByReplacingCharactersInRange:NSMakeRange(3, 4) withString:@"****"];
+    }
+    phoneLab.text = phoneStr;
     phoneLab.textColor = [ColorManager Color333333];
     phoneLab.font = kBoldFont(18);
+    self.phoneLab = phoneLab;
     [self.view addSubview:phoneLab];
     [phoneLab mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.equalTo(self.view);
@@ -74,8 +108,14 @@
     
     if ([self.type isEqualToString:@"2"]) {
         [nav changeTitle:@"邮箱"];
-        titleLab.text = @"当前绑定邮箱";
-        phoneLab.text = @"1244247@qq.com";
+        if (userInfo.member_email.length) {
+            titleLab.text = @"当前绑定邮箱";
+            phoneLab.text =userInfo.member_email;
+        }else{
+            titleLab.text = @"当前未绑定邮箱";
+            phoneLab.text = @"";
+        }
+        
         [changeBtn setTitle:@"修改邮箱" forState:UIControlStateNormal];
     }
 }

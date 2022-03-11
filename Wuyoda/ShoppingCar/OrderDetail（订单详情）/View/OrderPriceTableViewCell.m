@@ -30,7 +30,7 @@
     }];
     
     self.priceLab = [[UILabel alloc]init];
-    self.priceLab.text = @"￥349.00";
+    //self.priceLab.text = @"￥349.00";
     self.priceLab.textColor = [ColorManager ColorCCCCCC];
     self.priceLab.font = kFont(14);
     [self.contentView addSubview:self.priceLab];
@@ -40,7 +40,7 @@
     }];
     
     self.allPriceLab = [[UILabel alloc]init];
-    self.allPriceLab.text = @"￥349.00";
+    //self.allPriceLab.text = @"￥349.00";
     self.allPriceLab.textColor = [UIColor redColor];
     self.allPriceLab.font = kFont(16);
     [self.contentView addSubview:self.allPriceLab];

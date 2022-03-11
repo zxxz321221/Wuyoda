@@ -15,8 +15,6 @@
 
 @property (nonatomic , retain)UIImageView *selectImgV;
 
-@property (nonatomic , retain)UIButton *deleteBtn;
-
 @end
 
 @implementation AccountListTableViewCell
@@ -31,9 +29,9 @@
 }
 
 -(void)createUI{
-    self.iconImgV = [[UIImageView alloc]init];
-    self.iconImgV.backgroundColor = [ColorManager RandomColor];
+    self.iconImgV = [[UIImageView alloc]initWithImage:kGetImage(@"normal_icon")];
     self.iconImgV.layer.cornerRadius = kWidth(28);
+    self.iconImgV.layer.masksToBounds = YES;
     [self.contentView addSubview:self.iconImgV];
     [self.iconImgV mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_offset(kWidth(21));
@@ -49,7 +47,7 @@
     }];
     
     self.nameLab = [[UILabel alloc]init];
-    self.nameLab.text = @"小张";
+    //self.nameLab.text = @"小张";
     self.nameLab.textColor = [ColorManager Color333333];
     self.nameLab.font = kFont(16);
     [self.contentView addSubview:self.nameLab];
@@ -72,6 +70,27 @@
         make.width.mas_offset(kWidth(60));
         make.height.mas_offset(kWidth(26));
     }];
+}
+
+-(void)setModel:(UserInfoModel *)model{
+    [self.iconImgV sd_setImageWithURL:[NSURL URLWithString:model.member_image] placeholderImage:kGetImage(@"normal_icon")];
+    self.nameLab.text = model.member_name;
+    
+    UserInfoModel *currentUser = [UserInfoModel getUserInfoModel];
+    if ([model.member_id isEqualToString:currentUser.member_id]) {
+        self.selectImgV.hidden = NO;
+    }else{
+        self.selectImgV.hidden = YES;
+    }
+}
+
+- (void)setType:(NSString *)type{
+    if ([type isEqualToString:@"2"]) {
+        self.deleteBtn .hidden = YES;
+        self.selectImgV.hidden = YES;
+        [self.iconImgV setImage:kGetImage(@"添加账号")];
+        self.nameLab.text = @"添加账号";
+    }
 }
 
 - (void)awakeFromNib {

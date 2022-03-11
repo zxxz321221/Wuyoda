@@ -11,11 +11,13 @@
 #import "AttractionDetailViewController.h"
 #import "AttractionModel.h"
 
-@interface AttractionsListViewController ()<UITableViewDelegate,UITableViewDataSource>
+@interface AttractionsListViewController ()<UITableViewDelegate,UITableViewDataSource,UITextFieldDelegate>
 
 @property (nonatomic , retain)UITableView *tableView;
 
 @property (nonatomic , retain)NSArray *attractionArr;
+
+@property (nonatomic , retain)NSMutableArray *attractionSearchArr;
 
 @end
 
@@ -25,16 +27,44 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     AttractionsListNavView *nav = [[AttractionsListNavView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kHeight_NavBar)];
+    nav.searchField.delegate = self;
     [self.view addSubview:nav];
     
     self.tableView = [[UITableView alloc]initWithFrame:CGRectMake(0, kHeight_NavBar, kScreenWidth, kScreenHeight-kHeight_NavBar-kHeight_SafeArea) style:UITableViewStyleGrouped];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
+    self.tableView.backgroundColor = [ColorManager ColorF2F2F2];
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     [self.tableView registerClass:[AttractionsListTableViewCell class] forCellReuseIdentifier:NSStringFromClass([AttractionsListTableViewCell class])];
     [self.view addSubview:self.tableView];
     
     [self getDataFromServer];
+}
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField{
+    if (textField.text.length) {
+        [self.attractionSearchArr removeAllObjects];
+        for (int i = 0; i<self.attractionArr.count; i++) {
+            AttractionModel *model = [self.attractionArr objectAtIndex:i];
+            if ([model.scenic_title containsString:textField.text]) {
+                [self.attractionSearchArr addObject:model];
+            }
+        }
+    }else{
+        self.attractionSearchArr = [self.attractionArr mutableCopy];
+    }
+    
+    [self.tableView reloadData];
+    return YES;
+}
+
+-(BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string{
+    NSString *inputWordStr = [textField.text stringByReplacingCharactersInRange:range withString:string];
+    if (!inputWordStr.length) {
+        self.attractionSearchArr = [self.attractionArr mutableCopy];
+        [self.tableView reloadData];
+    }
+    return YES;
 }
 
 -(void)getDataFromServer{
@@ -44,6 +74,7 @@
         BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
         if ([baseModel.code isEqualToString:CODE0]) {
             self.attractionArr = [AttractionModel mj_objectArrayWithKeyValuesArray:responseObject[@"data"]];
+            self.attractionSearchArr = [self.attractionArr mutableCopy];
             [self.tableView reloadData];
         }
     } failure:^(NSError *error) {
@@ -57,7 +88,7 @@
         cell = [[AttractionsListTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:NSStringFromClass([AttractionsListTableViewCell class])];
     }
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
-    cell.model = [self.attractionArr objectAtIndex:indexPath.row];
+    cell.model = [self.attractionSearchArr objectAtIndex:indexPath.row];
         
     return cell;
 }
@@ -66,7 +97,7 @@
     return 1;
 }
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
-    return self.attractionArr.count;
+    return self.attractionSearchArr.count;
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
     return kWidth(160);
@@ -101,7 +132,7 @@
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     AttractionDetailViewController *vc = [[AttractionDetailViewController alloc]init];
-    AttractionModel *model = [self.attractionArr objectAtIndex:indexPath.row];
+    AttractionModel *model = [self.attractionSearchArr objectAtIndex:indexPath.row];
     vc.scenic_id = model.uid;
     [self.navigationController pushViewController:vc animated:YES];
 }

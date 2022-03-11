@@ -37,6 +37,10 @@
 
 @property (nonatomic , retain)NSMutableArray *goodsArr;
 
+@property (nonatomic , assign)NSInteger surplusTime;
+
+@property (nonatomic , retain)NSTimer *timer;
+
 @end
 
 @implementation OrderInfoViewController
@@ -59,13 +63,21 @@
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.tableView.backgroundColor = [ColorManager WhiteColor];
     [self.view addSubview:self.tableView];
+    [self createBottomView];
     
-    if (self.type && ![self.type isEqualToString:@"4"]) {
+    self.goodsArr = [[NSMutableArray alloc]init];
+    [self getOrderInfoFromServer];
+}
+
+-(void)createBottomView{
+    if (self.type) {
         self.headerV = [[OrderInfoHeaderView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kWidth(94))];
         self.headerV.type = self.type;
 
         self.tableView.tableHeaderView = self.headerV;
-        
+        if (self.bottomV) {
+            [self.bottomV removeFromSuperview];
+        }
         self.bottomV = [[OrderInfoBottomView alloc]initWithFrame:CGRectMake(0, kScreenHeight-kHeight_SafeArea-kWidth(49), kScreenWidth, kWidth(49))];
         [self.bottomV.payBtn addTarget:self action:@selector(payOrderClicked:) forControlEvents:UIControlEventTouchUpInside];
         [self.bottomV.addressBtn addTarget:self action:@selector(changeAddressClicked:) forControlEvents:UIControlEventTouchUpInside];
@@ -73,12 +85,11 @@
         [self.bottomV.readLogisticsBtn addTarget:self action:@selector(readLogisticsClicked:) forControlEvents:UIControlEventTouchUpInside];
         [self.bottomV.finishEvaluateBtn addTarget:self action:@selector(evaluateClicked:) forControlEvents:UIControlEventTouchUpInside];
         [self.bottomV.doneTakeBtn addTarget:self action:@selector(doneTakeClicked:) forControlEvents:UIControlEventTouchUpInside];
+        [self.bottomV.buyAgainBtn addTarget:self action:@selector(doneTakeClicked:) forControlEvents:UIControlEventTouchUpInside];
         self.bottomV.type = self.type;
         [self.view addSubview:self.bottomV];
         self.tableView.frame = CGRectMake(0, kHeight_NavBar, kScreenWidth, kScreenHeight-kHeight_NavBar-kHeight_SafeArea-kWidth(49));
     }
-    self.goodsArr = [[NSMutableArray alloc]init];
-    [self getOrderInfoFromServer];
 }
 
 -(void)getOrderInfoFromServer{
@@ -87,6 +98,7 @@
     [FJNetTool postWithParams:dic url:Special_orders_list loading:YES success:^(id responseObject) {
         BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
         if ([baseModel.code isEqualToString:CODE0]) {
+            [self.goodsArr removeAllObjects];
             self.orderInfoModel = [OrderListModel mj_objectWithKeyValues:responseObject[@"data"]];
             NSDictionary *goodsDic = self.orderInfoModel.order_goods;
             NSArray *allKey = [goodsDic allKeys];
@@ -96,10 +108,58 @@
                 [self.goodsArr addObject:goodsModel];
             }
             
+            if ([self.type isEqualToString:@"1"]) {
+                self.surplusTime = self.orderInfoModel.endtime-self.orderInfoModel.time;
+                if (self.surplusTime < 0) {
+                    self.type = @"4";
+                    [self createBottomView];
+                }else{
+                    self.timer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(surplusPayTime) userInfo:nil repeats:YES];
+                    
+                }
+            }
+//            if ([self.orderInfoModel.status_code isEqualToString:@"1"]) {
+//                self.type = @"1";
+//            }
+//            else if ([self.orderInfoModel.status_code isEqualToString:@"4"]) {
+//                self.type = @"2";
+//            }
+//            else if ([self.orderInfoModel.status_code isEqualToString:@"5"]) {
+//                self.type = @"3";
+//            }else{
+//                self.type = @"4";
+//            }
+//            [self createBottomView];
             [self.tableView reloadData];
         }
     } failure:^(NSError *error) {
         
+    }];
+}
+
+-(void)surplusPayTime{
+    self.surplusTime -= 1;
+    if (self.surplusTime > 550) {
+        self.headerV.surplus = self.surplusTime;
+    }else{
+        [self.timer invalidate];
+        [self payTimeOutCancelOrder];
+    }
+}
+
+-(void)payTimeOutCancelOrder{
+    NSDictionary *dic = @{@"m_id":[UserInfoModel getUserInfoModel].member_id,@"uid":self.orderInfoModel.uid,@"cancel":@"订单超时",@"api_token":[RegisterModel getUserInfoModel].user_token};
+    [FJNetTool postWithParams:dic url:Special_cancel_order loading:YES success:^(id responseObject) {
+        BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
+        if ([baseModel.code isEqualToString:CODE0]) {
+            self.type = @"4";
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"orderUpdate" object:nil];
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"willPayOrderUpdate" object:nil];
+            
+            [self createBottomView];
+        }
+    } failure:^(NSError *error) {
+            
     }];
 }
 
@@ -120,6 +180,7 @@
     model.mobile = self.orderInfoModel.mobile;
     model.pay_name = self.orderInfoModel.pay_name;
     model.ordersn= self.orderInfoModel.ordersn;
+    model.addressid= self.orderInfoModel.addressid;
     ChangeOrderAddressViewController *vc = [[ChangeOrderAddressViewController alloc]init];
     vc.orderListModel = model;
     vc.delegate = self;
@@ -141,6 +202,8 @@
         BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
         if ([baseModel.code isEqualToString:CODE0]) {
             [self.view showHUDWithText:baseModel.msg withYOffSet:0];
+            self.type = @"4";
+            [self createBottomView];
             [self getOrderInfoFromServer];
         }
     } failure:^(NSError *error) {
@@ -159,8 +222,29 @@
     [self.navigationController pushViewController:vc animated:YES];
 }
 
+-(void)buyAgainClicked:(UIButton *)sender{
+    
+    NSDictionary *dic = @{@"m_id":[UserInfoModel getUserInfoModel].member_id,@"order_id":self.orderInfoModel.uid,@"addressid":self.orderInfoModel.addressid,@"api_token":[RegisterModel getUserInfoModel].user_token};
+    
+    [FJNetTool postWithParams:dic url:Special_buy_again loading:YES success:^(id responseObject) {
+        BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
+        [self.view showHUDWithText:baseModel.msg withYOffSet:0];
+        if ([baseModel.code isEqualToString:CODE0]) {
+            [self.tabBarController setSelectedIndex:2];
+            [self.navigationController popToViewController:self.navigationController.viewControllers.firstObject animated:NO];
+        }
+    } failure:^(NSError *error) {
+        
+    }];
+}
+
 - (void)changeOrderAddress{
     [self getOrderInfoFromServer];
+}
+-(void)copyOrderSnClicked{
+    UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+    [pasteboard setString:self.orderInfoModel.ordersn];
+    [self.view showHUDWithText:@"复制成功" withYOffSet:0];
 }
 
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -235,7 +319,8 @@
             cell.infoLab.hidden = NO;
             if (indexPath.row == 0) {
                 cell.titleLab.text = @"下单时间";
-                cell.infoLab.text = @"2020.7.3 10:30:20";
+                NSDate *date = [NSDate dateWithTimeIntervalSince1970:self.orderInfoModel.addtime];
+                cell.infoLab.text = [CommonManager timeGetCurrentDateOfYearMonthDayHourMinutesSecond:date];
             }
             if (indexPath.row == 2) {
                 cell.titleLab.text = @"支付方式";
@@ -252,6 +337,7 @@
             
             cell.titleLab.text = @"订单编号";
             cell.orderNumLab.text = self.orderInfoModel.ordersn;
+            [cell.orderCopyBtn addTarget:self action:@selector(copyOrderSnClicked) forControlEvents:UIControlEventTouchUpInside];
         }
         
         

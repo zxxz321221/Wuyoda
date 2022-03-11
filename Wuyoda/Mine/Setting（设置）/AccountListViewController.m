@@ -12,6 +12,7 @@
 
 @property (nonatomic , retain)UITableView *tableView;
 
+@property (nonatomic , retain)NSMutableArray *usersArr;
 
 @end
 
@@ -32,6 +33,15 @@
     self.tableView.backgroundColor = [ColorManager ColorF2F2F2];
     
     [self.view addSubview:self.tableView];
+    
+    self.usersArr = [LoginUsersModel getLoginUsers];
+}
+
+-(void)deleteUserClicked:(UIButton *)sender{
+    UserInfoModel *user = [self.usersArr objectAtIndex:sender.tag];
+    [LoginUsersModel deleteLoginUsers:user];
+    self.usersArr = [LoginUsersModel getLoginUsers];
+    [self.tableView reloadData];
 }
 
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -41,6 +51,15 @@
         cell = [[AccountListTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:NSStringFromClass([AccountListTableViewCell class])];
     }
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    
+    if (indexPath.row == self.usersArr.count) {
+        cell.type = @"2";
+    }else{
+        cell.model = [self.usersArr objectAtIndex:indexPath.row];
+        
+        cell.deleteBtn.tag = indexPath.row;
+        [cell.deleteBtn addTarget:self action:@selector(deleteUserClicked:) forControlEvents:UIControlEventTouchUpInside];
+    }
     
     
     
@@ -52,7 +71,7 @@
 }
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
 
-    return 10;
+    return self.usersArr.count+1;
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
 
@@ -74,6 +93,27 @@
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
 
     return [UIView new];
+}
+
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    if (indexPath.row == self.usersArr.count) {
+        
+        LoginViewController *VC = [[LoginViewController alloc] init];
+        VC.modalPresentationStyle = UIModalPresentationFullScreen;
+        //[viewCotroller.navigationController pushViewController:VC animated:YES];
+        FJBaseNavigationController *nav = [[FJBaseNavigationController alloc]initWithRootViewController:VC];
+        nav.modalPresentationStyle = UIModalPresentationFullScreen;
+        [self presentViewController:nav animated:YES completion:nil];
+    }else{
+        UserInfoModel *currentUser = [UserInfoModel getUserInfoModel];
+        UserInfoModel *user = [self.usersArr objectAtIndex:indexPath.row];
+        if (![currentUser.member_id isEqualToString:user.member_id]) {
+            [UserInfoModel saveUserInfoModel:user];
+            [self.navigationController popToRootViewControllerAnimated:YES];
+        }
+    }
+    
+    
 }
 
 /*

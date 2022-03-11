@@ -21,6 +21,11 @@
 
 @implementation SecurityCenterViewController
 
+-(void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:animated];
+    [self.tableView reloadData];
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
@@ -53,11 +58,24 @@
     [cell.imgV setImage:kGetImage(titleStr)];
     cell.titleLab.text = titleStr;
     
+    UserInfoModel *userInfo = [UserInfoModel getUserInfoModel];
+    
     if (indexPath.row == 1) {
-        cell.infoLab.text = @"183****9031";
+        NSString *phoneStr = userInfo.member_tel2;
+        if (phoneStr.length) {
+            phoneStr = [phoneStr stringByReplacingCharactersInRange:NSMakeRange(3, 4) withString:@"****"];
+        }else{
+            phoneStr = @"未绑定";
+        }
+        
+        cell.infoLab.text = phoneStr;
     }
     if (indexPath.row == 2) {
-        cell.infoLab.text = @"1244247@qq.com";
+        NSString *emailStr = userInfo.member_email;
+        if (!emailStr.length) {
+            emailStr = @"未绑定";
+        }
+        cell.infoLab.text = emailStr;
     }
     
     return cell;

@@ -48,6 +48,11 @@
     }];
 }
 
+- (void)setModel:(CityEventModel *)model{
+    self.timeLab.text = model.event_date;
+    self.historyLab.text = model.event_content;
+}
+
 - (void)awakeFromNib {
     [super awakeFromNib];
     // Initialization code
