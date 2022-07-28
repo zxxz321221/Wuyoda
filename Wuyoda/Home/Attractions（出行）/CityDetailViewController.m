@@ -17,6 +17,7 @@
 #import "CityDetailModel.h"
 #import "AttractionModel.h"
 #import "HomeModel.h"
+#import "SearchViewController.h"
 
 @interface CityDetailViewController ()<UITableViewDelegate,UITableViewDataSource ,updateCityHeaderHeightDelegate>
 
@@ -47,9 +48,41 @@
     // Do any additional setup after loading the view.
     
     FJNormalNavView *nav = [[FJNormalNavView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kHeight_NavBar) controller:self titleStr:self.title];
+    nav.backgroundColor = [ColorManager ColorF2F2F2];
     [self.view addSubview:nav];
     
-    self.tableView = [[UITableView alloc]initWithFrame:CGRectMake(0, kHeight_NavBar, kScreenWidth, kScreenHeight-kHeight_NavBar-kHeight_SafeArea) style:UITableViewStyleGrouped];
+    UIButton *searchBtn = [[UIButton alloc]init];
+    [searchBtn setImage:kGetImage(@"首页搜索") forState:UIControlStateNormal];
+    [searchBtn addTarget:self action:@selector(searchClicked) forControlEvents:UIControlEventTouchUpInside];
+    [nav addSubview:searchBtn];
+    [searchBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.bottom.mas_offset(kWidth(-10));
+        make.right.mas_offset(kWidth(-60));
+        make.width.height.mas_offset(kWidth(18));
+    }];
+    
+    UIButton *shopCartBtn = [[UIButton alloc]init];
+    [shopCartBtn setImage:kGetImage(@"首页顶部购物车") forState:UIControlStateNormal];
+    [shopCartBtn addTarget:self action:@selector(shopCartClicked) forControlEvents:UIControlEventTouchUpInside];
+    [nav addSubview:shopCartBtn];
+    [shopCartBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerY.equalTo(searchBtn);
+        make.right.mas_offset(kWidth(-20));
+        make.width.height.mas_offset(kWidth(20));
+    }];
+    
+    self.view.backgroundColor = [ColorManager ColorF2F2F2];
+    
+    UIView *bgView = [[UIView alloc]initWithFrame:CGRectMake(0, kHeight_NavBar+kWidth(20), kScreenWidth, kScreenHeight-kHeight_NavBar-kWidth(20))];
+    bgView.backgroundColor = [ColorManager WhiteColor];
+    [self.view addSubview:bgView];
+    UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:bgView.bounds byRoundingCorners:UIRectCornerTopRight | UIRectCornerTopLeft cornerRadii:CGSizeMake(kWidth(10), kWidth(10))];
+    CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
+    maskLayer.frame =  bgView.bounds;
+    maskLayer.path = maskPath.CGPath;
+    bgView.layer.mask = maskLayer;
+    
+    self.tableView = [[UITableView alloc]initWithFrame:CGRectMake(0, kWidth(0), kScreenWidth, kScreenHeight-kHeight_NavBar-kHeight_SafeArea-kWidth(20)) style:UITableViewStyleGrouped];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
@@ -64,18 +97,19 @@
     self.headerV.delegate = self;
     self.tableView.tableHeaderView = self.headerV;
     
-    [self.view addSubview:self.tableView];
+    [bgView addSubview:self.tableView];
     
     self.sectionArr = [[NSArray alloc]initWithObjects:@"著名景点",@"历史事件",@"推荐行程",@"民俗美食",@"手办·礼品", nil];
     [self getDataFromServer];
 }
 
 -(void)getDataFromServer{
-    NSDictionary *dic = @{@"city_id":self.cityID,@"api_token":[RegisterModel getUserInfoModel].user_token};
+    NSDictionary *dic = @{@"city_id":self.cityID};
     
     [FJNetTool postWithParams:dic url:Store_city_list loading:YES success:^(id responseObject) {
         BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
         if ([baseModel.code isEqualToString:CODE0]) {
+            NSLog(@"cityDetail:%@",responseObject);
             self.cityModel = [CityDetailModel mj_objectWithKeyValues:responseObject[@"data"]];
             self.customArr = [CityCustomModel mj_objectArrayWithKeyValuesArray:responseObject[@"data"][@"custom"]];
             self.eventArr = [CityEventModel mj_objectArrayWithKeyValuesArray:responseObject[@"data"][@"event"]];
@@ -94,8 +128,21 @@
     }];
 }
 
+-(void)searchClicked{
+    SearchViewController *vc = [[SearchViewController alloc]init];
+    [self.navigationController pushViewController:vc animated:YES];
+}
+
+-(void)shopCartClicked{
+    if ([CommonManager isLogin:self isPush:YES]) {
+        [self.tabBarController setSelectedIndex:2];
+        [self.navigationController popToViewController:self.navigationController.viewControllers.firstObject animated:NO];
+    }
+    
+}
+
 -(void)updateCityHeaderHeight:(CGFloat)height{
-    self.headerV.frame = CGRectMake(0, 0, kScreenWidth, kWidth(195)+height);
+    self.headerV.frame = CGRectMake(0, 0, kScreenWidth, kWidth(208)+height);
     [self.tableView reloadData];
 }
 
@@ -115,6 +162,11 @@
         
         //cell.imgName = [NSString stringWithFormat:@"景点%ld",indexPath.row+1];
         cell.model = [self.attractionArr objectAtIndex:indexPath.row];
+        if (indexPath.row == self.attractionArr.count-1) {
+            cell.isLast = YES;
+        }else{
+            cell.isLast = NO;
+        }
         
         return cell;
     }else if (indexPath.section == 1){
@@ -125,6 +177,11 @@
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         
         cell.model = [self.eventArr objectAtIndex:indexPath.row];
+        if (indexPath.row == self.eventArr.count-1) {
+            cell.isLast = YES;
+        }else{
+            cell.isLast = NO;
+        }
         
         return cell;
     }else if (indexPath.section == 2){
@@ -136,6 +193,12 @@
         
         cell.model = [self.tripArr objectAtIndex:indexPath.row];
         
+        if (indexPath.row == self.tripArr.count-1) {
+            cell.isLast = YES;
+        }else{
+            cell.isLast = NO;
+        }
+        
         return cell;
     }else if (indexPath.section == 3){
         CityDetailFoodTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:NSStringFromClass([CityDetailFoodTableViewCell class]) forIndexPath:indexPath];
@@ -145,6 +208,12 @@
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         
         cell.model = [self.customArr objectAtIndex:indexPath.row];
+        
+        if (indexPath.row == self.customArr.count-1) {
+            cell.isLast = YES;
+        }else{
+            cell.isLast = NO;
+        }
         
         return cell;
     }else{
@@ -200,7 +269,7 @@
         if (!self.customArr.count) {
             return 0.001;
         }
-        return kWidth(100);
+        return kWidth(140);
     }else{
         if (!self.goodsArr.count) {
             return 0.001;
@@ -243,18 +312,50 @@
     UIView *bgV = [[UIView alloc]initWithFrame:CGRectMake(0, kWidth(8), kScreenWidth, kWidth(50))];
     bgV.backgroundColor = [ColorManager WhiteColor];
     [headerV addSubview:bgV];
+    UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:bgV.bounds byRoundingCorners:UIRectCornerTopRight | UIRectCornerTopLeft cornerRadii:CGSizeMake(kWidth(10), kWidth(10))];
+    CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
+    maskLayer.frame =  bgV.bounds;
+    maskLayer.path = maskPath.CGPath;
+    bgV.layer.mask = maskLayer;
+    
     UILabel *titleLab = [[UILabel alloc]init];
-    titleLab.text = [self.sectionArr objectAtIndex:section];
-    if (section == 4) {
+    if (section == 0) {
+        if (!self.attractionArr.count) {
+            return [UIView new];
+        }else{
+            titleLab.text = [self.sectionArr objectAtIndex:section];
+        }
+    }else if (section == 1){
+        if (!self.eventArr.count) {
+            return [UIView new];
+        }else{
+            titleLab.text = [self.sectionArr objectAtIndex:section];
+        }
+    }else if (section == 2){
+        if (!self.tripArr.count) {
+            return [UIView new];
+        }else{
+            titleLab.text = [self.sectionArr objectAtIndex:section];
+        }
+    }else if (section == 3){
+        if (!self.customArr.count) {
+            return [UIView new];
+        }else{
+            titleLab.text = [self.sectionArr objectAtIndex:section];
+        }
+    }else{
         if (!self.goodsArr.count) {
-            titleLab.text = @"";
+            return [UIView new];
+        }else{
+            titleLab.text = [self.sectionArr objectAtIndex:section];
         }
     }
+    
     titleLab.textColor = [ColorManager Color333333];
     titleLab.font = kBoldFont(16);
     [bgV addSubview:titleLab];
     [titleLab mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.bottom.equalTo(bgV).mas_offset(kWidth(-10));
+        make.top.mas_offset(kWidth(20));
         make.left.mas_offset(kWidth(16));
     }];
     
@@ -271,7 +372,7 @@
         }];
     }
     
-    UIView *line = [[UIView alloc]initWithFrame:CGRectMake(0, kWidth(49), kScreenWidth, kWidth(1))];
+    UIView *line = [[UIView alloc]initWithFrame:CGRectMake(0, kWidth(55), kScreenWidth, kWidth(1))];
     line.backgroundColor = [ColorManager ColorF7F7F7];
     [bgV addSubview:line];
     

@@ -15,7 +15,9 @@
 
 @property (nonatomic , retain)UILabel *nameLab;
 
-@property (nonatomic , retain)UILabel *oldPriceLab;
+@property (nonatomic , retain)UILabel *weightLab;
+
+//@property (nonatomic , retain)UILabel *oldPriceLab;
 
 @property (nonatomic , retain)UILabel *priceLab;
 
@@ -49,27 +51,28 @@
     [bgV mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.top.equalTo(self.contentView);
         make.width.mas_offset(kWidth(355));
-        make.bottom.mas_offset(kWidth(-8));
+        make.bottom.mas_offset(kWidth(-10));
     }];
     
-    self.selectImgV = [[UIImageView alloc]initWithImage:kGetImage(@"选择")];
+    self.selectImgV = [[UIImageView alloc]initWithImage:kGetImage(@"未选中")];
     [bgV addSubview:self.selectImgV];
     [self.selectImgV mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_offset(kWidth(11));
-        make.top.mas_offset(kWidth(24));
-        make.width.height.mas_offset(kWidth(20));
+        make.top.mas_offset(kWidth(60));
+        make.width.height.mas_offset(kWidth(18));
     }];
     
     self.imgV = [[UIImageView alloc]init];
     self.imgV.backgroundColor = [ColorManager ColorF2F2F2];
     self.imgV.layer.masksToBounds = YES;
     self.imgV.layer.cornerRadius = kWidth(10);
+    self.imgV.contentMode = UIViewContentModeScaleAspectFit;
     [self.imgV setImage:kGetImage(@"good_detail_top")];
     [bgV addSubview:self.imgV];
     [self.imgV mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_offset(kWidth(46));
-        make.top.mas_offset(kWidth(16));
-        make.width.height.mas_offset(kWidth(80));
+        make.left.mas_offset(kWidth(48));
+        make.top.mas_offset(kWidth(20));
+        make.width.height.mas_offset(kWidth(100));
     }];
     
     self.nameLab = [[UILabel alloc]init];
@@ -85,26 +88,32 @@
         make.right.mas_offset(kWidth(-20));
     }];
     
-    self.oldPriceLab = [[UILabel alloc]init];
-    self.oldPriceLab.textColor = [ColorManager ColorAAAAAA];
-    self.oldPriceLab.font = kFont(14);
-    NSMutableAttributedString *oldPrice = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"￥%@",@"788"]];
-    [oldPrice addAttribute:NSStrikethroughStyleAttributeName value:@(NSUnderlinePatternSolid | NSUnderlineStyleSingle) range:NSMakeRange(0, oldPrice.length)];
-    self.oldPriceLab.attributedText = oldPrice;
-    [bgV addSubview:self.oldPriceLab];
-    [self.oldPriceLab mas_makeConstraints:^(MASConstraintMaker *make) {
+//    self.oldPriceLab = [[UILabel alloc]init];
+//    self.oldPriceLab.textColor = [ColorManager ColorCCCCCC];
+//    self.oldPriceLab.font = kFont(14);
+//    [bgV addSubview:self.oldPriceLab];
+//    [self.oldPriceLab mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.left.equalTo(self.imgV.mas_right).mas_offset(kWidth(10));
+//        make.top.mas_offset(kWidth(75));
+//    }];
+//
+    self.weightLab = [[UILabel alloc]init];
+    self.weightLab.textColor = [ColorManager ColorCCCCCC];
+    self.weightLab.font = kFont(14);
+    [bgV addSubview:self.weightLab];
+    [self.weightLab mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(self.imgV.mas_right).mas_offset(kWidth(10));
-        make.top.equalTo(self.nameLab.mas_bottom).mas_offset(kWidth(15));
+        make.top.mas_offset(kWidth(75));
     }];
     
     self.priceLab = [[UILabel alloc]init];
     self.priceLab.text = @"￥0";
-    self.priceLab.textColor = [ColorManager ColorD8001B];
-    self.priceLab.font = kFont(16);
+    self.priceLab.textColor = [ColorManager ColorFE3C3D];
+    self.priceLab.font = kFont(14);
     [bgV addSubview:self.priceLab];
     [self.priceLab mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.equalTo(self.oldPriceLab);
-        make.top.equalTo(self.oldPriceLab.mas_bottom).mas_offset(kWidth(13));
+        make.left.equalTo(self.weightLab);
+        make.top.equalTo(self.weightLab.mas_bottom).mas_offset(kWidth(10));
     }];
     
     self.addBtn = [[UIButton alloc]init];
@@ -155,8 +164,8 @@
     self.statusLab.font = kBoldFont(12);
     [bgV addSubview:self.statusLab];
     [self.statusLab mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.bottom.mas_offset(kWidth(-10));
-        make.left.mas_offset(kWidth(95));
+        make.bottom.mas_offset(kWidth(-20));
+        make.left.mas_offset(kWidth(107));
     }];
 }
 
@@ -165,8 +174,17 @@
     _model = model;
     self.nameLab.text = model.goods_name;
     [self.imgV sd_setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@",model.goods_file1]]];
-    self.oldPriceLab.text = [NSString stringWithFormat:@"%@%@",[CommonManager getPriceType:model.money_type],model.ori_price];
-    self.priceLab.text = [NSString stringWithFormat:@"%@%@",[CommonManager getPriceType:model.money_type],model.cart_price];
+    if (![model.goods_kg isEqualToString:@"0"] && model.goods_kg) {
+        self.weightLab.text = [NSString stringWithFormat:@"%@g",model.goods_kg];
+    }else{
+        self.weightLab.text = @" ";
+    }
+    
+    //self.oldPriceLab.text = [CommonManager getShowPrice:model.money_type Price:model.ori_price];
+    self.priceLab.text = [CommonManager getShowPrice:model.money_type Price:model.cart_price];
+    
+//    self.oldPriceLab.text = [NSString stringWithFormat:@"%@%@",[CommonManager getPriceType:model.money_type],model.ori_price];
+//    self.priceLab.text = [NSString stringWithFormat:@"%@%@",[CommonManager getPriceType:model.money_type],model.cart_price];
     self.numLab.text = model.cart_num;
     
     if ([model.isup isEqualToString:@"1"]) {
@@ -182,8 +200,6 @@
         self.statusLab.hidden = NO;
     }
     
-    
-    
 }
 
 -(void)setIsEdit:(BOOL)isEdit{
@@ -191,13 +207,13 @@
         if (self.model.isEdit.length && [self.model.isEdit isEqualToString:@"1"]) {
             [self.selectImgV setImage:kGetImage(@"选中")];
         }else{
-            [self.selectImgV setImage:kGetImage(@"选择")];
+            [self.selectImgV setImage:kGetImage(@"未选中")];
         }
     }else{
         if (self.model.isSelect.length && [self.model.isSelect isEqualToString:@"1"]) {
             [self.selectImgV setImage:kGetImage(@"选中")];
         }else{
-            [self.selectImgV setImage:kGetImage(@"选择")];
+            [self.selectImgV setImage:kGetImage(@"未选中")];
         }
     }
 }

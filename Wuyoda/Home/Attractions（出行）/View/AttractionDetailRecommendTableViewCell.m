@@ -10,9 +10,11 @@
 #import "AttractionDetailViewController.h"
 #import "AttractionModel.h"
 
-@interface AttractionDetailRecommendTableViewCell ()<UICollectionViewDelegate,UICollectionViewDataSource>
+@interface AttractionDetailRecommendTableViewCell ()
 
-@property (nonatomic , retain)UICollectionView *collectionV;
+@property (nonatomic , retain)UIImageView *imgV;
+@property (nonatomic , retain)UILabel *titleLab;
+@property (nonatomic , retain)UILabel *introLab;
 
 @end
 
@@ -28,45 +30,81 @@
 }
 
 -(void)createUI{
-    UICollectionViewFlowLayout *fl = [[UICollectionViewFlowLayout alloc]init];
-    fl.itemSize = CGSizeMake(kWidth(161), kWidth(170));
-    fl.sectionInset = UIEdgeInsetsMake(0, kWidth(20), kWidth(20), kWidth(20));
-    fl.minimumLineSpacing = kWidth(24);
+//    UICollectionViewFlowLayout *fl = [[UICollectionViewFlowLayout alloc]init];
+//    fl.itemSize = CGSizeMake(kWidth(161), kWidth(170));
+//    fl.sectionInset = UIEdgeInsetsMake(0, kWidth(20), kWidth(20), kWidth(20));
+//    fl.minimumLineSpacing = kWidth(24);
+//
+//
+//    self.collectionV = [[UICollectionView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, kWidth(194)*2+kWidth(16)) collectionViewLayout:fl];
+//    self.collectionV.delegate = self;
+//    self.collectionV.dataSource = self;
+//    self.collectionV.backgroundColor = [ColorManager WhiteColor];
+//    [self.collectionV registerClass:[AttractionDetailRecommendCollectionViewCell class] forCellWithReuseIdentifier:NSStringFromClass([AttractionDetailRecommendCollectionViewCell class])];
+//    [self.contentView addSubview:self.collectionV];
     
+    self.imgV = [[UIImageView alloc]init];
+    self.imgV.layer.cornerRadius = kWidth(10);
+    self.imgV.layer.masksToBounds = YES;
+    [self.contentView addSubview:self.imgV];
+    [self.imgV mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_offset(kWidth(20));
+        make.centerY.equalTo(self.contentView);
+        make.width.height.mas_offset(kWidth(100));
+    }];
     
-    self.collectionV = [[UICollectionView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, kWidth(194)*2+kWidth(16)) collectionViewLayout:fl];
-    self.collectionV.delegate = self;
-    self.collectionV.dataSource = self;
-    self.collectionV.backgroundColor = [ColorManager WhiteColor];
-    [self.collectionV registerClass:[AttractionDetailRecommendCollectionViewCell class] forCellWithReuseIdentifier:NSStringFromClass([AttractionDetailRecommendCollectionViewCell class])];
-    [self.contentView addSubview:self.collectionV];
+    self.titleLab = [[UILabel alloc]init];
+    self.titleLab.textColor= [ColorManager BlackColor];
+    self.titleLab.font = kFont(14);
+    [self.contentView addSubview:self.titleLab];
+    [self.titleLab mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(self.imgV.mas_right).mas_offset(kWidth(15));
+        make.top.equalTo(self.imgV).mas_offset(kWidth(5));
+        make.right.mas_offset(kWidth(-15));
+    }];
+    
+    self.introLab = [[UILabel alloc]init];
+    self.introLab.textColor= [ColorManager Color333333];
+    self.introLab.font = kFont(12);
+    self.introLab.numberOfLines = 4;
+    self.introLab.lineBreakMode = NSLineBreakByTruncatingTail;
+    [self.contentView addSubview:self.introLab];
+    [self.introLab mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(self.imgV.mas_right).mas_offset(kWidth(15));
+        make.top.equalTo(self.titleLab.mas_bottom).mas_offset(kWidth(10));
+        make.right.mas_offset(kWidth(-15));
+    }];
 }
 
--(__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
-    AttractionDetailRecommendCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass([AttractionDetailRecommendCollectionViewCell class]) forIndexPath:indexPath];
-    
-    cell.model = [self.otherArr objectAtIndex:indexPath.row];
-    
-    return cell;
-}
+//-(__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
+//    AttractionDetailRecommendCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass([AttractionDetailRecommendCollectionViewCell class]) forIndexPath:indexPath];
+//    
+//    cell.model = [self.otherArr objectAtIndex:indexPath.row];
+//    
+//    return cell;
+//}
+//
+//-(NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView{
+//    return 1;
+//}
+//
+//-(NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section{
+//    return self.otherArr.count;
+//}
+//-(void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
+//    
+//}
 
--(NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView{
-    return 1;
-}
+//-(void)setOtherArr:(NSArray *)otherArr{
+//    _otherArr = otherArr;
+//    [self.collectionV reloadData];
+//}
 
--(NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section{
-    return self.otherArr.count;
-}
--(void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
-    AttractionModel *model = [self.otherArr objectAtIndex:indexPath.row];
-    AttractionDetailViewController *vc = [[AttractionDetailViewController alloc]init];
-    vc.scenic_id = model.uid;
-    [self.CurrentViewController.navigationController pushViewController:vc animated:YES];
-}
-
--(void)setOtherArr:(NSArray *)otherArr{
-    _otherArr = otherArr;
-    [self.collectionV reloadData];
+- (void)setModel:(AttractionModel *)model{
+    _model = model;
+    [self.imgV sd_setImageWithURL:[NSURL URLWithString:model.cover]];
+    self.titleLab.text = model.scenic_title;
+    self.introLab.text = model.scenic_brief;
 }
 
 - (void)awakeFromNib {

@@ -122,7 +122,7 @@
     OrderListModel *model = [self.ordersArr objectAtIndex:sender.tag];
     PayInfoModel *payModel = [[PayInfoModel alloc]init];
     payModel.ordersn = model.ordersn;
-    payModel.original_price = model.original_price;
+    payModel.order_amount = model.order_amount;
     payModel.uid = model.uid;
     PayInfoViewController *vc = [[PayInfoViewController alloc]init];
     vc.payInfoModel = payModel;
@@ -141,7 +141,7 @@
     
     cell.listModel = model;
     
-    cell.type = @"1";
+    cell.type = model.status_code;
     [cell.addressBtn addTarget:self action:@selector(changeAddressClicked:) forControlEvents:UIControlEventTouchUpInside];
     [cell.cancelBtn addTarget:self action:@selector(cancelOrderClicked:) forControlEvents:UIControlEventTouchUpInside];
     [cell.payBtn addTarget:self action:@selector(payOrderClicked:) forControlEvents:UIControlEventTouchUpInside];
@@ -188,7 +188,7 @@
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     OrderListModel *model = [self.ordersArr objectAtIndex:indexPath.row];
     OrderInfoViewController *vc = [[OrderInfoViewController alloc]init];
-    vc.type = @"1";
+    vc.type = model.status_code;
     vc.ordersn = model.ordersn;
     [self.navigationController pushViewController:vc animated:YES];
 }

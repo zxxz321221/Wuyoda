@@ -26,16 +26,28 @@
     // Do any additional setup after loading the view.
     
     FJNormalNavView *nav = [[FJNormalNavView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kHeight_NavBar) controller:self titleStr:@"账号注销"];
+    nav.backgroundColor = [ColorManager ColorF2F2F2];
     [self.view addSubview:nav];
     
-    self.tableView = [[UITableView alloc]initWithFrame:CGRectMake(0, kHeight_NavBar, kScreenWidth, kScreenHeight-kHeight_NavBar-kHeight_SafeArea-kWidth(48)-kWidth(60)) style:UITableViewStyleGrouped];
+    self.view.backgroundColor = [ColorManager ColorF2F2F2];
+    
+    UIView *bgView = [[UIView alloc]initWithFrame:CGRectMake(0, kHeight_NavBar+kWidth(20), kScreenWidth, kScreenHeight-kHeight_NavBar-kWidth(20))];
+    bgView.backgroundColor = [ColorManager WhiteColor];
+    [self.view addSubview:bgView];
+    UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:bgView.bounds byRoundingCorners:UIRectCornerTopRight | UIRectCornerTopLeft cornerRadii:CGSizeMake(kWidth(10), kWidth(10))];
+    CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
+    maskLayer.frame =  bgView.bounds;
+    maskLayer.path = maskPath.CGPath;
+    bgView.layer.mask = maskLayer;
+    
+    self.tableView = [[UITableView alloc]initWithFrame:CGRectMake(0, kWidth(10), kScreenWidth, kScreenHeight-kHeight_NavBar-kHeight_SafeArea-kWidth(48)-kWidth(60)-kWidth(30)) style:UITableViewStyleGrouped];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     [self.tableView registerClass:[OrderCancelTableViewCell class] forCellReuseIdentifier:NSStringFromClass([OrderCancelTableViewCell class])];
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.tableView.backgroundColor = [ColorManager WhiteColor];
     
-    [self.view addSubview:self.tableView];
+    [bgView addSubview:self.tableView];
     
     self.titleArr = @[@"需要解绑手机",@"需要解绑邮箱",@"安全/隐私顾虑",@"只是多余的账号",@"购物遇到困难",@"其他"];
     
@@ -43,7 +55,7 @@
     [doneBtn setTitle:@"确定" forState:UIControlStateNormal];
     [doneBtn setTitleColor:[ColorManager WhiteColor] forState:UIControlStateNormal];
     doneBtn.titleLabel.font = kFont(14);
-    doneBtn.backgroundColor = [ColorManager MainColor];
+    [doneBtn setBackgroundImage:kGetImage(@"login_按钮") forState:UIControlStateNormal];;
     doneBtn.layer.cornerRadius = kWidth(24);
     [doneBtn addTarget:self action:@selector(doneClicked) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:doneBtn];
@@ -62,8 +74,11 @@
         [FJNetTool postWithParams:dic url:Login_cancel loading:YES success:^(id responseObject) {
             BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
             if ([baseModel.code isEqualToString:CODE0]) {
+                [self.view showHUDWithText:baseModel.msg withYOffSet:0];
                 [UserInfoModel clearUserInfo];
                 [self.navigationController popToRootViewControllerAnimated:YES];
+            }else{
+                [self.view showHUDWithText:baseModel.msg withYOffSet:0];
             }
         } failure:^(NSError *error) {
 
@@ -74,8 +89,6 @@
     }else{
         [self.view showHUDWithText:@"请选择注销原因" withYOffSet:0];
     }
-    
-    
     
 }
 

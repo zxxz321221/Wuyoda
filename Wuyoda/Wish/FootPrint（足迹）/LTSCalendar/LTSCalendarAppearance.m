@@ -61,11 +61,11 @@
     self.lunarDayTextColorSelected = [UIColor whiteColor];
     
     
-    self.dayBorderColorToday = [ColorManager MainColor];
-    self.dayCircleColorSelected  = [ColorManager MainColor];
-    self.dayCircleColorToday = [ColorManager MainColor];
+    self.dayBorderColorToday = [ColorManager ColorFB9A3A];
+    self.dayCircleColorSelected  = [ColorManager ColorFB9A3A];
+    self.dayCircleColorToday = [ColorManager ColorFB9A3A];
     self.dayTextColorToday = [UIColor whiteColor];
-    self.dayDotColor = [ColorManager MainColor];
+    self.dayDotColor = [ColorManager ColorFB9A3A];
   
     
     

@@ -126,7 +126,7 @@
     
     cell.listModel = model;
     
-    cell.type = @"3";
+    cell.type = model.status_code;
     
     cell.finishEvaluateBtn.tag = indexPath.row;
     [cell.finishEvaluateBtn addTarget:self action:@selector(evaluateClicked:) forControlEvents:UIControlEventTouchUpInside];
@@ -171,7 +171,7 @@
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     OrderListModel *model = [self.ordersArr objectAtIndex:indexPath.row];
     OrderInfoViewController *vc = [[OrderInfoViewController alloc]init];
-    vc.type = @"3";
+    vc.type = model.status_code;
     vc.ordersn = model.ordersn;
     [self.navigationController pushViewController:vc animated:YES];
 }

@@ -11,6 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface ChangePassWordViewController : FJBaseViewController
 
+@property (nonatomic , copy)NSString *type;
 @property (nonatomic , retain)UserInfoModel *userInfo;
 
 @end

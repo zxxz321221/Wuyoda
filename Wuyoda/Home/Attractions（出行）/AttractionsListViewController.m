@@ -30,13 +30,33 @@
     nav.searchField.delegate = self;
     [self.view addSubview:nav];
     
-    self.tableView = [[UITableView alloc]initWithFrame:CGRectMake(0, kHeight_NavBar, kScreenWidth, kScreenHeight-kHeight_NavBar-kHeight_SafeArea) style:UITableViewStyleGrouped];
+    UIView *bgView = [[UIView alloc]initWithFrame:CGRectMake(0, kHeight_NavBar+kWidth(20), kScreenWidth, kScreenHeight-kHeight_NavBar-kWidth(20))];
+    bgView.backgroundColor = [ColorManager WhiteColor];
+    [self.view addSubview:bgView];
+    UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:bgView.bounds byRoundingCorners:UIRectCornerTopRight | UIRectCornerTopLeft cornerRadii:CGSizeMake(kWidth(10), kWidth(10))];
+    CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
+    maskLayer.frame =  bgView.bounds;
+    maskLayer.path = maskPath.CGPath;
+    bgView.layer.mask = maskLayer;
+    
+    self.view.backgroundColor = [ColorManager ColorF2F2F2];
+    
+    UILabel *titleLab = [[UILabel alloc]init];
+    titleLab.text = @"热门推荐";
+    titleLab.textColor = [ColorManager BlackColor];
+    titleLab.font = kFont(24);
+    [bgView addSubview:titleLab];
+    [titleLab mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.top.mas_offset(kWidth(20));
+    }];
+    
+    self.tableView = [[UITableView alloc]initWithFrame:CGRectMake(0, kWidth(10)+kWidth(60), kScreenWidth, kScreenHeight-kHeight_NavBar-kHeight_SafeArea-kWidth(10)-kWidth(60)) style:UITableViewStyleGrouped];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     self.tableView.backgroundColor = [ColorManager ColorF2F2F2];
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     [self.tableView registerClass:[AttractionsListTableViewCell class] forCellReuseIdentifier:NSStringFromClass([AttractionsListTableViewCell class])];
-    [self.view addSubview:self.tableView];
+    [bgView addSubview:self.tableView];
     
     [self getDataFromServer];
 }
@@ -68,7 +88,7 @@
 }
 
 -(void)getDataFromServer{
-    NSDictionary *dic = @{@"ps_id":self.cityID,@"api_token":[RegisterModel getUserInfoModel].user_token};
+    NSDictionary *dic = @{@"ps_id":self.cityID};
     
     [FJNetTool postWithParams:dic url:Store_scenic_list loading:YES success:^(id responseObject) {
         BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
@@ -89,6 +109,11 @@
     }
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     cell.model = [self.attractionSearchArr objectAtIndex:indexPath.row];
+    if (indexPath.row == 0) {
+        cell.isFirst = YES;
+    }else{
+        cell.isFirst = NO;
+    }
         
     return cell;
 }
@@ -100,31 +125,16 @@
     return self.attractionSearchArr.count;
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
-    return kWidth(160);
+    return kWidth(170);
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
-    return kWidth(48);
+    return 0.001;
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section{
     return 0.001;
 }
 -(UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
-    UIView *headerV = [[UIView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kWidth(48))];
-    headerV.backgroundColor = [ColorManager ColorF7F7F7];
-    UIView *bgV = [[UIView alloc]initWithFrame:CGRectMake(0, kWidth(10), kScreenWidth, kWidth(38))];
-    bgV.backgroundColor = [ColorManager WhiteColor];
-    [headerV addSubview:bgV];
-    UILabel *titleLab = [[UILabel alloc]init];
-    titleLab.text = @"热门推荐";
-    titleLab.textColor = [ColorManager BlackColor];
-    titleLab.font = kBoldFont(22);
-    [bgV addSubview:titleLab];
-    [titleLab mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.bottom.equalTo(bgV);
-        make.left.mas_offset(kWidth(20));
-    }];
-    
-    return headerV;
+    return [UIView new];
 }
 -(UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section{
     return [UIView new];

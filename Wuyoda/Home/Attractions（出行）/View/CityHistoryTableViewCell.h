@@ -14,6 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic , retain)CityEventModel *model;
 
+@property (nonatomic , assign)BOOL isLast;
+
 @end
 
 NS_ASSUME_NONNULL_END

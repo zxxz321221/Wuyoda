@@ -31,15 +31,18 @@
     // Do any additional setup after loading the view.
     
     FJNormalNavView *nav = [[FJNormalNavView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kHeight_NavBar) controller:self titleStr:@"安全中心"];
+    nav.backgroundColor = [ColorManager ColorF2F2F2];
     [self.view addSubview:nav];
+
+    self.view.backgroundColor = [ColorManager ColorF2F2F2];
     
-    self.tableView = [[UITableView alloc]initWithFrame:CGRectMake(0, kHeight_NavBar, kScreenWidth, kScreenHeight-kHeight_NavBar-kHeight_SafeArea) style:UITableViewStyleGrouped];
+    self.tableView = [[UITableView alloc]initWithFrame:CGRectMake(0, kHeight_NavBar+10, kScreenWidth, kScreenHeight-kHeight_NavBar-kHeight_SafeArea) style:UITableViewStyleGrouped];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     [self.tableView registerClass:[SecurityCenterTableViewCell class] forCellReuseIdentifier:NSStringFromClass([SecurityCenterTableViewCell class])];
 
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    self.tableView.backgroundColor = [ColorManager WhiteColor];
+    self.tableView.backgroundColor = [ColorManager ColorF2F2F2];
     
     [self.view addSubview:self.tableView];
     
@@ -59,6 +62,10 @@
     cell.titleLab.text = titleStr;
     
     UserInfoModel *userInfo = [UserInfoModel getUserInfoModel];
+    if (indexPath.row == 0) {
+        cell.isLast = NO;
+        cell.isFirst = YES;
+    }
     
     if (indexPath.row == 1) {
         NSString *phoneStr = userInfo.member_tel2;
@@ -69,6 +76,8 @@
         }
         
         cell.infoLab.text = phoneStr;
+        cell.isLast = NO;
+        cell.isFirst = NO;
     }
     if (indexPath.row == 2) {
         NSString *emailStr = userInfo.member_email;
@@ -76,6 +85,8 @@
             emailStr = @"未绑定";
         }
         cell.infoLab.text = emailStr;
+        cell.isFirst = NO;
+        cell.isLast = YES;
     }
     
     return cell;
@@ -90,7 +101,7 @@
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
 
-    return kWidth(52);
+    return kWidth(56);
 }
 
 -(CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section{

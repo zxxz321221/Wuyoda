@@ -14,6 +14,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property(nonatomic , retain)PayInfoModel *payInfoModel;
 
+@property(nonatomic , copy)NSString *payType;
+@property(nonatomic , copy)NSString *openId;
+
 @end
 
 NS_ASSUME_NONNULL_END

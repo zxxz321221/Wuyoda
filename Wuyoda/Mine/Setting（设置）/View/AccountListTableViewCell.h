@@ -15,6 +15,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic , retain)UserInfoModel *model;
 
+@property (nonatomic , assign)BOOL isEdit;
+
 //1.账号； 2.添加账号
 @property (nonatomic , copy)NSString *type;
 

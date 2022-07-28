@@ -32,17 +32,18 @@
 -(void)createUI{
     self.backgroundColor = [ColorManager WhiteColor];
     self.addressBtn = [[UIButton alloc]init];
-    [self.addressBtn setTitle:@"城市" forState:UIControlStateNormal];
+    [self.addressBtn setTitle:@"产地:默认" forState:UIControlStateNormal];
     [self.addressBtn setTitleColor:[ColorManager BlackColor] forState:UIControlStateNormal];
     self.addressBtn.titleLabel.font = kFont(12);
     [self.addressBtn setImage:kGetImage(@"下拉icon") forState:UIControlStateNormal];
     [self.addressBtn setImage:kGetImage(@"") forState:UIControlStateSelected];
-    self.addressBtn.imageEdgeInsets = UIEdgeInsetsMake(0, kWidth(85), 0, 0);
+    self.addressBtn.imageEdgeInsets = UIEdgeInsetsMake(0, kWidth(90), 0, 0);
+    self.addressBtn.titleEdgeInsets = UIEdgeInsetsMake(0, kWidth(-30), 0, 0);
     [self addSubview:self.addressBtn];
     [self.addressBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_offset(kWidth(20));
-        make.top.mas_offset(kWidth(10));
-        make.width.mas_offset(kWidth(95));
+        make.centerY.equalTo(self);
+        make.width.mas_offset(kWidth(110));
         make.height.mas_offset(kWidth(30));
     }];
     
@@ -52,13 +53,14 @@
     self.typeBtn.titleLabel.font = kFont(12);
     [self.typeBtn setImage:kGetImage(@"下拉icon") forState:UIControlStateNormal];
     [self.typeBtn setImage:kGetImage(@"") forState:UIControlStateSelected];
-    self.typeBtn.imageEdgeInsets = UIEdgeInsetsMake(0, kWidth(85), 0, 0);
+    self.typeBtn.imageEdgeInsets = UIEdgeInsetsMake(0, kWidth(80), 0, 0);
+    self.typeBtn.titleEdgeInsets = UIEdgeInsetsMake(0, kWidth(-30), 0, 0);
 //    [self.typeBtn addTarget:self action:@selector(selectTypeClicekd:) forControlEvents:UIControlEventTouchUpInside];
     [self addSubview:self.typeBtn];
     [self.typeBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.equalTo(self);
-        make.top.mas_offset(kWidth(10));
-        make.width.mas_offset(kWidth(95));
+        make.centerY.equalTo(self);
+        make.width.mas_offset(kWidth(100));
         make.height.mas_offset(kWidth(30));
     }];
     
@@ -69,12 +71,13 @@
     [self.priceBtn setImage:kGetImage(@"下拉icon") forState:UIControlStateNormal];
     [self.priceBtn setImage:kGetImage(@"") forState:UIControlStateSelected];
 //    [self.priceBtn addTarget:self action:@selector(selectTypeClicekd:) forControlEvents:UIControlEventTouchUpInside];
-    self.priceBtn.imageEdgeInsets = UIEdgeInsetsMake(0, kWidth(75), 0, 0);
+    self.priceBtn.imageEdgeInsets = UIEdgeInsetsMake(0, kWidth(80), 0, 0);
+    self.priceBtn.titleEdgeInsets = UIEdgeInsetsMake(0, kWidth(-30), 0, 0);
     [self addSubview:self.priceBtn];
     [self.priceBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.right.mas_offset(kWidth(-20));
-        make.top.mas_offset(kWidth(10));
-        make.width.mas_offset(kWidth(86));
+        make.centerY.equalTo(self);
+        make.width.mas_offset(kWidth(100));
         make.height.mas_offset(kWidth(30));
     }];
     

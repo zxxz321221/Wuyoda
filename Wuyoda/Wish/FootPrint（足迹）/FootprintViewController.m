@@ -46,8 +46,9 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     FJNormalNavView *nav = [[FJNormalNavView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kHeight_NavBar) controller:self titleStr:@"历史足迹"];
+    nav.backgroundColor = [ColorManager ColorF2F2F2];
     [self.view addSubview:nav];
-    self.view.backgroundColor = [ColorManager WhiteColor];
+    self.view.backgroundColor = [ColorManager ColorF2F2F2];
     
     UIButton *editBtn = [[UIButton alloc]init];
     [editBtn setTitle:@"管理" forState:UIControlStateNormal];
@@ -131,7 +132,7 @@
 
 - (UIButton *)leftBtn{
     if (!_leftBtn) {
-        _leftBtn = [[UIButton alloc]initWithFrame:CGRectMake(kScreenWidth/2-63, 8+kHeight_NavBar, 8, 14)];
+        _leftBtn = [[UIButton alloc]initWithFrame:CGRectMake(kScreenWidth/2-63, 8+kHeight_NavBar+kWidth(30), 8, 14)];
         [_leftBtn setBackgroundImage:[UIImage imageNamed:@"footleft"] forState:UIControlStateNormal];
         [_leftBtn addTarget:self action:@selector(leftClick) forControlEvents:UIControlEventTouchUpInside];
     }
@@ -139,7 +140,7 @@
 }
 - (UILabel *)titleL{
     if (!_titleL) {
-        _titleL = [[UILabel alloc]initWithFrame:CGRectMake(kScreenWidth/2-45, kHeight_NavBar, 90, 30)];
+        _titleL = [[UILabel alloc]initWithFrame:CGRectMake(kScreenWidth/2-45, kHeight_NavBar+kWidth(30), 90, 30)];
         _titleL.font = [UIFont systemFontOfSize:14];
         _titleL.textAlignment = NSTextAlignmentCenter;
         _titleL.textColor = [ColorManager Color333333];
@@ -148,25 +149,36 @@
 }
 - (UIButton *)rightBtn{
     if (!_rightBtn) {
-        _rightBtn = [[UIButton alloc]initWithFrame:CGRectMake(_titleL.right+10, 8+kHeight_NavBar, 8, 14)];
+        _rightBtn = [[UIButton alloc]initWithFrame:CGRectMake(_titleL.right+10, 8+kHeight_NavBar+kWidth(30), 8, 14)];
         [_rightBtn setBackgroundImage:[UIImage imageNamed:@"footright"] forState:UIControlStateNormal];
         [_rightBtn addTarget:self action:@selector(rightClick) forControlEvents:UIControlEventTouchUpInside];
     }
     return _rightBtn;
 }
 - (void)lts_InitUI{
+    
+    
+    UIView *bgView = [[UIView alloc]initWithFrame:CGRectMake(0, kHeight_NavBar+kWidth(20), kScreenWidth, kScreenHeight-kHeight_NavBar-kWidth(20))];
+    bgView.backgroundColor = [ColorManager WhiteColor];
+    [self.view addSubview:bgView];
+    UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:bgView.bounds byRoundingCorners:UIRectCornerTopRight | UIRectCornerTopLeft cornerRadii:CGSizeMake(kWidth(10), kWidth(10))];
+    CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
+    maskLayer.frame =  bgView.bounds;
+    maskLayer.path = maskPath.CGPath;
+    bgView.layer.mask = maskLayer;
+    
     [self.view addSubview:self.leftBtn];
     [self.view addSubview:self.titleL];
     [self.view addSubview:self.rightBtn];
     
     self.manager = [LTSCalendarManager new];
     self.manager.eventSource = self;
-    self.manager.weekDayView = [[LTSCalendarWeekDayView alloc]initWithFrame:CGRectMake(0, 30+kHeight_NavBar, kScreenWidth, 30)];
-    [self.view addSubview:self.manager.weekDayView];
+    self.manager.weekDayView = [[LTSCalendarWeekDayView alloc]initWithFrame:CGRectMake(0, kWidth(45), kScreenWidth, 30)];
+    [bgView addSubview:self.manager.weekDayView];
     
-    self.manager.calenderScrollView = [[LTSCalendarScrollView alloc] initWithFrame:CGRectMake(0, self.manager.weekDayView.bottom, kScreenWidth, kScreenHeight-kHeight_NavBar-self.manager.weekDayView.height-30)];
+    self.manager.calenderScrollView = [[LTSCalendarScrollView alloc] initWithFrame:CGRectMake(0, self.manager.weekDayView.bottom, kScreenWidth, kScreenHeight-kHeight_NavBar-self.manager.weekDayView.height-30-kWidth(30)-kWidth(45))];
 //    self.manager.calenderScrollView.delegate = self;
-    [self.view addSubview:self.manager.calenderScrollView];
+    [bgView addSubview:self.manager.calenderScrollView];
     [self.manager.calenderScrollView scrollToAllWeek];//默认显示月
 //    self.manager.calenderScrollView.listArray = [arr mutableCopy];
 //    self.manager.calenderScrollView.modelArrs = self.modelArrs;

@@ -31,38 +31,28 @@
 
 -(void)createUI{
     
-    self.backgroundColor = [ColorManager WhiteColor];
-    self.imgV = [[UIImageView alloc]init];
-    //self.imgV.backgroundColor = [ColorManager RandomColor];
-    [self addSubview:self.imgV];
-    [self.imgV mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_offset(kWidth(16));
-        make.right.mas_offset(-16);
-        make.top.mas_offset(kWidth(5));
-        make.height.mas_offset(kWidth(174));
+    self.backgroundColor = [ColorManager ColorF2F2F2];
+    
+    UIView *bgView = [[UIView alloc]init];
+    bgView.backgroundColor = [ColorManager WhiteColor];
+    bgView.layer.cornerRadius = kWidth(10);
+    [self addSubview:bgView];
+    [bgView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.left.width.height.equalTo(self);
     }];
     
-//    self.introLab = [[UILabel alloc]init];
-//    //self.introLab.text = @"高雄市的旅游风情：拥有大都市现代风格的高雄市，旅游景点的丰富让人目不暇给，在市区有高雄85大楼、城市光廊、玫瑰圣母院、驳二艺术特区、瑞丰夜市、爱河之心(如意湖)、梦时代购物中心等，而近郊的旗津风景区、莲池潭、西子湾风景区也都有秀丽的景致供前往旅游的民众观赏；除此之外，五都合并前的高雄县，占地相当广大且旅游资源相对丰富，不论您打算来趟访古之旅拜访旗山老街、美浓、桥头糖厂，亦或是山林寻幽之旅，如阿公店水库、观音山、荖浓溪、茂林国家风景区、关山越岭古道、宝来温泉等，都可依您想到高雄旅游的目的来安排；而甫于2010年全新开幕位于大树区观音山风景区旁的义大世界，九十余公顷的面积，区域内包含学校、星级饭店、游乐世界、购物广场等涵盖文化艺术、购物美食、休闲渡假等多元主题，在南台湾掀起渡假游憩新风潮，也是您探访高雄不可错过的新兴景点。";
-//    self.introLab.textColor = [ColorManager Color333333];
-//    self.introLab.font = kFont(16);
-//    self.introLab.numberOfLines = 0;
-//    self.introLab.lineBreakMode = NSLineBreakByCharWrapping;
-//    [self addSubview:self.introLab];
-//    [self.introLab mas_makeConstraints:^(MASConstraintMaker *make) {
-//        make.left.mas_offset(kWidth(20));
-//        make.right.mas_offset(-20);
-//        make.top.equalTo(self.imgV.mas_bottom).mas_offset(kWidth(14));
-//    }];
-    
-//    NSString *jScript = @"var meta = document.createElement('meta'); meta.setAttribute('name', 'viewport'); meta.setAttribute('content', 'width=device-width'); document.getElementsByTagName('head')[0].appendChild(meta);";
-//
-//            WKUserScript *wkUScript = [[WKUserScript alloc] initWithSource:jScript injectionTime:WKUserScriptInjectionTimeAtDocumentEnd forMainFrameOnly:YES];
-//            WKUserContentController *wkUController = [[WKUserContentController alloc] init];
-//            [wkUController addUserScript:wkUScript];
-//
-//            WKWebViewConfiguration *wkWebConfig = [[WKWebViewConfiguration alloc] init];
-//            wkWebConfig.userContentController = wkUController;
+    self.imgV = [[UIImageView alloc]init];
+    //self.imgV.backgroundColor = [ColorManager RandomColor];
+    self.imgV.contentMode = UIViewContentModeScaleAspectFit;
+    self.imgV.layer.cornerRadius = kWidth(10);
+    self.imgV.layer.masksToBounds = YES;
+    [self addSubview:self.imgV];
+    [self.imgV mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_offset(0);
+        make.right.mas_offset(0);
+        make.top.mas_offset(0);
+        make.height.mas_offset(kWidth(188));
+    }];
     
     NSString *jScript = @"var meta = document.createElement('meta'); meta.setAttribute('name', 'viewport'); meta.setAttribute('content', 'width=device-width'); document.getElementsByTagName('head')[0].appendChild(meta);";
 
@@ -77,6 +67,7 @@
     self.webView.UIDelegate = self;
     self.webView.opaque = NO;
     self.webView.multipleTouchEnabled = YES;
+    
     [self.webView.scrollView addObserver:self forKeyPath:@"contentSize" options:NSKeyValueObservingOptionNew context:nil];
     [self addSubview:self.webView];
 }
@@ -86,7 +77,8 @@
     //self.introLab.text = model.city_content;
 //    NSURLRequest *request = [[NSURLRequest alloc]initWithURL:[NSURL URLWithString:@"https://www.baidu.com"]];
 //    [self.webView loadRequest:request];
-    [self.webView loadHTMLString:model.city_content baseURL:nil];
+//    [self.webView loadHTMLString:model.city_content baseURL:nil];
+    [self loadHtml:model.city_content];
 }
 
 -(void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation{
@@ -121,7 +113,7 @@
         if ((int)height-30 != (int)self.webH) {
             NSLog(@"新闻加载完成网页高度：%f--%f",height,self.webH);
             self.webH = height;
-            self.webView.frame = CGRectMake(kWidth(20), kWidth(195), kScreenWidth-kWidth(40), height+30);
+            self.webView.frame = CGRectMake(kWidth(20), kWidth(198), kScreenWidth-kWidth(40), height+30);
             if (self.delegate && [self.delegate respondsToSelector:@selector(updateCityHeaderHeight:)]) {
                 [self.delegate updateCityHeaderHeight:height+30];
             }
@@ -129,6 +121,29 @@
         }
         
     }
+}
+
+-(void)loadHtml:(NSString *)str {
+    NSString *htmlString = [NSString stringWithFormat:@"<html> \n"
+        "<head> \n"
+        "<style type=\"text/css\"> \n"
+        "body {font-size:14px;}\n"
+        "</style> \n"
+        "</head> \n"
+        "<body>"
+        "<script type='text/javascript'>"
+        "window.onload = function(){\n"
+        "var $img = document.getElementsByTagName('img');\n"
+        "for(var p in  $img){\n"
+        " $img[p].style.width = '100%%';\n"
+        "$img[p].style.height ='auto'\n"
+        "}\n"
+        "}"
+        "</script>%@"
+        "</body>"
+        "</html>", str];
+    [self.webView loadHTMLString:htmlString baseURL:nil];
+
 }
 
 /*

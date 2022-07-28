@@ -14,6 +14,7 @@
 #import "PreferentialGoodListViewController.h"
 #import <CoreLocation/CoreLocation.h>
 #import "HomeModel.h"
+#import "ClassicalProductListViewController.h"
 
 @interface HomeViewController ()<UITableViewDelegate,UITableViewDataSource,SpecailProductTypeSelectDelegate,CLLocationManagerDelegate>
 
@@ -31,6 +32,7 @@
 
 @property (nonatomic , retain)NSMutableArray *cityArr;
 @property (nonatomic , retain)NSMutableArray *specialShopArr;
+@property (nonatomic , retain)HomeShopModel *specialTopModel;
 
 @end
 
@@ -56,43 +58,93 @@
 
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
-    BOOL isFirst = [[NSUserDefaults standardUserDefaults]objectForKey:@"isFirst"];
-    if (!isFirst) {
-        LoginViewController *VC = [[LoginViewController alloc] init];
+    NSString *openStatus = [[NSUserDefaults standardUserDefaults]objectForKey:@"firstOpen"];
+    if ([openStatus isEqualToString:@"login"]) {
+        NewLoginViewController *VC = [[NewLoginViewController alloc] init];
         FJBaseNavigationController *nav = [[FJBaseNavigationController alloc]initWithRootViewController:VC];
         nav.modalPresentationStyle = UIModalPresentationFullScreen;
         [self presentViewController:nav animated:YES completion:nil];
-        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"isFirst"];
+    }else if ([openStatus isEqualToString:@"register"]){
+        RegisterViewController *VC = [[RegisterViewController alloc] init];
+        FJBaseNavigationController *nav = [[FJBaseNavigationController alloc]initWithRootViewController:VC];
+        nav.modalPresentationStyle = UIModalPresentationFullScreen;
+        [self presentViewController:nav animated:YES completion:nil];
     }
 }
 
--(void)getTokenFromServer{
-    RegisterModel *registerModel = [RegisterModel getUserInfoModel];
-    if (!registerModel) {
-        registerModel = [[RegisterModel alloc]init];
-    }
-    [FJNetTool postWithParams:@{} url:Login_GetToken loading:YES success:^(id responseObject){
-        NSString *token = [[NSString alloc]initWithData:responseObject encoding:NSUTF8StringEncoding];
-        registerModel.user_token = token;
-        [RegisterModel saveUserInfoModel:registerModel];
-        [self getDataFromServer];
+-(void)getLoginStatusFromServer{
+    NSDictionary *dic = @{@"api_token":[RegisterModel getUserInfoModel].user_token,@"uid":[UserInfoModel getUserInfoModel].uid};
+//    7c558d0a3ab262e12a4427d8113a2a54
+    [FJNetTool postWithParams:dic url:Login_login_status loading:YES success:^(id responseObject) {
+        BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
+        if ([baseModel.code isEqualToString:CODE0]) {
+            if ([baseModel.msg isEqualToString:@"有效"]) {
+                NSLog(@"login_statis:%@",responseObject[@"data"]);
+                UserInfoModel *userModel = [UserInfoModel mj_objectWithKeyValues:responseObject[@"data"]];
+                
+                RegisterModel *registerModel = [RegisterModel getUserInfoModel];
+                registerModel.user_id = userModel.member_id;
+                registerModel.user_token = userModel.token;
+                [RegisterModel saveUserInfoModel:registerModel];
+                [UserInfoModel saveUserInfoModel:userModel];
+                
+                [self getDataFromServer];
+            }
+        }else{
+            [self.view showHUDWithText:@"登录状态已过期，请重新登录" withYOffSet:0];
+            [UserInfoModel clearUserInfo];
+            [[NSUserDefaults standardUserDefaults] setValue:@"logout" forKey:@"firstOpen"];
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"changeAccountLoginTimeOut" object:nil];
+            
+            NewLoginViewController *VC = [[NewLoginViewController alloc] init];
+            FJBaseNavigationController *nav = [[FJBaseNavigationController alloc]initWithRootViewController:VC];
+            nav.modalPresentationStyle = UIModalPresentationFullScreen;
+            [self presentViewController:nav animated:YES completion:nil];
+            //[self getTokenFromServer];
+        }
+            
     } failure:^(NSError *error) {
-
+            
     }];
-//    if (!registerModel.user_token.length) {
-//        
-//    }else{
-//        [self getDataFromServer];
-//    }
+    
 }
 
--(void)getHomeStoreFromServer:(NSString *)city{
-    NSDictionary *dic = @{@"city":city,@"api_token":[RegisterModel getUserInfoModel].user_token};
+//-(void)getTokenFromServer{
     
+//    [FJNetTool postWithParams:@{} url:Login_GetToken loading:YES success:^(id responseObject){
+//        NSString *token = [[NSString alloc]initWithData:responseObject encoding:NSUTF8StringEncoding];
+//        registerModel.user_token = token;
+//        [RegisterModel saveUserInfoModel:registerModel];
+//        [self getDataFromServer];
+//    } failure:^(NSError *error) {
+//        if (error.code != 1005) {
+//            [self getTokenFromServer];
+//        }
+//
+//    }];
+////    if (!registerModel.user_token.length) {
+////
+////    }else{
+////        [self getDataFromServer];
+////    }
+//}
+
+-(void)getHomeStoreFromServer:(HomeCategoryModel *)model{
+    NSDictionary *dic = @{@"goods_category":model.uid};
+    self.specialTopModel = nil;
+    [self.specialShopArr removeAllObjects];
     [FJNetTool postWithParams:dic url:Index_shop loading:YES success:^(id responseObject) {
         BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
         if ([baseModel.code isEqualToString:CODE0]) {
-            self.specialShopArr = [HomeShopModel mj_objectArrayWithKeyValuesArray:responseObject[@"data"]];
+            
+            NSArray *shopArr = [HomeShopModel mj_objectArrayWithKeyValuesArray:responseObject[@"data"]];
+            for (HomeShopModel *model in shopArr) {
+                if ([model.istop isEqualToString:@"1"]) {
+                    self.specialTopModel = model;
+                }else{
+                    [self.specialShopArr addObject:model];
+                }
+            }
             
             [self.tableView reloadData];
         }
@@ -101,17 +153,38 @@
     }];
 }
 
+-(void)getHomeCategoryFromServer{
+    NSDictionary *dic = @{};
+    
+    [FJNetTool postWithParams:dic url:Index_category loading:YES success:^(id responseObject) {
+        BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
+        if ([baseModel.code isEqualToString:CODE0]) {
+            NSLog(@"homeCategory:%@",responseObject);
+            self.specialTypeArr = [HomeCategoryModel mj_objectArrayWithKeyValuesArray:responseObject[@"data"]];
+            
+            self.specialTypeIndex = 0;
+            [self getHomeStoreFromServer:[self.specialTypeArr objectAtIndex:self.specialTypeIndex]];
+        }
+    } failure:^(NSError *error) {
+        
+    }];
+}
+
+
 -(void)getDataFromServer{
-    [FJNetTool postWithParams:@{@"token":[RegisterModel getUserInfoModel].user_token} url:Index_index loading:YES success:^(id responseObject) {
+    [FJNetTool postWithParams:@{} url:Index_index loading:YES success:^(id responseObject) {
         
         BaseModel *model = [BaseModel mj_objectWithKeyValues:responseObject];
         if ([model.code isEqualToString:CODE0]) {
+            
+            [self getHomeCategoryFromServer];
             self.cityArr = [[HomeCityModel mj_objectArrayWithKeyValuesArray:responseObject[@"data"][@"recity"]] mutableCopy];
+            [[NSUserDefaults standardUserDefaults] setObject:responseObject[@"data"][@"city"] forKey:@"allCity"];
             //NSDictionary *shopDic = responseObject[@"data"][@"shop"];
-            NSMutableArray *hotCityArr = [[NSMutableArray alloc]initWithObjects:@"台北市",@"台中市",@"苗栗县",@"嘉义县",@"花莲县" , nil];
-            self.tableHeaderV.hotCityArr = hotCityArr;
-            self.tableHeaderV.allCityArr = responseObject[@"data"][@"city"];
-            self.specialTypeArr = hotCityArr;
+            //NSMutableArray *hotCityArr = [[NSMutableArray alloc]initWithObjects:@"台北市",@"高雄市",@"苗栗县",@"嘉义县",@"台中市" , nil];
+            //self.tableHeaderV.hotCityArr = hotCityArr;
+            //self.tableHeaderV.allCityArr = responseObject[@"data"][@"city"];
+//            self.specialTypeArr = hotCityArr;
             
 //            for (int i = 0; i<self.specialTypeArr.count; i++) {
 //                NSString *key = [self.specialTypeArr objectAtIndex:i];
@@ -120,9 +193,7 @@
 //                [self.specialShopArr addObject:modelArr];;
 //
 //            }
-            self.specialTypeIndex = 0;
-            [self getHomeStoreFromServer:[hotCityArr objectAtIndex:self.specialTypeIndex]];
-            [self.tableView reloadData];
+            
         }else{
             [self.view showHUDWithText:model.msg withYOffSet:0];
         }
@@ -135,7 +206,13 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    [self getTokenFromServer];
+    if ([CommonManager isLogin:self isPush:NO]) {
+        [self getLoginStatusFromServer];
+    }else{
+        //[self getTokenFromServer];
+        
+    }
+    [self getDataFromServer];
     
     self.tableView = [[UITableView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kScreenHeight-kHeight_TabBar) style:UITableViewStyleGrouped];
     self.tableView.delegate = self;
@@ -149,7 +226,8 @@
     [self.tableView registerClass:[HomeCultureProductTableViewCell class] forCellReuseIdentifier:NSStringFromClass([HomeCultureProductTableViewCell class])];
     [self.tableView registerClass:[HomeAttractionsTableViewCell class] forCellReuseIdentifier:NSStringFromClass([HomeAttractionsTableViewCell class])];
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    self.tableHeaderV = [[HomeTableHeaderView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kWidth(554))];
+    self.tableView.backgroundColor = [ColorManager WhiteColor];
+    self.tableHeaderV = [[HomeTableHeaderView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kWidth(440))];
     self.tableView.tableHeaderView = self.tableHeaderV;
     
     [self.view addSubview:self.tableView];
@@ -160,8 +238,20 @@
     self.sectionArr = [[NSMutableArray alloc]initWithObjects:@{@"title":@"口碑推荐",@"sub":@"台湾名产贴心推荐，低至7折"},@{@"title":@"你可能也想去",@"sub":@"发现更多出行灵感"}, nil];
     self.specialShopArr = [[NSMutableArray alloc]init];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeHomdeCity:) name:@"changeHomeCity" object:nil];
+    //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeHomdeCity:) name:@"changeHomeCity" object:nil];
 //    self.specialTypeArr = [[NSMutableArray alloc]initWithObjects:@"台北市",@"莺歌",@"马祖",@"阿里山",@"基隆",@"台南市",@"高雄市",@"澎湖", nil];
+    
+//    NSString *openStatus = [[NSUserDefaults standardUserDefaults]objectForKey:@"firstOpen"];
+//    if (![openStatus isEqualToString:@"none"]) {
+//        NewLoginViewController *VC = [[NewLoginViewController alloc] init];
+//        FJBaseNavigationController *nav = [[FJBaseNavigationController alloc]initWithRootViewController:VC];
+//        nav.modalPresentationStyle = UIModalPresentationFullScreen;
+//        [self presentViewController:nav animated:YES completion:nil];
+//    }
+    
+//    if (![CommonManager isLogin:self isPush:NO]) {
+//        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshHomeData) name:@"reloadHomeData" object:nil];
+//    }
 }
 
 - (void)locate {
@@ -211,7 +301,7 @@
                 self.currentCity = @"无法定位当前城市";
             }
             NSLog(@"%@",self.currentCity); //这就是当前的城市
-            NSLog(@"%@",placeMark.name);//具体地址:  xx市xx区xx街道
+            NSLog(@"%@----%@---%@",placeMark.administrativeArea,placeMark.locality,placeMark.name);//具体地址:  xx市xx区xx街道
             self.tableHeaderV.currentCity = self.currentCity;
             if ([placeMark.country isEqualToString:@"中国"]) {
                 if ([placeMark.locality isEqualToString:@"香港特别行政区"] || [placeMark.locality isEqualToString:@"澳门特别行政区"] || [placeMark.administrativeArea isEqualToString:@"台湾省"]) {
@@ -229,26 +319,26 @@
     }];
 }
 
--(void)changeHomdeCity:(NSNotification *)notification{
-    NSString *city = notification.object[@"city"];
-    BOOL inArr = [self.specialTypeArr containsObject:city];
-    if (self.specialTypeArr.count == 5) {
-        if (inArr) {
-            self.specialTypeIndex = [self.specialTypeArr indexOfObject:city];
-        }else{
-            [self.specialTypeArr insertObject:city atIndex:0];
-            self.specialTypeIndex = 0;
-        }
-    }else{
-        if (inArr) {
-            self.specialTypeIndex = [self.specialTypeArr indexOfObject:city];
-        }else{
-            [self.specialTypeArr replaceObjectAtIndex:0 withObject:city];
-            self.specialTypeIndex = 0;
-        }
-    }
-    [self getHomeStoreFromServer:city];
-}
+//-(void)changeHomdeCity:(NSNotification *)notification{
+//    NSString *city = notification.object[@"city"];
+//    BOOL inArr = [self.specialTypeArr containsObject:city];
+//    if (self.specialTypeArr.count == 5) {
+//        if (inArr) {
+//            self.specialTypeIndex = [self.specialTypeArr indexOfObject:city];
+//        }else{
+//            [self.specialTypeArr insertObject:city atIndex:0];
+//            self.specialTypeIndex = 0;
+//        }
+//    }else{
+//        if (inArr) {
+//            self.specialTypeIndex = [self.specialTypeArr indexOfObject:city];
+//        }else{
+//            [self.specialTypeArr replaceObjectAtIndex:0 withObject:city];
+//            self.specialTypeIndex = 0;
+//        }
+//    }
+//    [self getHomeStoreFromServer:city];
+//}
 
 -(void)selectSpecailProductType:(NSInteger)index{
     self.specialTypeIndex = index;
@@ -260,6 +350,13 @@
     PreferentialGoodListViewController *vc = [[PreferentialGoodListViewController alloc]init];
     [self.navigationController pushViewController:vc animated:YES];
 
+}
+
+-(void)moreCategoryClicked{
+    HomeCategoryModel *model = [self.specialTypeArr objectAtIndex:self.specialTypeIndex];
+    ClassicalProductListViewController *vc = [[ClassicalProductListViewController alloc]init];
+    vc.uid = model.uid;
+    [self.navigationController pushViewController:vc animated:YES];
 }
 
 //-(void)scrollViewDidScroll:(UIScrollView *)scrollView{
@@ -284,6 +381,7 @@
         cell.typeIndex = self.specialTypeIndex;
         cell.typeArr = self.specialTypeArr;
         cell.shopArr = self.specialShopArr;
+        cell.topGoodModel = self.specialTopModel;
         cell.delegate = self;
         
         return cell;
@@ -311,13 +409,24 @@
 
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
     if (indexPath.section == 0) {
-        return kWidth(233)*2 + kWidth(50)+kWidth(24);
+        CGFloat height = 0;
+        if (self.specialTopModel) {
+            height += +kWidth(413);
+        }
+        NSInteger line = self.specialShopArr.count/2;
+        if (self.specialShopArr.count%2) {
+            line += 1;
+        }
+        
+        height += kWidth(260)*line;
+        
+        return height + kWidth(70)+kWidth(24)*2;
     }
 //    else if (indexPath.section == 1){
 //        return kWidth(200);
 //    }
     else{
-        return kWidth(175);
+        return kWidth(230);
     }
 }
 
@@ -325,9 +434,9 @@
     return kWidth(66);
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section{
-    if (section == 0) {
-        return kWidth(68);
-    }
+//    if (section == 0) {
+//        return kWidth(68);
+//    }
     return 0.0001;
 }
 -(UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
@@ -343,6 +452,25 @@
         make.top.mas_offset(0);
     }];
     
+    if (section == 0) {
+        UIButton *moreBtn = [[UIButton alloc]init];
+        [moreBtn setTitle:@"更多推荐" forState:UIControlStateNormal];
+        [moreBtn setTitleColor:[ColorManager BlackColor] forState:UIControlStateNormal];
+        moreBtn.titleLabel.font = kFont(14);
+        [moreBtn setImage:kGetImage(@"箭头_深") forState:UIControlStateNormal];
+        moreBtn.imageEdgeInsets = UIEdgeInsetsMake(0, kWidth(70), 0, 0);
+        moreBtn.titleEdgeInsets = UIEdgeInsetsMake(0, kWidth(-15), 0, 0);
+        [moreBtn addTarget:self action:@selector(moreCategoryClicked) forControlEvents:UIControlEventTouchUpInside];
+        [headerV addSubview:moreBtn];
+        [moreBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.right.mas_offset(kWidth(-20));
+            make.centerY.equalTo(titleLab);
+            make.width.mas_offset(kWidth(80));
+            make.height.mas_offset(kWidth(16));
+        }];
+    }
+    
+    
     UILabel *subLab = [[UILabel alloc]init];
     subLab.text = [[self.sectionArr objectAtIndex:section] valueForKey:@"sub"];
     subLab.textColor = [ColorManager Color7F7F7F];
@@ -357,30 +485,30 @@
 }
 
 -(UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section{
-    if (section == 0) {
-        UIView *footerV = [[UIView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kWidth(68))];
-        footerV.backgroundColor = [ColorManager WhiteColor];
-        UIButton *moreBtn = [[UIButton alloc]init];
-        NSString *titleStr = @"显示更多特惠商品";
-        if (self.specialTypeArr.count) {
-            titleStr = [NSString stringWithFormat:@"显示更多%@特惠商品",[self.specialTypeArr objectAtIndex:self.specialTypeIndex]];
-        }
-        [moreBtn setTitle:titleStr forState:UIControlStateNormal];
-        [moreBtn setTitleColor:[ColorManager BlackColor] forState:UIControlStateNormal];
-        moreBtn.titleLabel.font = kFont(14);
-        moreBtn.layer.cornerRadius = kWidth(5);
-        moreBtn.layer.borderColor = [ColorManager BlackColor].CGColor;
-        moreBtn.layer.borderWidth = 1;
-        [moreBtn addTarget:self action:@selector(showMoreClicked:) forControlEvents:UIControlEventTouchUpInside];
-        [footerV addSubview:moreBtn];
-        [moreBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.top.centerX.equalTo(footerV);
-            make.width.mas_offset(kWidth(335));
-            make.height.mas_offset(kWidth(36));
-        }];
-        
-        return footerV;
-    }
+//    if (section == 0) {
+//        UIView *footerV = [[UIView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kWidth(68))];
+//        footerV.backgroundColor = [ColorManager WhiteColor];
+//        UIButton *moreBtn = [[UIButton alloc]init];
+//        NSString *titleStr = @"显示更多特惠商品";
+////        if (self.specialTypeArr.count) {
+////            titleStr = [NSString stringWithFormat:@"显示更多%@特惠商品",[self.specialTypeArr objectAtIndex:self.specialTypeIndex]];
+////        }
+//        [moreBtn setTitle:titleStr forState:UIControlStateNormal];
+//        [moreBtn setTitleColor:[ColorManager BlackColor] forState:UIControlStateNormal];
+//        moreBtn.titleLabel.font = kFont(14);
+//        moreBtn.layer.cornerRadius = kWidth(5);
+//        moreBtn.layer.borderColor = [ColorManager BlackColor].CGColor;
+//        moreBtn.layer.borderWidth = 1;
+//        [moreBtn addTarget:self action:@selector(showMoreClicked:) forControlEvents:UIControlEventTouchUpInside];
+//        [footerV addSubview:moreBtn];
+//        [moreBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+//            make.top.centerX.equalTo(footerV);
+//            make.width.mas_offset(kWidth(335));
+//            make.height.mas_offset(kWidth(36));
+//        }];
+//        
+//        return footerV;
+//    }
     return [UIView new];
 }
 

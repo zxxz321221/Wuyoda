@@ -18,3 +18,7 @@
 @implementation HomeShopModel
 
 @end
+
+@implementation HomeCategoryModel
+
+@end

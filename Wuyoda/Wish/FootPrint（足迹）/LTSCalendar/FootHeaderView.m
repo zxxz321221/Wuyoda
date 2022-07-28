@@ -15,7 +15,7 @@
         
         self.readBtn = [[UIButton alloc]initWithFrame:CGRectMake(5, kWidth(12), kWidth(16), kWidth(16))];
         [self.readBtn addTarget:self action:@selector(readClick:) forControlEvents:UIControlEventTouchUpInside];
-        [self.readBtn setImage:[UIImage imageNamed:@"选择"] forState:UIControlStateNormal];
+        [self.readBtn setImage:[UIImage imageNamed:@"未选中"] forState:UIControlStateNormal];
         [self.readBtn setImage:[UIImage imageNamed:@"选中"] forState:UIControlStateSelected];
         self.readBtn.hidden=YES;
         [self addSubview:self.readBtn];

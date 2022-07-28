@@ -32,20 +32,20 @@
     [self.payBtn setTitle:@"提交订单" forState:UIControlStateNormal];
     [self.payBtn setTitleColor:[ColorManager WhiteColor] forState:UIControlStateNormal];
     self.payBtn.titleLabel.font = kFont(14);
-    self.payBtn.backgroundColor = [ColorManager MainColor];
-    self.payBtn.layer.cornerRadius = kWidth(16);
+    [self.payBtn setBackgroundImage:kGetImage(@"提交订单") forState:UIControlStateNormal];
+    self.payBtn.layer.cornerRadius = kWidth(20);
     [self addSubview:self.payBtn];
     [self.payBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.right.mas_offset(kWidth(-13));
-        make.top.mas_offset(kWidth(7));
+        make.right.mas_offset(kWidth(-20));
+        make.top.mas_offset(kWidth(10));
         make.width.mas_offset(kWidth(88));
-        make.height.mas_offset(kWidth(32));
+        make.height.mas_offset(kWidth(40));
     }];
     
     self.allPriceLab = [[UILabel alloc]init];
-    self.allPriceLab.text = @"￥349.00";
-    self.allPriceLab.textColor = [UIColor redColor];
-    self.allPriceLab.font = kFont(16);
+    self.allPriceLab.text = @"￥0.00";
+    self.allPriceLab.textColor = [ColorManager ColorFE3C3D];
+    self.allPriceLab.font = kBoldFont(20);
     [self addSubview:self.allPriceLab];
     [self.allPriceLab mas_makeConstraints:^(MASConstraintMaker *make) {
         make.right.equalTo(self.payBtn.mas_left).mas_offset(kWidth(-10));
@@ -55,10 +55,10 @@
     UILabel *titleLab = [[UILabel alloc]init];
     titleLab.text = @"合计：";
     titleLab.textColor = [ColorManager Color333333];
-    titleLab.font = kFont(16);
+    titleLab.font = kBoldFont(14);
     [self addSubview:titleLab];
     [titleLab mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.right.equalTo(self.allPriceLab.mas_left);
+        make.right.equalTo(self.allPriceLab.mas_left).mas_offset(kWidth(-20));
         make.centerY.equalTo(self.payBtn);
     }];
 }

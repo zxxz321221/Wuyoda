@@ -58,10 +58,10 @@
     
     self.deleteBtn = [[UIButton alloc] init];
     [self.deleteBtn setTitle:@"删除" forState:UIControlStateNormal];
-    [self.deleteBtn setTitleColor:[ColorManager Color008A70] forState:UIControlStateNormal];
+    [self.deleteBtn setTitleColor:[ColorManager MainColor] forState:UIControlStateNormal];
     self.deleteBtn.titleLabel.font = kFont(14);
     self.deleteBtn.layer.cornerRadius = kWidth(13);
-    self.deleteBtn.layer.borderColor = [ColorManager Color008A70].CGColor;
+    self.deleteBtn.layer.borderColor = [ColorManager MainColor].CGColor;
     self.deleteBtn.layer.borderWidth = kWidth(1);
     [self.contentView addSubview:self.deleteBtn];
     [self.deleteBtn mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -85,11 +85,18 @@
 }
 
 - (void)setType:(NSString *)type{
+    _type = type;
     if ([type isEqualToString:@"2"]) {
         self.deleteBtn .hidden = YES;
         self.selectImgV.hidden = YES;
         [self.iconImgV setImage:kGetImage(@"添加账号")];
         self.nameLab.text = @"添加账号";
+    }
+}
+
+-(void)setIsEdit:(BOOL)isEdit{
+    if (![self.type isEqualToString:@"2"]) {
+        self.deleteBtn.hidden = !isEdit;
     }
 }
 

@@ -7,6 +7,7 @@
 
 #import "CityPresentTableViewCell.h"
 #import "CityPresentCollectionViewCell.h"
+#import "ProductDetailViewController.h"
 
 @interface CityPresentTableViewCell ()<UICollectionViewDelegate,UICollectionViewDataSource>
 
@@ -28,7 +29,7 @@
     UICollectionViewFlowLayout *fl = [[UICollectionViewFlowLayout alloc]init];
     fl.itemSize = CGSizeMake(kWidth(100), kWidth(130));
     fl.sectionInset = UIEdgeInsetsMake(kWidth(20), kWidth(20), kWidth(20), kWidth(20));
-    fl.minimumLineSpacing = kWidth(18);
+    fl.minimumLineSpacing = kWidth(30);
     fl.scrollDirection = UICollectionViewScrollDirectionHorizontal;
 
 
@@ -55,6 +56,14 @@
 
 -(NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section{
     return self.goodsArr.count;
+}
+
+-(void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
+    HomeShopModel *model = [self.goodsArr objectAtIndex:indexPath.row];
+    ProductDetailViewController *vc = [[ProductDetailViewController alloc]init];
+    vc.uid = model.uid;
+    vc.supplier_id = model.supplier_id;
+    [self.CurrentViewController.navigationController pushViewController:vc animated:YES];
 }
 
 - (void)setGoodsArr:(NSArray *)goodsArr{

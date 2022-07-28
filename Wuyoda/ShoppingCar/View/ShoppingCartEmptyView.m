@@ -54,6 +54,7 @@
     shoppingBtn.layer.borderColor = [ColorManager ColorCCCCCC].CGColor;
     shoppingBtn.layer.borderWidth = kWidth(1);
     shoppingBtn.backgroundColor = [ColorManager WhiteColor];
+    [shoppingBtn addTarget:self action:@selector(shoppingClicked) forControlEvents:UIControlEventTouchUpInside];
     [self addSubview:shoppingBtn];
     [shoppingBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.equalTo(self);
@@ -61,6 +62,10 @@
         make.width.mas_offset(kWidth(78));
         make.height.mas_offset(kWidth(28));
     }];
+}
+
+-(void)shoppingClicked{
+    [self.CurrentViewController.tabBarController setSelectedIndex:0];
 }
 
 /*

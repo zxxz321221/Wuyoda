@@ -9,6 +9,8 @@
 
 @interface CityAttractionTableViewCell ()
 
+@property (nonatomic , retain)UIView *bgView;
+
 @property (nonatomic , retain)UIImageView *imgV;
 
 @property (nonatomic , retain)UILabel *nameLab;
@@ -28,9 +30,21 @@
 }
 
 -(void)createUI{
+    
+    self.backgroundColor = [ColorManager ColorF2F2F2];
+    
+    self.bgView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kWidth(120))];
+    self.bgView.backgroundColor = [ColorManager WhiteColor];
+    [self.contentView addSubview:self.bgView];
+    [self.bgView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.left.width.height.equalTo(self.contentView);
+    }];
+    
+    
     self.imgV = [[UIImageView alloc]init];
     self.imgV.backgroundColor = [ColorManager ColorF2F2F2];
     self.imgV.layer.cornerRadius = kWidth(5);
+    self.imgV.layer.masksToBounds = YES;
     [self.contentView addSubview:self.imgV];
     [self.imgV mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_offset(kWidth(16));
@@ -66,6 +80,23 @@
     [self.imgV sd_setImageWithURL:[NSURL URLWithString:model.cover]];
     self.nameLab.text = model.scenic_title;
     self.introLab.text = model.scenic_brief;
+}
+
+-(void)setIsLast:(BOOL)isLast{
+    if (isLast) {
+        UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:self.bgView.bounds byRoundingCorners:UIRectCornerBottomLeft | UIRectCornerBottomRight cornerRadii:CGSizeMake(kWidth(10), kWidth(10))];
+        CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
+        maskLayer.frame =  self.bgView.bounds;
+        maskLayer.path = maskPath.CGPath;
+        self.bgView.layer.mask = maskLayer;
+        
+    }else{
+        UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:self.bgView.bounds byRoundingCorners:UIRectCornerBottomLeft | UIRectCornerBottomRight cornerRadii:CGSizeMake(0, 0)];
+        CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
+        maskLayer.frame =  self.bgView.bounds;
+        maskLayer.path = maskPath.CGPath;
+        self.bgView.layer.mask = maskLayer;
+    }
 }
 
 - (void)awakeFromNib {

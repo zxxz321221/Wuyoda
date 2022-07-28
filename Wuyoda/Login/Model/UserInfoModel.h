@@ -55,6 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy)NSString             *wx_language;
 @property (nonatomic, copy)NSString             *wx_privilege;
 @property (nonatomic, copy)NSString             *token;
+@property (nonatomic, copy)NSString             *days;
 
 
 

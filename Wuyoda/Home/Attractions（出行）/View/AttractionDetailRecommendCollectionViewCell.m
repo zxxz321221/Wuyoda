@@ -33,7 +33,7 @@
 -(void)createUI{
     self.imgV = [[UIImageView alloc]init];
     //self.imgV.backgroundColor = [UIColor lightGrayColor];
-    //self.imgV.contentMode = UIViewContentModeScaleAspectFill;
+    self.imgV.contentMode = UIViewContentModeScaleAspectFit;
     [self.contentView addSubview:self.imgV];
     [self.imgV mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.top.mas_offset(0);

@@ -9,7 +9,6 @@
 #import "View/MineHeaderView.h"
 #import "View/MineOrderTableViewCell.h"
 #import "View/MineTableViewCell.h"
-#import "SettingViewController.h"
 
 @interface MineViewController ()<UITableViewDelegate,UITableViewDataSource>
 
@@ -29,10 +28,11 @@
         UserInfoModel *userInfo = [UserInfoModel getUserInfoModel];
         [self.headerV.iconImgV sd_setImageWithURL:[NSURL URLWithString:userInfo.member_image] placeholderImage:kGetImage(@"normal_icon")];
         self.headerV.nameLab.text = userInfo.member_name;
+        self.headerV.signLab.text = [NSString stringWithFormat:@"今天是Wuyoda陪伴你的第%@天",userInfo.days];
         self.headerV.isLogin = YES;
     }else{
         [self.headerV.iconImgV sd_setImageWithURL:[NSURL URLWithString:@""]];
-        self.headerV.nameLab.text = @"未登录";
+        self.headerV.nameLab.text = @"请登录";
         self.headerV.isLogin = NO;
     }
     
@@ -41,21 +41,12 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    FJNormalNavView *nav = [[FJNormalNavView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kHeight_NavBar) controller:self titleStr:@"我的"];
+    FJNormalNavView *nav = [[FJNormalNavView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kHeight_NavBar) controller:self titleStr:@""];
     [nav leftBtnHidden:YES];
+    nav.backgroundColor = [ColorManager ColorF2F2F2];
     [self.view addSubview:nav];
     
-    UIButton *settingBtn = [[UIButton alloc]init];
-    [settingBtn setImage:kGetImage(@"设置") forState:UIControlStateNormal];
-    [settingBtn addTarget:self action:@selector(settingClicked) forControlEvents:UIControlEventTouchUpInside];
-    [nav addSubview:settingBtn];
-    [settingBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.right.mas_offset(kWidth(-24));
-        make.bottom.mas_offset(kWidth(0));
-        make.width.mas_offset(kWidth(16));
-        make.height.mas_offset(kHeight_NavBar-kHeight_StatusBar);
-    }];
-    
+    self.view.backgroundColor = [ColorManager ColorF2F2F2];
     
     self.tableView = [[UITableView alloc]initWithFrame:CGRectMake(0, kHeight_NavBar, kScreenWidth, kScreenHeight-kHeight_NavBar-kHeight_TabBar) style:UITableViewStyleGrouped];
     self.tableView.delegate = self;
@@ -63,19 +54,20 @@
     [self.tableView registerClass:[MineOrderTableViewCell class] forCellReuseIdentifier:NSStringFromClass([MineOrderTableViewCell class])];
     [self.tableView registerClass:[MineTableViewCell class] forCellReuseIdentifier:NSStringFromClass([MineTableViewCell class])];
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    self.tableView.backgroundColor = [ColorManager WhiteColor];
+    self.tableView.backgroundColor = [ColorManager ColorF2F2F2];
     
-    self.headerV = [[MineHeaderView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kWidth(146))];
+    self.headerV = [[MineHeaderView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kWidth(139))];
     self.tableView.tableHeaderView = self.headerV;
     
     [self.view addSubview:self.tableView];
     
     self.titleArr = @[@"批发商申请",@"分享APP"];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(timeoutLogin) name:@"changeAccountLoginTimeOut" object:nil];
 }
 
--(void)settingClicked{
-    SettingViewController *vc = [[SettingViewController alloc]init];
-    [self.navigationController pushViewController:vc animated:YES];
+-(void)timeoutLogin{
+    [CommonManager isLogin:self isPush:YES];
 }
 
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -101,7 +93,7 @@
     
 }
 -(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
-    return 2;
+    return 1;
 }
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
     if (section == 0) {
@@ -121,7 +113,7 @@
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
 
-    return kWidth(62);
+    return 0.001;
 }
 
 -(UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section{
@@ -130,24 +122,7 @@
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
 
-    UIView *headerV = [[UIView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kWidth(62))];
-    headerV.backgroundColor = [ColorManager WhiteColor];
-    
-    UILabel *titleLab = [[UILabel alloc]init];
-    titleLab.textColor = [ColorManager BlackColor];
-    titleLab.font = kFont(16);
-    if (section == 0) {
-        titleLab.text = @"我的订单";
-    }else{
-        titleLab.text = @"批发/分享";
-    }
-    [headerV addSubview:titleLab];
-    [titleLab mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_offset(kWidth(20));
-        make.top.mas_offset(kWidth(24));
-    }];
-    
-    return headerV;
+    return [UIView new];
 }
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{

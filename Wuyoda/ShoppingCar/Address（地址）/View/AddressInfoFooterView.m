@@ -21,8 +21,8 @@
 -(void)createUI{
     UILabel *titleLab = [[UILabel alloc]init];
     titleLab.text = @"上传身份证正反面";
-    titleLab.textColor = [ColorManager Color666666];
-    titleLab.font = kFont(14);
+    titleLab.textColor = [ColorManager BlackColor];
+    titleLab.font = kFont(18);
     [self addSubview:titleLab];
     [titleLab mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.top.mas_offset(kWidth(15));
@@ -42,6 +42,8 @@
     }];
     
     self.identifierimgV1 = [[UIImageView alloc]initWithImage:kGetImage(@"上传身份证正面")];
+    self.identifierimgV1.layer.cornerRadius = kWidth(10);
+    self.identifierimgV1.layer.masksToBounds = YES;
     [self addSubview:self.identifierimgV1];
     [self.identifierimgV1 mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_offset(kWidth(24));
@@ -59,8 +61,21 @@
         make.width.mas_offset(kWidth(145));
         make.height.mas_offset(kWidth(86));
     }];
+    self.deleteBtn1 = [[UIButton alloc]init];
+    [self.deleteBtn1 setImage:kGetImage(@"删除") forState:UIControlStateNormal];
+    self.deleteBtn1.backgroundColor = [ColorManager WhiteColor];
+    self.deleteBtn1.layer.cornerRadius = kWidth(10);
+    self.deleteBtn1.layer.masksToBounds = YES;
+    self.deleteBtn1.hidden = YES;
+    [self addSubview:self.deleteBtn1];
+    [self.deleteBtn1 mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.right.equalTo(self.identifierimgV1);
+        make.width.height.mas_offset(kWidth(20));
+    }];
     
     self.identifierimgV2 = [[UIImageView alloc]initWithImage:kGetImage(@"上传身份证反面")];
+    self.identifierimgV2.layer.cornerRadius = kWidth(10);
+    self.identifierimgV2.layer.masksToBounds = YES;
     [self addSubview:self.identifierimgV2];
     [self.identifierimgV2 mas_makeConstraints:^(MASConstraintMaker *make) {
         make.right.mas_offset(kWidth(-24));
@@ -77,7 +92,20 @@
         make.width.mas_offset(kWidth(145));
         make.height.mas_offset(kWidth(86));
     }];
+    
+    self.deleteBtn2 = [[UIButton alloc]init];
+    [self.deleteBtn2 setImage:kGetImage(@"删除") forState:UIControlStateNormal];
+    self.deleteBtn2.backgroundColor = [ColorManager WhiteColor];
+    self.deleteBtn2.layer.cornerRadius = kWidth(10);
+    self.deleteBtn2.layer.masksToBounds = YES;
+    self.deleteBtn2.hidden = YES;
+    [self addSubview:self.deleteBtn2];
+    [self.deleteBtn2 mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.right.equalTo(self.identifierimgV2);
+        make.width.height.mas_offset(kWidth(20));
+    }];
 }
+
 
 /*
 // Only override drawRect: if you perform custom drawing.

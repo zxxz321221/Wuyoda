@@ -26,6 +26,12 @@
 @property (nonatomic , retain)NSMutableArray *shoppingCartArr;
 
 @property (nonatomic , assign)BOOL isEdit;
+//33.邮寄  69.当地
+@property (nonatomic , copy)NSString *type;
+
+@property (nonatomic , retain)UIButton *expressBtn;
+
+@property (nonatomic , retain)UIButton *currentBtn;
 
 @end
 
@@ -34,13 +40,15 @@
 -(void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
     
-    [self getDataFromServer];
+    [self getDataFromServer:self.type];
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     self.view.backgroundColor = [ColorManager ColorF2F2F2];
+    
+    self.type = @"33";
     
     UILabel *titleLab = [[UILabel alloc]init];
     titleLab.text = @"购物车";
@@ -54,8 +62,8 @@
     
     UIButton *editBtn = [[UIButton alloc]init];
     [editBtn setTitle:@"管理" forState:UIControlStateNormal];
-    [editBtn setTitle:@"取消" forState:UIControlStateSelected];
-    [editBtn setTitleColor:[ColorManager Color3399FF] forState:UIControlStateNormal];
+    [editBtn setTitle:@"完成" forState:UIControlStateSelected];
+    [editBtn setTitleColor:[ColorManager MainColor] forState:UIControlStateNormal];
     editBtn.titleLabel.font = kFont(16);
     [editBtn addTarget:self action:@selector(editShoppintCartClicked:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:editBtn];
@@ -66,12 +74,50 @@
         make.height.mas_offset(kWidth(16));
     }];
     
+    self.expressBtn = [[UIButton alloc]init];
+    [self.expressBtn setTitle:@"官方配送" forState:UIControlStateNormal];
+    [self.expressBtn setTitleColor:[ColorManager BlackColor] forState:UIControlStateNormal];
+    [self.expressBtn setTitleColor:[ColorManager WhiteColor] forState:UIControlStateSelected];
+    [self.expressBtn setBackgroundImage:kGetImage(@"购物车_左白底") forState:UIControlStateNormal];
+    [self.expressBtn setBackgroundImage:kGetImage(@"购物车_左白底") forState:UIControlStateHighlighted];
+    [self.expressBtn setBackgroundImage:kGetImage(@"购物车_左渐变") forState:UIControlStateSelected];
+    self.expressBtn.titleLabel.font = kFont(20);
+    self.expressBtn.selected = YES;
+    [self.expressBtn addTarget:self action:@selector(changgeShopCartTypeClicked:) forControlEvents:UIControlEventTouchUpInside];
+    self.expressBtn.userInteractionEnabled = NO;
+    [self.view addSubview:self.expressBtn];
+    [self.expressBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_offset(kWidth(10));
+        make.top.equalTo(titleLab.mas_bottom).mas_offset(kWidth(20));
+        make.width.mas_offset(kWidth(177.5));
+        make.height.mas_offset(kWidth(40));
+    }];
+    
+    self.currentBtn = [[UIButton alloc]init];
+    [self.currentBtn setTitle:@"商家配送" forState:UIControlStateNormal];
+    [self.currentBtn setTitleColor:[ColorManager BlackColor] forState:UIControlStateNormal];
+    [self.currentBtn setTitleColor:[ColorManager WhiteColor] forState:UIControlStateSelected];
+    [self.currentBtn setBackgroundImage:kGetImage(@"购物车_右白底") forState:UIControlStateNormal];
+    [self.currentBtn setBackgroundImage:kGetImage(@"购物车_右白底") forState:UIControlStateHighlighted];
+    [self.currentBtn setBackgroundImage:kGetImage(@"购物车_右渐变") forState:UIControlStateSelected];
+    self.currentBtn.titleLabel.font = kFont(20);
+    [self.currentBtn addTarget:self action:@selector(changgeShopCartTypeClicked:) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:self.currentBtn];
+    [self.currentBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(self.view.mas_centerX);
+        make.top.equalTo(titleLab.mas_bottom).mas_offset(kWidth(20));
+        make.width.mas_offset(kWidth(177.5));
+        make.height.mas_offset(kWidth(40));
+    }];
+    
     self.emptyV = [[ShoppingCartEmptyView alloc]init];
+    self.emptyV.backgroundColor = [ColorManager WhiteColor];
+    self.emptyV.layer.cornerRadius = kWidth(10);
     [self.view addSubview:self.emptyV];
     [self.emptyV mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.width.equalTo(self.view);
-        make.top.equalTo(titleLab.mas_bottom).mas_offset(kWidth(16));
-        make.bottom.mas_offset(kWidth(-60));
+        make.top.equalTo(self.expressBtn.mas_bottom).mas_offset(kWidth(10));
+        make.bottom.mas_offset(kWidth(10));
     }];
     
     self.tableView = [[UITableView alloc]initWithFrame:CGRectZero style:UITableViewStyleGrouped];
@@ -83,8 +129,13 @@
     [self.view addSubview:self.tableView];
     [self.tableView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.width.equalTo(self.view);
-        make.top.equalTo(titleLab.mas_bottom).mas_offset(kWidth(16));
+        make.top.equalTo(self.expressBtn.mas_bottom).mas_offset(kWidth(10));
         make.bottom.mas_offset(kWidth(-60));
+    }];
+    
+    __weak typeof (self) weakSelf = self;
+    self.tableView.mj_header = [MJRefreshNormalHeader headerWithRefreshingBlock:^{
+        [weakSelf getDataFromServer:self.type];
     }];
     
     self.bottomV = [[ShoppingCarBottomView alloc]init];
@@ -102,6 +153,26 @@
     
 }
 
+-(void)changgeShopCartTypeClicked:(UIButton *)sender{
+    sender.selected = YES;
+    NSString *type = @"";
+    if (sender == self.expressBtn) {
+        self.currentBtn.selected = NO;
+        self.currentBtn.userInteractionEnabled = YES;
+        self.expressBtn.userInteractionEnabled = NO;
+        self.type = @"33";
+    }else{
+        self.expressBtn.selected = NO;
+        self.expressBtn.userInteractionEnabled = YES;
+        self.currentBtn.userInteractionEnabled = NO;
+        
+        self.type = @"69";
+    }
+    
+    [self getDataFromServer:self.type];
+    
+}
+
 -(void)orderBuyAgainNotification:(NSNotification *)notification{
     NSDictionary *orderDic = notification.object;
     NSDictionary *cartListDic = orderDic[@"data"][@"cart_list"];
@@ -112,12 +183,15 @@
     [self.navigationController pushViewController:vc animated:YES];
 }
 
--(void)getDataFromServer{
-    NSDictionary *dic = @{@"m_id":[UserInfoModel getUserInfoModel].member_id,@"api_token":[RegisterModel getUserInfoModel].user_token};
+-(void)getDataFromServer:(NSString *)type{
+    NSDictionary *dic = @{@"m_id":[UserInfoModel getUserInfoModel].member_id,@"api_token":[RegisterModel getUserInfoModel].user_token,@"ship":self.type};
     
     [FJNetTool postWithParams:dic url:Store_order_cart loading:YES success:^(id responseObject) {
+        [self.tableView.mj_header endRefreshing];
         BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
         if ([baseModel.code isEqualToString:CODE0]) {
+            [self.expressBtn setTitle:[NSString stringWithFormat:@"官方配送(%@)",responseObject[@"data"][@"cart_num"][@"pledge"]] forState:UIControlStateNormal];
+            [self.currentBtn setTitle:[NSString stringWithFormat:@"商家配送(%@)",responseObject[@"data"][@"cart_num"][@"zhyz"]] forState:UIControlStateNormal];
             self.shoppingCartArr = [ShopCartModel mj_objectArrayWithKeyValuesArray:responseObject[@"data"][@"cart_list"]];
             if (self.shoppingCartArr.count) {
                 self.emptyV.hidden = YES;
@@ -129,12 +203,18 @@
                 self.bottomV.hidden = YES;
                 self.emptyV.hidden = NO;
             }
+            [self handleCartPrice];
             
         }else{
             [self.view showHUDWithText:baseModel.msg withYOffSet:0];
         }
     } failure:^(NSError *error) {
-            
+        [self.expressBtn setTitle:@"官方配送(0)" forState:UIControlStateNormal];
+        [self.currentBtn setTitle:@"商家配送(0)" forState:UIControlStateNormal];
+        [self.shoppingCartArr removeAllObjects];
+        [self.tableView reloadData];
+        [self handleCartPrice];
+        [self.tableView.mj_header endRefreshing];
     }];
 }
 
@@ -235,7 +315,7 @@
             BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
             if ([baseModel.code isEqualToString:CODE0]) {
                 [self.view showHUDWithText:baseModel.msg withYOffSet:0];
-                [self getDataFromServer];
+                [self getDataFromServer:self.type];
             }
         } failure:^(NSError *error) {
             
@@ -299,7 +379,18 @@
     return self.shoppingCartArr.count;
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
-    return kWidth(157);
+    
+    ShopCartModel *model = [self.shoppingCartArr objectAtIndex:indexPath.row];
+    if ([model.isup isEqualToString:@"1"]) {
+        
+        if ([model.goods_stock integerValue] < [model.cart_num integerValue]) {
+            return kWidth(174);
+        }
+    }else{
+        return kWidth(174);
+    }
+    
+    return kWidth(150);
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section{
     return 0.001;

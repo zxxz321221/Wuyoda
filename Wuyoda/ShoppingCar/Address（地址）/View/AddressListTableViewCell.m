@@ -36,34 +36,45 @@
 }
 
 -(void)createUI{
+    self.contentView.backgroundColor = [ColorManager ColorF2F2F2];
+    
+    UIView *bgView = [[UIView alloc]init];
+    bgView.backgroundColor = [ColorManager WhiteColor];
+    bgView.layer.cornerRadius = kWidth(10);
+    [self.contentView addSubview:bgView];
+    [bgView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_offset(kWidth(10));
+        make.right.mas_offset(kWidth(-10));
+        make.top.height.equalTo(self.contentView);
+    }];
     
     self.nameLab = [[UILabel alloc]init];
     //self.nameLab.text = @"张三";
     self.nameLab.textColor = [ColorManager BlackColor];
     self.nameLab.font = kFont(14);
-    [self.contentView addSubview:self.nameLab];
+    [bgView addSubview:self.nameLab];
     [self.nameLab mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_offset(kWidth(20));
-        make.top.mas_offset(kWidth(15));
+        make.left.mas_offset(kWidth(10));
+        make.top.mas_offset(kWidth(20));
     }];
     
     self.phoneLab = [[UILabel alloc]init];
     //self.phoneLab.text = @"156****1245";
     self.phoneLab.textColor = [ColorManager BlackColor];
     self.phoneLab.font = kFont(14);
-    [self.contentView addSubview:self.phoneLab];
+    [bgView addSubview:self.phoneLab];
     [self.phoneLab mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(self.nameLab.mas_right).mas_offset(kWidth(10));
-        make.top.mas_offset(kWidth(15));
+        make.top.mas_offset(kWidth(20));
     }];
     
     self.addressLab = [[UILabel alloc]init];
     //self.addressLab.text = @"辽宁省大连市沙河口区中山路588-24-8";
     self.addressLab.textColor = [ColorManager BlackColor];
     self.addressLab.font = kFont(14);
-    [self.contentView addSubview:self.addressLab];
+    [bgView addSubview:self.addressLab];
     [self.addressLab mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_offset(kWidth(20));
+        make.left.mas_offset(kWidth(10));
         make.right.mas_offset(kWidth(-36));
         make.top.equalTo(self.nameLab.mas_bottom).mas_offset(kWidth(16));
     }];
@@ -71,28 +82,29 @@
     self.editBtn = [[UIButton alloc]init];
     [self.editBtn setImage:kGetImage(@"编辑地址") forState:UIControlStateNormal];
     [self.editBtn addTarget:self action:@selector(editAddressClicked:) forControlEvents:UIControlEventTouchUpInside];
-    [self.contentView addSubview:self.editBtn];
+    [bgView addSubview:self.editBtn];
     [self.editBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.right.mas_offset(kWidth(-20));
-        make.top.mas_offset(kWidth(27));
+        make.right.mas_offset(kWidth(-10));
+        make.top.mas_offset(kWidth(32));
         make.width.height.mas_offset(kWidth(18));
     }];
 
     UIView *bottomLine = [[UIView alloc]init];
     bottomLine.backgroundColor = [ColorManager ColorF2F2F2];
-    [self.contentView addSubview:bottomLine];
+    [bgView addSubview:bottomLine];
     [bottomLine mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.width.equalTo(self.contentView);
-        make.top.mas_offset(kWidth(75));
+        make.left.mas_offset(kWidth(10));
+        make.right.mas_offset(kWidth(-10));
+        make.top.mas_offset(kWidth(80));
         make.height.mas_offset(kWidth(1));
     }];
     
     self.defaultImgV = [[UIImageView alloc]init];
     self.defaultImgV.image = kGetImage(@"选择");
-    [self.contentView addSubview:self.defaultImgV];
+    [bgView addSubview:self.defaultImgV];
     [self.defaultImgV mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_offset(kWidth(20));
-        make.top.mas_offset(kWidth(87));
+        make.left.mas_offset(kWidth(10));
+        make.top.mas_offset(kWidth(92));
         make.width.height.mas_offset(kWidth(18));
     }];
     
@@ -111,7 +123,7 @@
     [defaultBtn setTitleColor:[ColorManager Color666666] forState:UIControlStateNormal];
     defaultBtn.titleLabel.font = kFont(14);
     [defaultBtn addTarget:self action:@selector(defaultAddressClicked) forControlEvents:UIControlEventTouchUpInside];
-    [self.contentView addSubview:defaultBtn];
+    [bgView addSubview:defaultBtn];
     [defaultBtn  mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(self.defaultImgV.mas_right).mas_offset(kWidth(15));
         make.centerY.equalTo(self.defaultImgV);
@@ -124,9 +136,9 @@
     [self.deleteBtn setTitleColor:[ColorManager Color666666] forState:UIControlStateNormal];
     self.deleteBtn.titleLabel.font = kFont(14);
     [self.deleteBtn addTarget:self action:@selector(deleteAddressClicked) forControlEvents:UIControlEventTouchUpInside];
-    [self.contentView addSubview:self.deleteBtn];
+    [bgView addSubview:self.deleteBtn];
     [self.deleteBtn  mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.right.mas_offset(kWidth(-18));
+        make.right.mas_offset(kWidth(-10));
         make.centerY.equalTo(self.defaultImgV);
         make.width.mas_offset(kWidth(30));
         make.height.mas_offset(kWidth(14));
@@ -142,18 +154,10 @@
 }
 
 -(void)deleteAddressClicked{
-    NSDictionary *dic = @{@"uid":self.model.uid,@"api_token":[RegisterModel getUserInfoModel].user_token};
     
-    [FJNetTool postWithParams:dic url:Special_address_del loading:YES success:^(id responseObject) {
-        BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
-        if ([baseModel.code isEqualToString:CODE0]) {
-            if (self.delegate && [self.delegate respondsToSelector:@selector(deleteAddressWithModel:)]) {
-                [self.delegate deleteAddressWithModel:self.model];
-            }
-        }
-    } failure:^(NSError *error) {
-        
-    }];
+    if (self.delegate && [self.delegate respondsToSelector:@selector(deleteAddressWithModel:)]) {
+        [self.delegate deleteAddressWithModel:self.model];
+    }
 }
 
 -(void)defaultAddressClicked{

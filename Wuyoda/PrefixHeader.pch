@@ -131,6 +131,8 @@ _Pragma("clang diagnostic pop")
 #import <Masonry.h>
 //项目中
 #import "LoginViewController.h"
+#import "NewLoginViewController.h"
+#import "RegisterViewController.h"
 #import "RegisterModel.h"
 #import "UserInfoModel.h"
 #import "LoginUsersModel.h"
@@ -139,6 +141,7 @@ _Pragma("clang diagnostic pop")
 #import "UIImage+Blur.h"
 #import "UIImage+ImageEffects.h"
 #import "WXApi.h"
+#import "KeyChain.h"
 
 
 #define HEX_COLOR(hex)              [UIColor nb_colorWithHex:hex alpha:1.0]

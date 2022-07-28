@@ -45,7 +45,19 @@
     // Do any additional setup after loading the view.
     
     FJNormalNavView *nav = [[FJNormalNavView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kHeight_NavBar) controller:self titleStr:@"手机号"];
+    nav.backgroundColor = [ColorManager ColorF2F2F2];
     [self.view addSubview:nav];
+    
+    self.view.backgroundColor = [ColorManager ColorF2F2F2];
+    
+    UIView *bgView = [[UIView alloc]initWithFrame:CGRectMake(0, kHeight_NavBar+kWidth(20), kScreenWidth, kScreenHeight-kHeight_NavBar-kWidth(20))];
+    bgView.backgroundColor = [ColorManager WhiteColor];
+    [self.view addSubview:bgView];
+    UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:bgView.bounds byRoundingCorners:UIRectCornerTopRight | UIRectCornerTopLeft cornerRadii:CGSizeMake(kWidth(10), kWidth(10))];
+    CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
+    maskLayer.frame =  bgView.bounds;
+    maskLayer.path = maskPath.CGPath;
+    bgView.layer.mask = maskLayer;
     
     UserInfoModel *userInfo = [UserInfoModel getUserInfoModel];
     
@@ -58,7 +70,7 @@
     [self.view addSubview:titleLab];
     [titleLab mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.equalTo(self.view);
-        make.top.equalTo(nav.mas_bottom).mas_offset(kWidth(48));
+        make.top.equalTo(bgView).mas_offset(kWidth(40));
     }];
     
     UILabel *phoneLab = [[UILabel alloc]init];
@@ -68,7 +80,7 @@
     }
     phoneLab.text = phoneStr;
     phoneLab.textColor = [ColorManager Color333333];
-    phoneLab.font = kBoldFont(18);
+    phoneLab.font = kBoldFont(20);
     self.phoneLab = phoneLab;
     [self.view addSubview:phoneLab];
     [phoneLab mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -80,7 +92,7 @@
     [changeBtn setTitle:@"修改手机号" forState:UIControlStateNormal];
     [changeBtn setTitleColor:[ColorManager WhiteColor] forState:UIControlStateNormal];
     changeBtn.titleLabel.font = kFont(14);
-    changeBtn.backgroundColor = [ColorManager MainColor];
+    [changeBtn setBackgroundImage:kGetImage(@"login_按钮") forState:UIControlStateNormal];
     changeBtn.layer.cornerRadius = kWidth(24);
     [changeBtn addTarget:self action:@selector(changePhoneClicked) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:changeBtn];

@@ -19,6 +19,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic , retain)UIButton *orderCopyBtn;
 
+@property (nonatomic , retain)UIView *bgView;
+
+@property (nonatomic , assign)BOOL isLast;
+
 @end
 
 NS_ASSUME_NONNULL_END

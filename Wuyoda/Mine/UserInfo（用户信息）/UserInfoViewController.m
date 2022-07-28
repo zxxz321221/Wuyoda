@@ -38,21 +38,30 @@
     // Do any additional setup after loading the view.
     
     FJNormalNavView *nav = [[FJNormalNavView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kHeight_NavBar) controller:self titleStr:@"编辑个人资料"];
+    nav.backgroundColor = [ColorManager ColorF2F2F2];
     [self.view addSubview:nav];
     
-    self.tableView = [[UITableView alloc]initWithFrame:CGRectMake(0, kHeight_NavBar, kScreenWidth, kScreenHeight-kHeight_NavBar-kHeight_SafeArea) style:UITableViewStyleGrouped];
+    self.view.backgroundColor = [ColorManager ColorF2F2F2];
+    
+    UIView *bgView = [[UIView alloc]initWithFrame:CGRectMake(0, kHeight_NavBar+kWidth(20), kScreenWidth, kScreenHeight-kHeight_NavBar-kWidth(20))];
+    bgView.backgroundColor = [ColorManager WhiteColor];
+    [self.view addSubview:bgView];
+    UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:bgView.bounds byRoundingCorners:UIRectCornerTopRight | UIRectCornerTopLeft cornerRadii:CGSizeMake(kWidth(10), kWidth(10))];
+    CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
+    maskLayer.frame =  bgView.bounds;
+    maskLayer.path = maskPath.CGPath;
+    bgView.layer.mask = maskLayer;
+    
+    self.tableView = [[UITableView alloc]initWithFrame:CGRectMake(0, kWidth(10), kScreenWidth, kScreenHeight-kHeight_NavBar-kHeight_SafeArea) style:UITableViewStyleGrouped];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     [self.tableView registerClass:[UserInfoTableViewCell class] forCellReuseIdentifier:NSStringFromClass([UserInfoTableViewCell class])];
 
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    self.tableView.backgroundColor = [ColorManager WhiteColor];
+    self.tableView.backgroundColor = [ColorManager ColorF2F2F2];
     
-    UIView *headerV = [[UIView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kWidth(144))];
-    headerV.backgroundColor = [ColorManager ColorF2F2F2];
-    UIView *bgV = [[UIView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kWidth(136))];
-    bgV.backgroundColor = [ColorManager WhiteColor];
-    [headerV addSubview:bgV];
+    UIView *headerV = [[UIView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kWidth(154))];
+    headerV.backgroundColor = [ColorManager WhiteColor];
     self.iconImgV = [[UIImageView alloc]init];
     self.iconImgV.backgroundColor = [ColorManager ColorF2F2F2];
     self.iconImgV.layer.cornerRadius = kWidth(40);
@@ -60,19 +69,34 @@
     self.iconImgV.userInteractionEnabled = YES;
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(changeIconClicked)];
     [self.iconImgV addGestureRecognizer:tap];
-    [bgV addSubview:self.iconImgV];
+    [headerV addSubview:self.iconImgV];
     [self.iconImgV mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.center.equalTo(bgV);
+        make.top.mas_offset(kWidth(20));
+        make.centerX.equalTo(headerV);
         make.width.height.mas_offset(kWidth(80));
     }];
+    
+    UIButton *iconBtn = [[UIButton alloc]init];
+    [iconBtn setTitle:@"修改头像" forState:UIControlStateNormal];
+    [iconBtn setTitleColor:[ColorManager ColorFA8B18] forState:UIControlStateNormal];
+    iconBtn.titleLabel.font = kFont(12);
+    [iconBtn addTarget:self action:@selector(changeIconClicked) forControlEvents:UIControlEventTouchUpInside];
+    [headerV addSubview:iconBtn];
+    [iconBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(self.iconImgV.mas_bottom).mas_offset(kWidth(10));
+        make.centerX.equalTo(headerV);
+        make.width.mas_offset(kWidth(50));
+        make.height.mas_offset(kWidth(12));
+    }];
+    
     self.tableView.tableHeaderView = headerV;
     
-    UIView *footerV = [[UIView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kWidth(77))];
+    UIView *footerV = [[UIView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kWidth(82))];
     UIButton *saveBtn = [[UIButton alloc]init];
     [saveBtn setTitle:@"保存" forState:UIControlStateNormal];
     [saveBtn setTitleColor:[ColorManager WhiteColor] forState:UIControlStateNormal];
     saveBtn .titleLabel.font = kFont(14);
-    saveBtn.backgroundColor= [ColorManager MainColor];
+    [saveBtn setBackgroundImage:kGetImage(@"login_按钮") forState:UIControlStateNormal];;
     saveBtn.layer.cornerRadius = kWidth(24);
     [saveBtn addTarget:self action:@selector(saveUserInfoClicked) forControlEvents:UIControlEventTouchUpInside];
     [footerV addSubview:saveBtn];
@@ -93,7 +117,7 @@
     [self.iconImgV sd_setImageWithURL:[NSURL URLWithString:userInfo.member_image] placeholderImage:kGetImage(@"normal_icon")];
     self.sexStr = userInfo.member_sex;
     
-    [self.view addSubview:self.tableView];
+    [bgView addSubview:self.tableView];
 }
 
 -(void)saveUserInfoClicked{
@@ -104,7 +128,7 @@
     }
     
     [SVProgressHUD show];
-    NSDictionary *dic = @{@"uid":[UserInfoModel getUserInfoModel].uid,@"member_name":self.nameField.text,@"mamber_sex":self.sexStr,@"mamber_birthday":self.birthdayStr,@"api_token":[RegisterModel getUserInfoModel].user_token};
+    NSDictionary *dic = @{@"uid":[UserInfoModel getUserInfoModel].uid,@"member_name":self.nameField.text,@"member_sex":self.sexStr,@"member_birthday":self.birthdayStr,@"api_token":[RegisterModel getUserInfoModel].user_token};
     
     
     
@@ -114,7 +138,7 @@
     [sessionManager.responseSerializer setAcceptableContentTypes:[NSSet setWithObjects:@"application/json", @"text/html", @"text/json", @"text/plain", @"text/javascript", @"text/xml", @"image/*", nil]];
     [sessionManager POST:[NSString stringWithFormat:@"%@%@",HTTP,Login_perfect] parameters:dic headers:nil constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
 
-        NSData *data =UIImageJPEGRepresentation(self.iconImgV.image, 0.3);//把要上传的图片转成NSData
+        NSData *data = [LCTools resetSizeOfImageData:self.iconImgV.image maxSize:1024*80];//把要上传的图片转成NSData
         //把要上传的文件转成NSData
         //NSString*path=[[NSBundlemainBundle]pathForResource:@"123"ofType:@"txt"];
 
@@ -141,6 +165,7 @@
             }
             
         } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+            NSLog(@"errrrrr:%@",error);
             [self.view showHUDWithText:@"网络连接异常，请检查后重试!" withYOffSet:0];
             [SVProgressHUD dismiss];
         }];

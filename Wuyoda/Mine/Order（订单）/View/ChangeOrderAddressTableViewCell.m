@@ -62,7 +62,7 @@
         make.bottom.mas_offset(kWidth(-15));
     }];
     
-    self.selectImgV = [[UIImageView alloc]initWithImage:kGetImage(@"选择")];
+    self.selectImgV = [[UIImageView alloc]initWithImage:kGetImage(@"未选中")];
     [self.contentView addSubview:self.selectImgV];
     [self.selectImgV mas_makeConstraints:^(MASConstraintMaker *make) {
         make.right.mas_offset(kWidth(-12));
@@ -89,7 +89,7 @@
     if (selected) {
         [self.selectImgV setImage:kGetImage(@"选中")];
     }else{
-        [self.selectImgV setImage:kGetImage(@"选择")];
+        [self.selectImgV setImage:kGetImage(@"未选中")];
     }
     // Configure the view for the selected state
 }

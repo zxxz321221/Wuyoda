@@ -17,6 +17,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic , retain)OrderGoodModel *orderGoodModel;
 
+@property (nonatomic , assign)BOOL isfirst;
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -68,6 +68,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSString *)getPriceType:(NSString *)type;
 
++ (NSString *)getShowPrice:(NSString *)type Price:(NSString *)price;
+
 // ------处理广告图跳转------
 + (void)bannerJump:(int)type viewController:(UIViewController *)viewController parStr:(NSString *)parStr;
 /*加下阴影*/

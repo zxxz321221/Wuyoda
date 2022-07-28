@@ -19,6 +19,7 @@
 @property (nonatomic, strong) UIProgressView *myProgressView;
 
 @property (nonatomic,copy) NSString * payResultUrl;
+@property (nonatomic,strong) FJNormalNavView *nav;
 
 @end
 
@@ -33,11 +34,22 @@
     self.view.backgroundColor = [ColorManager WhiteColor];
 
     FJNormalNavView *nav = [[FJNormalNavView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, kHeight_NavBar) controller:self titleStr:self.title];
-         [self.view addSubview:nav];
-    if (self.ordersn.length) {
+    self.nav = nav;
+    [self.view addSubview:nav];
+    if (self.ordersn.length || [self.url isEqualToString:@"http://new.wuyoda.com/public/help/wuyoda_help.html"]) {
         nav.isInitBackBtn = YES;
         nav.block = ^{
-            [self.navigationController popToRootViewControllerAnimated:YES];
+            if (self.myWebView.canGoBack) {
+                [self.myWebView goBack];
+            }else{
+                if ([self.url isEqualToString:@"http://new.wuyoda.com/public/help/wuyoda_help.html"]) {
+                    [self.navigationController popViewControllerAnimated:YES];
+                }else{
+                    [self.navigationController popToRootViewControllerAnimated:YES];
+                }
+                
+            }
+           
         };
     }
 
@@ -77,6 +89,7 @@
 - (void)dealloc
 {
     [self.myWebView removeObserver:self forKeyPath:@"estimatedProgress"];
+    [self.myWebView removeObserver:self forKeyPath:@"title"];
 //    self.myWebView.navigationDelegate = nil;
 }
 
@@ -85,6 +98,7 @@
 //payresult=success?ordersn=xxxxx&userid=xxxxx
 - (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
 {
+    NSLog(@"penUrl:%@",webView.URL.absoluteString);
     if ([webView.URL.absoluteString hasPrefix:@"https://itunes.apple.com"]) {
         [[UIApplication sharedApplication] openURL:navigationAction.request.URL];
         decisionHandler(WKNavigationActionPolicyCancel);
@@ -116,12 +130,22 @@
                              }];
         }
 
+    }else if (object == self.myWebView && [keyPath isEqualToString:@"title"]&&!self.title){
+        [self.nav changeTitle:self.myWebView.title];
+        
     } else {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
     }
 }
 
 -(void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation{
+    
+    NSString *injectionJSString = @"var script = document.createElement('meta');"
+                                       "script.name = 'viewport';"
+                                       "script.content=\"width=device-width, user-scalable=no\";"
+                                       "document.getElementsByTagName('head')[0].appendChild(script);";
+    [webView evaluateJavaScript:injectionJSString completionHandler:nil];
+    
     if (self.payResultUrl.length) {
         NSString *dataStr = [[self.payResultUrl componentsSeparatedByString:@"?"] lastObject];
         NSArray *dataArr = [dataStr componentsSeparatedByString:@"&"];
@@ -144,6 +168,10 @@
             [self getOrderStatusFromServer:orderId];
         }
     }
+}
+
+-(void)webView:(WKWebView *)webView didFailNavigation:(WKNavigation *)navigation withError:(NSError *)error{
+    NSLog(@"webErro:%@",error);
 }
 
 #pragma mark - getter and setter
@@ -186,6 +214,7 @@
         _myWebView.opaque = NO;
         _myWebView.multipleTouchEnabled = YES;
         [_myWebView addObserver:self forKeyPath:@"estimatedProgress" options:NSKeyValueObservingOptionNew context:nil];
+        [_myWebView addObserver:self forKeyPath:@"title" options:NSKeyValueObservingOptionNew context:nil];
     }
 
     return _myWebView;
@@ -193,7 +222,7 @@
 -(void)request{
     NSString *url;
     NSMutableDictionary *pardic = [NSMutableDictionary dictionary];
-    [pardic setValue:[RegisterModel getUserInfoModel].user_token forKey:@"api_token"];
+    //[pardic setValue:[RegisterModel getUserInfoModel].user_token forKey:@"api_token"];
     if (self.type ==  0 ) {
         url = Store_notice_list;
         [pardic setValue:self.uid forKey:@"uid"];

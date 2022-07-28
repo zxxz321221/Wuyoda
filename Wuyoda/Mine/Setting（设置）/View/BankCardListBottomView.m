@@ -33,6 +33,7 @@
         make.height.mas_offset(kWidth(15));
     }];
     
+    
     self.deleteBtn = [[UIButton alloc]init];
     [self.deleteBtn setTitle:@"删除" forState:UIControlStateNormal];
     [self.deleteBtn setTitleColor:[ColorManager WhiteColor] forState:UIControlStateNormal];

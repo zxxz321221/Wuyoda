@@ -11,9 +11,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface HelperTableViewCell : UITableViewCell
 
+@property (nonatomic , retain)UIView *bgView;
+
 @property (nonatomic , retain)UIImageView *imgV;
 
 @property (nonatomic  , retain)UILabel *titleLab;
+
+@property (nonatomic , retain)UIView *bottomLine;
+
+@property (nonatomic , assign)BOOL isLast;
 
 @end
 

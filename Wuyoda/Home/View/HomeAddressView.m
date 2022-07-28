@@ -145,37 +145,39 @@
     }];
     
     UIButton *codeSearchBtn = [[UIButton alloc]init];
-    [codeSearchBtn setTitle:@"扫码搜索" forState:UIControlStateNormal];
-    [codeSearchBtn setTitleColor:[ColorManager WhiteColor] forState:UIControlStateNormal];
-    codeSearchBtn.titleLabel.font = kFont(14);
-    codeSearchBtn.backgroundColor = [ColorManager Color008A70];
-    codeSearchBtn.layer.cornerRadius = kWidth(5);
-    [codeSearchBtn setImage:kGetImage(@"扫码") forState:UIControlStateNormal];
-    codeSearchBtn.imageEdgeInsets = UIEdgeInsetsMake(0, 0, 0, kWidth(10));
-    [codeSearchBtn addTarget:self action:@selector(codeSearchClicked:) forControlEvents:UIControlEventTouchUpInside];
+//    [codeSearchBtn setTitle:@"扫码搜索" forState:UIControlStateNormal];
+//    [codeSearchBtn setTitleColor:[ColorManager WhiteColor] forState:UIControlStateNormal];
+//    codeSearchBtn.titleLabel.font = kFont(14);
+//    codeSearchBtn.backgroundColor = [ColorManager Color008A70];
+//    codeSearchBtn.layer.cornerRadius = kWidth(5);
+//    [codeSearchBtn setImage:kGetImage(@"扫码") forState:UIControlStateNormal];
+//    codeSearchBtn.imageEdgeInsets = UIEdgeInsetsMake(0, 0, 0, kWidth(10));
+//    [codeSearchBtn addTarget:self action:@selector(codeSearchClicked:) forControlEvents:UIControlEventTouchUpInside];
     [self addSubview:codeSearchBtn];
     [codeSearchBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(lineV2);
         make.width.mas_offset(kWidth(137));
         make.top.equalTo(searchBtn.mas_bottom).mas_offset(kWidth(8));
-        make.height.mas_offset(kWidth(40));
+        //make.height.mas_offset(kWidth(40));
+        make.height.mas_offset(kWidth(0));
     }];
     
     UIButton *photoSearchBtn = [[UIButton alloc]init];
-    [photoSearchBtn setTitle:@"拍照搜索" forState:UIControlStateNormal];
-    [photoSearchBtn setTitleColor:[ColorManager WhiteColor] forState:UIControlStateNormal];
-    photoSearchBtn.titleLabel.font = kFont(14);
-    photoSearchBtn.backgroundColor = [ColorManager Color008A70];
-    photoSearchBtn.layer.cornerRadius = kWidth(5);
-    [photoSearchBtn setImage:kGetImage(@"拍照搜索") forState:UIControlStateNormal];
-    photoSearchBtn.imageEdgeInsets = UIEdgeInsetsMake(0, 0, 0, kWidth(10));
-    [photoSearchBtn addTarget:self action:@selector(phoneSearchClicked:) forControlEvents:UIControlEventTouchUpInside];
+//    [photoSearchBtn setTitle:@"拍照搜索" forState:UIControlStateNormal];
+//    [photoSearchBtn setTitleColor:[ColorManager WhiteColor] forState:UIControlStateNormal];
+//    photoSearchBtn.titleLabel.font = kFont(14);
+//    photoSearchBtn.backgroundColor = [ColorManager Color008A70];
+//    photoSearchBtn.layer.cornerRadius = kWidth(5);
+//    [photoSearchBtn setImage:kGetImage(@"拍照搜索") forState:UIControlStateNormal];
+//    photoSearchBtn.imageEdgeInsets = UIEdgeInsetsMake(0, 0, 0, kWidth(10));
+//    [photoSearchBtn addTarget:self action:@selector(phoneSearchClicked:) forControlEvents:UIControlEventTouchUpInside];
     [self addSubview:photoSearchBtn];
     [photoSearchBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.right.equalTo(lineV2);
         make.width.mas_offset(kWidth(137));
         make.top.equalTo(searchBtn.mas_bottom).mas_offset(kWidth(8));
-        make.height.mas_offset(kWidth(40));
+        //make.height.mas_offset(kWidth(40));
+        make.height.mas_offset(kWidth(0));
     }];
 }
 

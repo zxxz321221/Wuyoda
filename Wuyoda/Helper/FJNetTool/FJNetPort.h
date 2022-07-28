@@ -15,8 +15,13 @@ extern NSString *const IMGHTTP;
 extern NSString *const CODE0;
 
 #pragma mark - 登录
+// apple登录按钮显示
+extern NSString *const AppleLogin_hiden;
+
 // 获取token
 extern NSString *const Login_GetToken;
+// 获取登录状态
+extern NSString *const Login_login_status;
 // 登录
 extern NSString *const Login_Login_index;
 // 发送验证码
@@ -27,11 +32,20 @@ extern NSString *const Login_phone_check;
 extern NSString *const Login_appleLogin;
 // 微信登录
 extern NSString *const Login_weixinLogin;
-
+// 手机号注册
+extern NSString *const Login_phone_register;
+// 邮箱注册
+extern NSString *const Login_email_register;
+// 退出登录
+extern NSString *const Login_login_out;
+// 账号图形验证码
+extern NSString *const Login_captcha;
 
 
 // 首页
 extern NSString *const Index_index;
+// 首页商品类别
+extern NSString *const Index_category;
 // 首页商品
 extern NSString *const Index_shop;
 // 首页台湾名品
@@ -40,10 +54,31 @@ extern NSString *const Store_twmp;
 extern NSString *const Store_bdlh;
 // 首页特惠商品
 extern NSString *const Store_thsp;
+// 分类
+extern NSString *const Classify_index;
+// 分类商品
+extern NSString *const Classify_cat_goods;
+// 分类商品列表
+extern NSString *const Classify_cat_product;
+// 分类商品列表顶部图片
+extern NSString *const Classify_cate_file;
+
+// 热门搜索
+extern NSString *const Classify_hot_word;
+// 历史搜索
+extern NSString *const Classify_history;
+// 删除历史搜索
+extern NSString *const Classify_history_del;
+
 // 商品列表
 extern NSString *const Store_getProductList;
 // 商品详情
 extern NSString *const Store_Detail;
+// 商品详情加入心愿单
+extern NSString *const Special_favorite_detail;
+// 商品详情移除心愿单
+extern NSString *const Special_favorite_remove;
+
 // 消息列表
 extern NSString *const Store_notice;
 // 消息详情
@@ -59,7 +94,8 @@ extern NSString *const Store_scenic_list;
 // 景点介绍
 extern NSString *const Store_scenic_intro;
 
-
+// 立即购买
+extern NSString *const Special_buy_now;
 // 加入购物车
 extern NSString *const Special_cart_order;
 // 购物车列表
@@ -158,5 +194,10 @@ extern NSString *const Login_perfect;
 
 // 物流信息
 extern NSString *const website_getOrderInfo;
+
+// 付款信息
+extern NSString *const Special_bank_list;
+// 添加银行卡
+extern NSString *const Special_bank_add;
 
 

@@ -15,6 +15,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic , assign)NSInteger surplus;
 
+@property (nonatomic , copy)NSString *ordersn;
+
 @end
 
 NS_ASSUME_NONNULL_END

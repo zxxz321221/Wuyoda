@@ -9,6 +9,7 @@
 
 @interface AttractionsListTableViewCell ()
 
+@property (nonatomic , retain)UIView *bgView;
 @property (nonatomic , retain)UIImageView *imgV;
 @property (nonatomic , retain)UILabel *nameLab;
 @property (nonatomic , retain)UILabel *introLab;
@@ -28,13 +29,22 @@
 }
 
 -(void)createUI{
+    
+    self.contentView.backgroundColor = [ColorManager ColorF2F2F2];
+    
+    UIView *bgView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kWidth(160))];
+    bgView.backgroundColor = [ColorManager WhiteColor];
+    self.bgView = bgView;
+    [self.contentView addSubview:bgView];
+    
     self.imgV = [[UIImageView alloc]init];
     self.imgV.backgroundColor = [ColorManager ColorF2F2F2];
     self.imgV.layer.cornerRadius = kWidth(5);
-    [self.contentView addSubview:self.imgV];
+    self.imgV.layer.masksToBounds = YES;
+    [bgView addSubview:self.imgV];
     [self.imgV mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_offset(kWidth(20));
-        make.centerY.equalTo(self.contentView);
+        make.centerY.equalTo(bgView);
         make.width.height.mas_offset(kWidth(120));
     }];
     
@@ -42,7 +52,7 @@
     self.nameLab.text = @"旗津海水浴场";
     self.nameLab.textColor = [ColorManager BlackColor];
     self.nameLab.font = kBoldFont(18);
-    [self.contentView addSubview:self.nameLab];
+    [bgView addSubview:self.nameLab];
     [self.nameLab mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(self.imgV.mas_right).mas_offset(kWidth(20));
         make.right.mas_offset(kWidth(-20));
@@ -54,8 +64,8 @@
     self.introLab.textColor = [ColorManager Color333333];
     self.introLab.font = kFont(12);
     self.introLab.numberOfLines = 2;
-    self.introLab.lineBreakMode = NSLineBreakByCharWrapping;
-    [self.contentView addSubview:self.introLab];
+    self.introLab.lineBreakMode = NSLineBreakByTruncatingTail;
+    [bgView addSubview:self.introLab];
     [self.introLab mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(self.imgV.mas_right).mas_offset(kWidth(20));
         make.right.mas_offset(kWidth(-20));
@@ -89,19 +99,28 @@
 //        make.height.mas_offset(kWidth(17));
 //    }];
     
-    UIView *line = [[UIView alloc]init];
-    line.backgroundColor = [ColorManager ColorF7F7F7];
-    [self.contentView addSubview:line];
-    [line mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.right.bottom.equalTo(self.contentView);
-        make.height.mas_offset(kWidth(1));
-    }];
 }
 
 -(void)setModel:(AttractionModel *)model{
     [self.imgV sd_setImageWithURL:[NSURL URLWithString:model.cover]];
     self.nameLab.text = model.scenic_title;
     self.introLab.text = model.scenic_brief;
+}
+
+-(void)setIsFirst:(BOOL)isFirst{
+    if (isFirst) {
+        UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:self.bgView.bounds byRoundingCorners:UIRectCornerBottomLeft | UIRectCornerBottomRight cornerRadii:CGSizeMake(kWidth(10), kWidth(10))];
+        CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
+        maskLayer.frame =  self.bgView.bounds;
+        maskLayer.path = maskPath.CGPath;
+        self.bgView.layer.mask = maskLayer;
+    }else{
+        UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:self.bgView.bounds byRoundingCorners:UIRectCornerTopLeft | UIRectCornerTopRight | UIRectCornerBottomLeft | UIRectCornerBottomRight cornerRadii:CGSizeMake(kWidth(10), kWidth(10))];
+        CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
+        maskLayer.frame =  self.bgView.bounds;
+        maskLayer.path = maskPath.CGPath;
+        self.bgView.layer.mask = maskLayer;
+    }
 }
 
 - (void)awakeFromNib {

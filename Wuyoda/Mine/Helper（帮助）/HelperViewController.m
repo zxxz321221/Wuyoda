@@ -24,7 +24,8 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    FJNormalNavView *nav = [[FJNormalNavView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kHeight_NavBar) controller:self titleStr:@"帮助"];
+    FJNormalNavView *nav = [[FJNormalNavView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kHeight_NavBar) controller:self titleStr:@"获取帮助"];
+    nav.backgroundColor = [ColorManager ColorF2F2F2];
     [self.view addSubview:nav];
     
     self.tableView = [[UITableView alloc]initWithFrame:CGRectMake(0, kHeight_NavBar, kScreenWidth, kScreenHeight-kHeight_NavBar) style:UITableViewStyleGrouped];
@@ -33,9 +34,9 @@
     [self.tableView registerClass:[HelperTableViewCell class] forCellReuseIdentifier:NSStringFromClass([HelperTableViewCell class])];
 
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    self.tableView.backgroundColor = [ColorManager WhiteColor];
+    self.tableView.backgroundColor = [ColorManager ColorF2F2F2];
     
-    HelperHeaderView *headerV = [[HelperHeaderView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kWidth(113))];
+    HelperHeaderView *headerV = [[HelperHeaderView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kWidth(157))];
     self.tableView.tableHeaderView = headerV;
     
     [self.view addSubview:self.tableView];
@@ -55,6 +56,11 @@
     
     [cell.imgV setImage:kGetImage(titleStr)];
     cell.titleLab.text = titleStr;
+    if (indexPath.row == 2) {
+        cell.isLast = YES;
+    }else{
+        cell.isLast = NO;
+    }
     
     return cell;
     
@@ -68,7 +74,7 @@
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
 
-    return kWidth(52);
+    return kWidth(56);
 }
 
 -(CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section{
@@ -76,7 +82,7 @@
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
 
-    return kWidth(30);
+    return kWidth(46);
 }
 
 -(UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section{
@@ -84,17 +90,26 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
-    UIView *headerV = [[UIView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kWidth(30))];
+    UIView *headerV = [[UIView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kWidth(46))];
     headerV.backgroundColor = [ColorManager ColorF2F2F2];
+    
+    UIView *bgV = [[UIView alloc]initWithFrame:CGRectMake(kWidth(10), 0, kWidth(355), kWidth(46))];
+    bgV.backgroundColor = [ColorManager WhiteColor];
+    [headerV addSubview:bgV];
+    UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:bgV.bounds byRoundingCorners:UIRectCornerTopLeft | UIRectCornerTopRight cornerRadii:CGSizeMake(kWidth(10), kWidth(10))];
+    CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
+    maskLayer.frame =  bgV.bounds;
+    maskLayer.path = maskPath.CGPath;
+    bgV.layer.mask = maskLayer;
     
     UILabel *titleLab = [[UILabel alloc]init];
     titleLab.text = @"常见问题";
-    titleLab.textColor = [ColorManager Color333333];
-    titleLab.font = kFont(14);
-    [headerV addSubview:titleLab];
+    titleLab.textColor = [ColorManager BlackColor];
+    titleLab.font = kFont(16);
+    [bgV addSubview:titleLab];
     [titleLab mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_offset(kWidth(12));
-        make.centerY.equalTo(headerV);
+        make.left.mas_offset(kWidth(10));
+        make.top.mas_offset(kWidth(20));
     }];
     
     return headerV;

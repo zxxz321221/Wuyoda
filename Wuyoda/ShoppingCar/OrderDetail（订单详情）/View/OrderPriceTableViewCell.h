@@ -11,11 +11,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OrderPriceTableViewCell : UITableViewCell
 
+@property (nonatomic , retain)UIView *bgView;
+
 @property (nonatomic , retain)UILabel *priceTitleLab;
 @property (nonatomic , retain)UILabel *priceLab;
 
 @property (nonatomic , retain)UILabel *allPriceTitleLab;
 @property (nonatomic , retain)UILabel *allPriceLab;
+
+@property (nonatomic , assign)BOOL isFirst;
+@property (nonatomic , assign)BOOL isLast;
 
 @end
 

@@ -18,17 +18,32 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
     
+    NSDictionary *dic = [KeyChain load:KEY_USERNAME_PASSWORD];
+    NSLog(@"%@",[dic objectForKey:KEY_PASSWORD]);
+    if (![dic objectForKey:KEY_PASSWORD]) {
+        NSMutableDictionary *usernamepasswordKVPairs = [NSMutableDictionary dictionary];
+        [usernamepasswordKVPairs setObject:[KeyChain get32RandomDigit] forKey:KEY_PASSWORD];
+        [KeyChain save:KEY_USERNAME_PASSWORD data:usernamepasswordKVPairs];
+    }
+    RegisterModel *registerModel = [RegisterModel getUserInfoModel];
+    if (!registerModel) {
+        registerModel = [[RegisterModel alloc]init];
+    }
+    
     if (@available(iOS 13.0, *)) {
-      
+        self.window.overrideUserInterfaceStyle = UIUserInterfaceStyleLight;
         } else {
-            BOOL isFirst = [[NSUserDefaults standardUserDefaults]objectForKey:@"isFirst"];
+            if ([UserInfoModel getUserInfoModel].member_id) {
+                [[NSUserDefaults standardUserDefaults] setValue:@"none" forKey:@"firstOpen"];
+            }
+            NSString *openStatus = [[NSUserDefaults standardUserDefaults]objectForKey:@"firstOpen"];
             
             self.window = [[UIWindow alloc]initWithFrame:[UIScreen mainScreen].bounds];
             
             self.window.backgroundColor = [UIColor whiteColor];
             
             
-            if (isFirst) {
+            if ([openStatus isEqualToString:@"none"]) {
                 self.window.rootViewController = [[FJTabBarViewController alloc]init];
             }else{
                 WelcomeViewController *vc = [[WelcomeViewController alloc]init];
@@ -40,9 +55,22 @@
         }
     
     [WXApi registerApp:WXPatient_App_ID universalLink:WXPatient_App_NIVERSAL_LINK];
-    
+    [self getAppleLoginHiden];
+    sleep(2);
    
     return YES;
+}
+
+-(void)getAppleLoginHiden{
+    [FJNetTool postWithParams:@{} url:AppleLogin_hiden loading:NO success:^(id responseObject) {
+        BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
+        if ([baseModel.code isEqualToString:CODE0]) {
+            [[NSUserDefaults standardUserDefaults] setObject:responseObject[@"msg"] forKey:@"appleLogin"];
+        }
+            
+    } failure:^(NSError *error) {
+            
+    }];
 }
 
 //- (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url {

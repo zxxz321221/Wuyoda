@@ -7,6 +7,7 @@
 
 #import "VersionViewController.h"
 #import "VersionTableViewCell.h"
+#import "FJWebViewController.h"
 
 @interface VersionViewController ()<UITableViewDelegate, UITableViewDataSource>
 
@@ -23,6 +24,7 @@
     // Do any additional setup after loading the view.
     
     FJNormalNavView *nav = [[FJNormalNavView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kHeight_NavBar) controller:self titleStr:@"版本"];
+    nav.backgroundColor = [ColorManager ColorF2F2F2];
     [self.view addSubview:nav];
     
     self.tableView = [[UITableView alloc]initWithFrame:CGRectMake(0, kHeight_NavBar, kScreenWidth, kScreenHeight-kHeight_NavBar-kHeight_SafeArea) style:UITableViewStyleGrouped];
@@ -34,13 +36,19 @@
     self.tableView.backgroundColor = [ColorManager ColorF2F2F2];
     
     UIView *headerV = [[UIView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kWidth(179))];
-    headerV.backgroundColor = [ColorManager ColorF2F2F2];
+    headerV.backgroundColor = [ColorManager WhiteColor];
     UIImageView *logoImgV = [[UIImageView alloc]initWithImage:kGetImage(@"appLogo")];
     [headerV addSubview:logoImgV];
     [logoImgV mas_makeConstraints:^(MASConstraintMaker *make) {
         make.center.equalTo(headerV);
         make.width.height.mas_offset(kWidth(100));
     }];
+    
+    UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:headerV.bounds byRoundingCorners:UIRectCornerTopRight | UIRectCornerTopLeft cornerRadii:CGSizeMake(kWidth(10), kWidth(10))];
+    CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
+    maskLayer.frame =  headerV.bounds;
+    maskLayer.path = maskPath.CGPath;
+    headerV.layer.mask = maskLayer;
     
     self.tableView.tableHeaderView = headerV;
     [self.view addSubview:self.tableView];
@@ -63,6 +71,12 @@
         cell.versionLab.text = @"";
     }
     
+    if (indexPath.row == 2) {
+        cell.isLast = YES;
+    }else{
+        cell.isLast = NO;
+    }
+    
     return cell;
     
 }
@@ -75,7 +89,7 @@
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
 
-    return kWidth(52);
+    return kWidth(56);
 }
 
 -(CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section{
@@ -97,7 +111,9 @@
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     if (indexPath.row == 1) {
-        [self.view showHUDWithText:@"敬请期待" withYOffSet:0];
+        FJWebViewController *vc = [[FJWebViewController alloc]init];
+        vc.url = @"http://www.wuyoda.com.cn/page.php?action=Privacypolicy";
+        [self.navigationController pushViewController:vc animated:YES];
     }
     if (indexPath.row == 2) {
         [[SDImageCache sharedImageCache] clearDiskOnCompletion:^{

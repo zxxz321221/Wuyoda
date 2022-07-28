@@ -25,6 +25,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic , weak)id <updateAddressInfoDelegate>delegate;
 
+@property (nonatomic , assign)NSInteger addressCount;
+
 @end
 
 NS_ASSUME_NONNULL_END

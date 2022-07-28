@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Bucket
+   uuid = "3F9DCA08-D672-40F3-BD3F-560AF5CDF5A1"
+   type = "0"
+   version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "DFACC73C-E0AA-419A-AE3B-3D4CFF6BA2F4"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Wuyoda/Mine/Order&#xff08;&#x8ba2;&#x5355;&#xff09;/AllOrderListViewController.m"
+            startingColumnNumber = "7"
+            endingColumnNumber = "7"
+            startingLineNumber = "114"
+            endingLineNumber = "114"
+            landmarkName = "-payOrderClicked:"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "A772CB3F-D0B0-4D25-9450-2A215B4556D4"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Wuyoda/Mine/Setting&#xff08;&#x8bbe;&#x7f6e;&#xff09;/AccountListViewController.m"
+            startingColumnNumber = "5"
+            endingColumnNumber = "5"
+            startingLineNumber = "91"
+            endingLineNumber = "91"
+            landmarkName = "-tableView:cellForRowAtIndexPath:"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "D658DD51-5506-4E13-8E51-7F30BA5EBE20"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Wuyoda/Mine/UserInfo&#xff08;&#x7528;&#x6237;&#x4fe1;&#x606f;&#xff09;/UserInfoViewController.m"
+            startingColumnNumber = "5"
+            endingColumnNumber = "26"
+            startingLineNumber = "211"
+            endingLineNumber = "211"
+            landmarkName = "-tableView:cellForRowAtIndexPath:"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "6987AB14-AC39-4879-A4EB-FCF74F96309E"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Wuyoda/ShoppingCar/OrderDetail&#xff08;&#x8ba2;&#x5355;&#x8be6;&#x60c5;&#xff09;/OrderDetailViewController.m"
+            startingColumnNumber = "5"
+            endingColumnNumber = "5"
+            startingLineNumber = "218"
+            endingLineNumber = "218"
+            landmarkName = "-selectOrderExpress:"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "2D113B0D-6248-49C3-BE2F-86A4423C04FB"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Wuyoda/Mine/Order&#xff08;&#x8ba2;&#x5355;&#xff09;/AllOrderListViewController.m"
+            startingColumnNumber = "5"
+            endingColumnNumber = "19"
+            startingLineNumber = "188"
+            endingLineNumber = "188"
+            landmarkName = "-tableView:cellForRowAtIndexPath:"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "5D4EA860-E938-4BBC-8B25-EBF4CB1FC23B"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Wuyoda/Mine/Order&#xff08;&#x8ba2;&#x5355;&#xff09;/LogisticsViewController.m"
+            startingColumnNumber = "9"
+            endingColumnNumber = "9"
+            startingLineNumber = "161"
+            endingLineNumber = "161"
+            landmarkName = "-tableView:heightForRowAtIndexPath:"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "054085AA-4347-462D-8E92-87C3202FA1A8"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Wuyoda/Mine/Order&#xff08;&#x8ba2;&#x5355;&#xff09;/LogisticsViewController.m"
+            startingColumnNumber = "17"
+            endingColumnNumber = "17"
+            startingLineNumber = "74"
+            endingLineNumber = "74"
+            landmarkName = "-getDataFromServer"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "84E7E2E7-1845-43E3-8E29-E53A57B246EF"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Wuyoda/Mine/SecurityCenter&#xff08;&#x5b89;&#x5168;&#x4e2d;&#x5fc3;&#xff09;/ChangePhoneViewController.m"
+            startingColumnNumber = "17"
+            endingColumnNumber = "45"
+            startingLineNumber = "160"
+            endingLineNumber = "160"
+            landmarkName = "-bindPhoneFromServer"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "6633D16C-3317-4D5D-92B8-EE6FD0D80A78"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Wuyoda/Mine/Order&#xff08;&#x8ba2;&#x5355;&#xff09;/AllOrderListViewController.m"
+            startingColumnNumber = "54"
+            endingColumnNumber = "69"
+            startingLineNumber = "195"
+            endingLineNumber = "195"
+            landmarkName = "-tableView:cellForRowAtIndexPath:"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
+</Bucket>

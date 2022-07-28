@@ -35,25 +35,35 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    self.tableView = [[UITableView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kScreenHeight-kHeight_SafeArea) style:UITableViewStyleGrouped];
+    FJNormalNavView *nav = [[FJNormalNavView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kHeight_NavBar) controller:self titleStr:@"景点详情"];
+    nav.backgroundColor = [ColorManager ColorF2F2F2];
+    [self.view addSubview:nav];
+    
+    UIView *bgView = [[UIView alloc]initWithFrame:CGRectMake(0, kHeight_NavBar+kWidth(20), kScreenWidth, kScreenHeight-kHeight_NavBar-kWidth(20))];
+    bgView.backgroundColor = [ColorManager WhiteColor];
+    [self.view addSubview:bgView];
+    UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:bgView.bounds byRoundingCorners:UIRectCornerTopRight | UIRectCornerTopLeft cornerRadii:CGSizeMake(kWidth(10), kWidth(10))];
+    CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
+    maskLayer.frame =  bgView.bounds;
+    maskLayer.path = maskPath.CGPath;
+    bgView.layer.mask = maskLayer;
+    
+    self.view.backgroundColor = [ColorManager ColorF2F2F2];
+    
+    self.tableView = [[UITableView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kScreenHeight-kHeight_SafeArea-kHeight_NavBar-kWidth(20)) style:UITableViewStyleGrouped];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
-    if (@available(iOS 11.0, *)) {
-        self.tableView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
-    } else {
-        // Fallback on earlier versions
-    }
     [self.tableView registerClass:[AttractionDetailIntroTableViewCell class] forCellReuseIdentifier:NSStringFromClass([AttractionDetailIntroTableViewCell class])];
     [self.tableView registerClass:[AttractionDetailRecommendTableViewCell class] forCellReuseIdentifier:NSStringFromClass([AttractionDetailRecommendTableViewCell class])];
 
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.tableView.backgroundColor = [ColorManager WhiteColor];
     //self.tableHeaderV = [[AttractionDetailHeaderView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kWidth(470))];
-    self.tableHeaderV = [[AttractionDetailHeaderView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kWidth(400))];
+    self.tableHeaderV = [[AttractionDetailHeaderView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kWidth(430))];
     //self.tableHeaderV.attractionName = self.attractionName;
     self.tableView.tableHeaderView = self.tableHeaderV;
     
-    [self.view addSubview:self.tableView];
+    [bgView addSubview:self.tableView];
     
 //    UIView *bottomV = [[UIView alloc]init];
 //    bottomV.backgroundColor = [ColorManager WhiteColor];
@@ -96,7 +106,7 @@
 }
 
 -(void)getDataFromServer{
-    NSDictionary *dic = @{@"scenic_id":self.scenic_id,@"api_token":[RegisterModel getUserInfoModel].user_token};
+    NSDictionary *dic = @{@"scenic_id":self.scenic_id};
     
     [FJNetTool postWithParams:dic url:Store_scenic_intro loading:YES success:^(id responseObject) {
         BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
@@ -129,6 +139,9 @@
 }
 
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
+    if (section == 1) {
+        return self.otherArr.count;
+    }
     return 1;
 }
 
@@ -151,7 +164,7 @@
             cell = [[AttractionDetailRecommendTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:NSStringFromClass([AttractionDetailRecommendTableViewCell class])];
         }
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        cell.otherArr = self.otherArr;
+        cell.model = [self.otherArr objectAtIndex:indexPath.row];
         
         return cell;
     }
@@ -162,14 +175,7 @@
     if (indexPath.section == 0) {
         return kWidth(25)+self.webH;
     }else{
-        if (!self.otherArr.count) {
-            return 0.001;
-        }
-        NSInteger line = self.otherArr.count/2;
-        if (self.otherArr.count%2) {
-            line += 1;
-        }
-        return kWidth(194)*line;
+        return kWidth(120);
     }
 }
 
@@ -212,6 +218,15 @@
 -(UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section{
 
     return [UIView new];
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    if (indexPath.section == 1) {
+        AttractionModel *model = [self.otherArr objectAtIndex:indexPath.row];
+        AttractionDetailViewController *vc = [[AttractionDetailViewController alloc]init];
+        vc.scenic_id = model.uid;
+        [self.navigationController pushViewController:vc animated:YES];
+    }
 }
 
 /*

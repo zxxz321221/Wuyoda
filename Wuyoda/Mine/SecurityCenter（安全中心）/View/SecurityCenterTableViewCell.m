@@ -19,47 +19,90 @@
 }
 
 -(void)createUI{
+    
+    self.contentView.backgroundColor = [ColorManager ColorF2F2F2];
+    
+    self.bgView = [[UIView alloc]initWithFrame:CGRectMake(kWidth(10), 0, kWidth(355), kWidth(56))];
+    self.bgView.backgroundColor = [ColorManager WhiteColor];
+    [self.contentView addSubview:self.bgView];
+    
     self.imgV = [[UIImageView alloc]init];
-    [self.contentView addSubview:self.imgV];
+    [self.bgView addSubview:self.imgV];
     [self.imgV mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_offset(kWidth(18));
-        make.centerY.equalTo(self.contentView);
+        make.left.mas_offset(kWidth(10));
+        make.centerY.equalTo(self.bgView);
     }];
     
 
     self.titleLab = [[UILabel alloc]init];
     self.titleLab.textColor = [ColorManager Color333333];
     self.titleLab.font = kFont(14);
-    [self.contentView addSubview:self.titleLab];
+    [self.bgView addSubview:self.titleLab];
     [self.titleLab mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_offset(kWidth(44));
-        make.centerY.equalTo(self.contentView);
+        make.left.mas_offset(kWidth(36));
+        make.centerY.equalTo(self.bgView);
     }];
     
     self.infoLab = [[UILabel alloc]init];
     self.infoLab.textColor = [ColorManager ColorD7D7D7];
     self.infoLab.font = kFont(14);
-    [self.contentView addSubview:self.infoLab];
+    [self.bgView addSubview:self.infoLab];
     [self.infoLab mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.right.mas_offset(kWidth(-44));
-        make.centerY.equalTo(self.contentView);
+        make.right.mas_offset(kWidth(-36));
+        make.centerY.equalTo(self.bgView);
     }];
     
-    UIImageView *arrowImgV = [[UIImageView alloc]initWithImage:kGetImage(@"")];
-    [self.contentView addSubview:arrowImgV];
+    UIImageView *arrowImgV = [[UIImageView alloc]initWithImage:kGetImage(@"箭头_深")];
+    arrowImgV.contentMode = UIViewContentModeScaleAspectFit;
+    [self.bgView addSubview:arrowImgV];
     [arrowImgV mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.right.mas_offset(kWidth(-24));
-        make.centerY.equalTo(self.contentView);
-        make.width.height.mas_offset(kWidth(12));
+        make.right.mas_offset(kWidth(-10));
+        make.centerY.equalTo(self.bgView);
+        make.width.height.mas_offset(kWidth(16));
     }];
     
     UIView *bottomLine = [[UIView alloc]init];
     bottomLine.backgroundColor = [ColorManager ColorF2F2F2];
-    [self.contentView addSubview:bottomLine];
+    self.bottomLine = bottomLine;
+    [self.bgView addSubview:bottomLine];
     [bottomLine mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.right.bottom.equalTo(self.contentView);
+        make.left.right.bottom.equalTo(self.bgView);
         make.height.mas_offset(kWidth(1));
     }];
+}
+
+-(void)setIsFirst:(BOOL)isFirst{
+    if (isFirst) {
+        UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:self.bgView.bounds byRoundingCorners:UIRectCornerTopLeft | UIRectCornerTopRight cornerRadii:CGSizeMake(kWidth(10), kWidth(10))];
+        CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
+        maskLayer.frame =  self.bgView.bounds;
+        maskLayer.path = maskPath.CGPath;
+        self.bgView.layer.mask = maskLayer;
+    }else{
+        UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:self.bgView.bounds byRoundingCorners:UIRectCornerTopLeft | UIRectCornerTopRight cornerRadii:CGSizeMake(0, 0)];
+        CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
+        maskLayer.frame =  self.bgView.bounds;
+        maskLayer.path = maskPath.CGPath;
+        self.bgView.layer.mask = maskLayer;
+    }
+}
+
+-(void)setIsLast:(BOOL)isLast{
+    self.bottomLine.hidden = isLast;
+    if (isLast) {
+        UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:self.bgView.bounds byRoundingCorners:UIRectCornerBottomLeft | UIRectCornerBottomRight cornerRadii:CGSizeMake(kWidth(10), kWidth(10))];
+        CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
+        maskLayer.frame =  self.bgView.bounds;
+        maskLayer.path = maskPath.CGPath;
+        self.bgView.layer.mask = maskLayer;
+        
+    }else{
+        UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:self.bgView.bounds byRoundingCorners:UIRectCornerBottomLeft | UIRectCornerBottomRight cornerRadii:CGSizeMake(0, 0)];
+        CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
+        maskLayer.frame =  self.bgView.bounds;
+        maskLayer.path = maskPath.CGPath;
+        self.bgView.layer.mask = maskLayer;
+    }
 }
 
 - (void)awakeFromNib {

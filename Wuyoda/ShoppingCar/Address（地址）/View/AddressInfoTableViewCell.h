@@ -13,7 +13,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic , retain)UILabel *titleLab;
 
+@property (nonatomic , retain)UIView *infoBgV;
+
 @property (nonatomic , retain)UITextField *infoTextField;
+
+@property (nonatomic , retain)UITextView *addressTextV;
+
+@property (nonatomic , retain)UILabel *addressPlaceHolderLab;
+
+@property (nonatomic , retain)UILabel *phoneTypeLab;
 
 @property (nonatomic , retain)UIImageView *defaultImgV;
 

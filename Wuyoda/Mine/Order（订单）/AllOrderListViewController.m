@@ -14,7 +14,9 @@
 #import "LogisticsViewController.h"
 #import "EvaluateViewController.h"
 #import "PayInfoModel.h"
+#import "PayModel.h"
 #import "PayInfoViewController.h"
+#import "PayViewController.h"
 
 
 @interface AllOrderListViewController ()<UITableViewDelegate, UITableViewDataSource>
@@ -104,13 +106,20 @@
 }
 
 -(void)payOrderClicked:(UIButton *)sender{
+//    OrderListModel *model = [self.ordersArr objectAtIndex:sender.tag];
+//    PayInfoModel *payModel = [[PayInfoModel alloc]init];
+//    payModel.ordersn = model.ordersn;
+//    payModel.order_amount = model.order_amount;
+//    payModel.uid = model.uid;
+//    PayInfoViewController *vc = [[PayInfoViewController alloc]init];
+//    vc.payInfoModel = payModel;
+//    [self.navigationController pushViewController:vc animated:YES];
     OrderListModel *model = [self.ordersArr objectAtIndex:sender.tag];
-    PayInfoModel *payModel = [[PayInfoModel alloc]init];
+    PayModel *payModel = [[PayModel alloc]init];
     payModel.ordersn = model.ordersn;
-    payModel.original_price = model.original_price;
-    payModel.uid = model.uid;
-    PayInfoViewController *vc = [[PayInfoViewController alloc]init];
-    vc.payInfoModel = payModel;
+    payModel.total_price = model.order_amount;
+    PayViewController *vc = [[PayViewController alloc]init];
+    vc.payModel = payModel;
     [self.navigationController pushViewController:vc animated:YES];
 }
 
@@ -147,7 +156,9 @@
 }
 
 -(void)readLogisticsClicked:(UIButton *)sender{
+    OrderListModel *model = [self.ordersArr objectAtIndex:sender.tag];
     LogisticsViewController *vc = [[LogisticsViewController alloc]init];
+    vc.orderNum = model.ordersn;
     [self.navigationController pushViewController:vc animated:YES];
 }
 
@@ -172,7 +183,7 @@
     }];
     
 //    LogisticsViewController *vc = [[LogisticsViewController alloc]init];
-//    vc.orderNum = @"UB200145315TW";
+//    vc.orderNum = @"OD164783292859";
 //    [self.navigationController pushViewController:vc animated:YES];
 }
 
@@ -186,9 +197,8 @@
     OrderListModel *model = [self.ordersArr objectAtIndex:indexPath.row];
     
     cell.listModel = model;
-    
+    cell.type = model.status_code;
     if ([model.status_code isEqualToString:@"1"]) {
-        cell.type = @"1";
         [cell.addressBtn addTarget:self action:@selector(changeAddressClicked:) forControlEvents:UIControlEventTouchUpInside];
         [cell.cancelBtn addTarget:self action:@selector(cancelOrderClicked:) forControlEvents:UIControlEventTouchUpInside];
         [cell.payBtn addTarget:self action:@selector(payOrderClicked:) forControlEvents:UIControlEventTouchUpInside];
@@ -197,8 +207,7 @@
         cell.payBtn.tag = indexPath.row;
         
     }
-    else if ([model.status_code isEqualToString:@"4"]) {
-        cell.type = @"2";
+    else if ([model.status_code isEqualToString:@"4"] || [model.status_code isEqualToString:@"3"]) {
         cell.doneTakeBtn.tag = indexPath.row;
         cell.readLogisticsBtn.tag = indexPath.row;
         [cell.doneTakeBtn addTarget:self action:@selector(doneTakeClicked:) forControlEvents:UIControlEventTouchUpInside];
@@ -206,11 +215,9 @@
         [cell.readLogisticsBtn addTarget:self action:@selector(readLogisticsClicked:) forControlEvents:UIControlEventTouchUpInside];
     }
     else if ([model.status_code isEqualToString:@"5"]) {
-        cell.type = @"3";
         cell.finishEvaluateBtn.tag = indexPath.row;
         [cell.finishEvaluateBtn addTarget:self action:@selector(evaluateClicked:) forControlEvents:UIControlEventTouchUpInside];
     }else{
-        cell.type = @"4";
         cell.buyAgainBtn.tag = indexPath.row;
         [cell.buyAgainBtn addTarget:self action:@selector(buyAgainClicked:) forControlEvents:UIControlEventTouchUpInside];
     }
@@ -230,7 +237,7 @@
     NSDictionary *orderGoodDic = listModel.order_goods;
     NSArray *allKey = orderGoodDic.allKeys;
     
-    return kWidth(117)+kWidth(89)*allKey.count;
+    return kWidth(124)+kWidth(110)*allKey.count;
 }
 
 -(CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section{
@@ -253,18 +260,7 @@
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     OrderListModel *model = [self.ordersArr objectAtIndex:indexPath.row];
     OrderInfoViewController *vc = [[OrderInfoViewController alloc]init];
-    if ([model.status_code isEqualToString:@"1"]) {
-        vc.type = @"1";
-    }
-    else if ([model.status_code isEqualToString:@"4"]) {
-        vc.type = @"2";
-    }
-    else if ([model.status_code isEqualToString:@"5"]) {
-        vc.type = @"3";
-    }else{
-        vc.type = @"4";
-    }
-    
+    vc.type = model.status_code;
     vc.ordersn = model.ordersn;
     [self.navigationController pushViewController:vc animated:YES];
 }

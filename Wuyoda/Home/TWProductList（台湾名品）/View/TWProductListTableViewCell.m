@@ -33,9 +33,10 @@
 
 -(void)createUI{
     self.imgV = [[UIImageView alloc]init];
-    self.imgV.backgroundColor = [ColorManager ColorF2F2F2];
+    self.imgV.backgroundColor = [ColorManager WhiteColor];
     self.imgV.layer.cornerRadius = kWidth(10);
     self.imgV.layer.masksToBounds = YES;
+    self.imgV.contentMode = UIViewContentModeScaleAspectFit;
     [self.contentView addSubview:self.imgV];
     [self.imgV mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_offset(kWidth(0));
@@ -113,8 +114,7 @@
     }];
     
     self.unitLab = [[UILabel alloc]init];
-    self.unitLab.text = @"/盒";
-    self.unitLab.textColor = [ColorManager Color555555];
+    self.unitLab.textColor = [ColorManager BlackColor];
     self.unitLab.font = kFont(14);
     [self.contentView addSubview:self.unitLab];
     [self.unitLab mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -183,16 +183,21 @@
 -(void)setModel:(HomeShopModel *)model{
     self.nameLab.text = model.goods_name;
     [self.imgV sd_setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@",model.goods_file1]]];
-    self.priceLab.text = [NSString stringWithFormat:@"%@%@",[CommonManager getPriceType:model.money_type],model.price];
+    //self.priceLab.text = [NSString stringWithFormat:@"%@%@",[CommonManager getPriceType:model.money_type],model.price];
+    self.priceLab.text = [CommonManager getShowPrice:model.money_type Price:model.price];
     NSString *oldPriceStr = model.goods_market_price_org;
     if (!oldPriceStr.length) {
         HomeShopModel *detailModel = [HomeShopModel mj_objectWithKeyValues:model.detail];
         oldPriceStr = detailModel.goods_market_price_org;
     }
     
-    NSMutableAttributedString *oldPrice = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@%@",[CommonManager getPriceType:model.money_type],oldPriceStr]];
+    //NSMutableAttributedString *oldPrice = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@%@",[CommonManager getPriceType:model.money_type],oldPriceStr]];
+    NSMutableAttributedString *oldPrice = [[NSMutableAttributedString alloc] initWithString:[CommonManager getShowPrice:model.money_type Price:oldPriceStr]];
     [oldPrice addAttribute:NSStrikethroughStyleAttributeName value:@(NSUnderlinePatternSolid | NSUnderlineStyleSingle) range:NSMakeRange(0, oldPrice.length)];
     self.oldPriceLab.attributedText = oldPrice;
+    if (![model.unit isEqualToString:@"0"]) {
+        self.unitLab.text = [NSString stringWithFormat:@"/%@",model.unit];
+    }
 }
 
 - (void)awakeFromNib {

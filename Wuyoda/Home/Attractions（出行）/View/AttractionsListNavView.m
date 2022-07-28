@@ -19,42 +19,77 @@
 }
 
 -(void)createUI{
-    self.backgroundColor = [ColorManager WhiteColor];
     
-    self.searchField = [[HomeSearchField alloc]init];
-    self.searchField.textColor = [ColorManager BlackColor];
-    self.searchField.placeholder = @"请输入景点名称";
-    self.searchField.font = kFont(14);
-    self.searchField.backgroundColor = [ColorManager ColorF2F2F2];
-    self.searchField.returnKeyType = UIReturnKeySearch;
-    self.searchField.layer.cornerRadius = kWidth(5);
+    self.backgroundColor = [ColorManager ColorF2F2F2];
     
-    UIImageView *leftV = [[UIImageView alloc]initWithImage:kGetImage(@"定位")];
-    self.searchField.leftView = leftV;
-    self.searchField.leftViewMode = UITextFieldViewModeAlways;
-    
-    [self addSubview:self.searchField];
-    [self.searchField mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.right.mas_offset(kWidth(-20));
-        make.bottom.mas_offset(kWidth(-12));
-        make.width.mas_offset(kWidth(300));
-        make.height.mas_offset(kWidth(36));
+    UIView *searchV = [[UIView alloc]init];
+    searchV.backgroundColor = [ColorManager WhiteColor];
+    searchV.layer.cornerRadius = kWidth(15);
+    searchV.layer.borderColor = [ColorManager MainColor].CGColor;
+    searchV.layer.borderWidth = kWidth(1);
+    [self addSubview:searchV];
+    [searchV mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.equalTo(self);
+        make.bottom.mas_offset(kWidth(-10));
+        make.width.mas_offset(kWidth(240));
+        make.height.mas_offset(kWidth(30));
     }];
     
-    UIButton *backBtn = [[UIButton alloc]init];
-    [backBtn setImage:kGetImage(@"返回") forState:UIControlStateNormal];
-    [backBtn addTarget:self action:@selector(backClicked) forControlEvents:UIControlEventTouchUpInside];
-    [self addSubview:backBtn];
-    [backBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+    UIImageView *searchImgV = [[UIImageView alloc]initWithImage:kGetImage(@"搜索（灰）")];
+    [searchV addSubview:searchImgV];
+    [searchImgV mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerY.equalTo(searchV);
+        make.left.mas_offset(kWidth(10));
+        make.width.height.mas_offset(kWidth(18));
+    }];
+    
+    self.searchField = [[UITextField alloc]init];
+    self.searchField.placeholder = @"请输入要搜索的景点名称";
+    self.searchField.textColor = [ColorManager Color333333];
+    self.searchField.font = kFont(14);
+    self.searchField.returnKeyType = UIReturnKeySearch;
+    [searchV addSubview:self.searchField];
+    [self.searchField mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerY.equalTo(searchV);
+        make.left.equalTo(searchImgV.mas_right).mas_offset(kWidth(18));
+        make.right.mas_offset(kWidth(-10));
+    }];
+    
+    
+    self.backBtn = [[UIButton alloc]init];
+    [self.backBtn setImage:kGetImage(@"返回") forState:UIControlStateNormal];
+    [self.backBtn addTarget:self action:@selector(backClicked) forControlEvents:UIControlEventTouchUpInside];
+    [self addSubview:self.backBtn];
+    [self.backBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerY.equalTo(searchV);
         make.left.mas_offset(kWidth(20));
-        make.centerY.equalTo(self.searchField);
         make.width.height.mas_offset(kWidth(16));
+    }];
+    
+    self.shopCartBtn = [[UIButton alloc]init];
+    [self.shopCartBtn setImage:kGetImage(@"首页顶部购物车") forState:UIControlStateNormal];
+    self.shopCartBtn.titleLabel.font = kFont(16);
+    [self.shopCartBtn addTarget:self action:@selector(shopCartClicked) forControlEvents:UIControlEventTouchUpInside];
+    [self addSubview:self.shopCartBtn];
+    [self.shopCartBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerY.equalTo(searchV);
+        make.right.mas_offset(kWidth(-20));
+        make.width.height.mas_offset(kWidth(20));
     }];
     
 }
 
 -(void)backClicked{
     [self.CurrentViewController.navigationController popViewControllerAnimated:YES];
+}
+
+
+-(void)shopCartClicked{
+    if ([CommonManager isLogin:self.CurrentViewController isPush:YES]) {
+        [self.CurrentViewController.tabBarController setSelectedIndex:2];
+        [self.CurrentViewController.navigationController popToViewController:self.CurrentViewController.navigationController.viewControllers.firstObject animated:NO];
+    }
+    
 }
 
 /*

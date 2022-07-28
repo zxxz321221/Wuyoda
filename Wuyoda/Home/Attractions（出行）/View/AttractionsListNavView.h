@@ -12,7 +12,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface AttractionsListNavView : UIView
 
-@property (nonatomic , retain)HomeSearchField *searchField;
+@property (nonatomic , retain)UIButton *backBtn;
+
+@property (nonatomic , retain)UITextField *searchField;
+
+@property (nonatomic , retain)UIButton *shopCartBtn;
 
 @end
 

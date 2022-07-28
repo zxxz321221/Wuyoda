@@ -6,6 +6,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "HomeModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -24,6 +25,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic , weak)id <SpecailProductTypeSelectDelegate>delegate;
 
 @property (nonatomic , retain)NSArray *shopArr;
+
+@property (nonatomic , retain)HomeShopModel *topGoodModel;
 
 @end
 

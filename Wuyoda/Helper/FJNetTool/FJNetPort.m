@@ -17,8 +17,14 @@ NSString *const IMGHTTP = @"http://wuyoda.com/union/"; // 图片域名
 NSString *const CODE0 = @"200";
 
 #pragma mark - 登录  7
+
+// apple登录按钮显示
+NSString *const AppleLogin_hiden = @"mobile/Control/index";
+
 // 获取Token
 NSString *const Login_GetToken = @"mobile/Login/getToken";
+// 获取登录状态
+NSString *const Login_login_status = @"mobile/Login/login_status";
 // 登录
 NSString *const Login_Login_index = @"mobile/Login/login_index";
 // 发送验证码
@@ -29,9 +35,19 @@ NSString *const Login_phone_check = @"mobile/Login/phone_check";
 NSString *const Login_appleLogin = @"mobile/Login/appleLogin";
 //微信登录
 NSString *const Login_weixinLogin = @"mobile/Login/weixinLogin";
+// 手机号注册
+NSString *const Login_phone_register = @"mobile/Login/phone_register";
+//邮箱注册
+NSString *const Login_email_register = @"mobile/Login/email_register";
+//退出登录
+NSString *const Login_login_out = @"mobile/Login/login_out";
+//账号图形验证码
+NSString *const Login_captcha= @"mobile/Login/captcha";
 
 // 首页
 NSString *const Index_index = @"mobile/Index/index";
+// 首页商品类别
+NSString *const Index_category = @"mobile/Index/category";
 // 首页商品
 NSString *const Index_shop = @"mobile/Index/shop";
 // 首页台湾名品
@@ -40,10 +56,30 @@ NSString *const Store_twmp = @"mobile/Store/twmp";
 NSString *const Store_bdlh = @"mobile/Store/bdlh";
 // 首页特惠商品
 NSString *const Store_thsp = @"mobile/Store/thsp";
+// 分类
+NSString *const Classify_index = @"mobile/Classify/index";
+// 分类商品
+NSString *const Classify_cat_goods = @"mobile/Classify/cat_goods";
+// 分类商品列表
+NSString *const Classify_cat_product = @"mobile/Classify/cat_product";
+// 分类商品列表顶部图片
+NSString *const Classify_cate_file = @"mobile/Classify/cate_file";
+
+// 热门搜索
+NSString *const Classify_hot_word = @"mobile/Classify/hot_word";
+// 历史搜索
+NSString *const Classify_history = @"mobile/Classify/history";
+// 删除历史搜索
+NSString *const Classify_history_del = @"mobile/Classify/history_del";
 // 获取商品列表
 NSString *const Store_getProductList = @"mobile/Store/getProductList";
 // 商品详情
 NSString *const Store_Detail = @"mobile/Store/detail";
+// 商品详情加入心愿单
+NSString *const Special_favorite_detail = @"mobile/Special/favorite_detail";
+// 商品详情移除心愿单
+NSString *const Special_favorite_remove = @"mobile/Special/favorite_remove";
+
 // 消息列表
 NSString *const Store_notice = @"mobile/Store/notice";
 // 消息详情
@@ -59,6 +95,8 @@ NSString *const Store_scenic_list = @"mobile/Store/scenic_list";
 // 景点介绍
 NSString *const Store_scenic_intro = @"mobile/Store/scenic_intro";
 
+// 立即购买
+NSString *const Special_buy_now = @"mobile/Special/buy_now";
 // 加入购物车
 NSString *const Special_cart_order = @"mobile/Special/cart_order";
 // 购物车列表
@@ -156,4 +194,9 @@ NSString *const Login_email_save = @"mobile/Login/email_save";
 NSString *const Login_perfect = @"mobile/Login/perfect";
 
 // 物流信息
-NSString *const website_getOrderInfo = @"http://tms.ubonex.com/website/getOrderInfo.do";
+NSString *const website_getOrderInfo = @"mobile/Special/synquery";
+
+// 付款信息
+NSString *const Special_bank_list = @"mobile/Special/bank_list";
+// 添加银行卡
+NSString *const Special_bank_add = @"mobile/Bank/bank_add";

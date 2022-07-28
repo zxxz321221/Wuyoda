@@ -22,6 +22,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic , copy)NSString *success;
 @property (nonatomic , copy)NSString *action;
 @property (nonatomic , copy)NSString *updateTime;
+@property (nonatomic , copy)NSString *file;
+@property (nonatomic , copy)NSString *message;
 
 @end
 

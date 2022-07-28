@@ -21,30 +21,49 @@
 -(void)createUI{
     self.selectBtn = [[UIButton alloc]init];
     [self.selectBtn setTitle:@"全选" forState:UIControlStateNormal];
-    [self.selectBtn setTitleColor:[ColorManager BlackColor] forState:UIControlStateNormal];
-    [self.selectBtn setImage:kGetImage(@"选择") forState:UIControlStateNormal];
+    [self.selectBtn setTitleColor:[ColorManager Color666666] forState:UIControlStateNormal];
+    [self.selectBtn setImage:kGetImage(@"未选中") forState:UIControlStateNormal];
     [self.selectBtn setImage:kGetImage(@"选中") forState:UIControlStateSelected];
-    self.selectBtn.titleLabel.font = kFont(14);
+    self.selectBtn.titleLabel.font = kFont(16);
     [self addSubview:self.selectBtn];
     [self.selectBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_offset(kWidth(15));
         make.centerY.equalTo(self);
-        make.width.mas_offset(kWidth(50));
-        make.height.mas_offset(kWidth(15));
+        make.width.mas_offset(kWidth(60));
+        make.height.mas_offset(kWidth(18));
     }];
+    self.selectBtn.titleEdgeInsets = UIEdgeInsetsMake(0, kWidth(5), 0, 0);
+    self.selectBtn.imageEdgeInsets = UIEdgeInsetsMake(0, 0, 0, kWidth(35));
     
     self.deleteBtn = [[UIButton alloc]init];
     [self.deleteBtn setTitle:@"删除" forState:UIControlStateNormal];
-    [self.deleteBtn setTitleColor:[ColorManager WhiteColor] forState:UIControlStateNormal];
+    [self.deleteBtn setTitleColor:[ColorManager MainColor] forState:UIControlStateNormal];
     self.deleteBtn.titleLabel.font = kFont(14);
-    self.deleteBtn.backgroundColor = [ColorManager ColorD8001B];
-    self.deleteBtn.layer.cornerRadius = kWidth(18);
+    self.deleteBtn.layer.cornerRadius = kWidth(20);
+    self.deleteBtn.layer.borderColor = [ColorManager MainColor].CGColor;
+    self.deleteBtn.layer.borderWidth = kWidth(0.5);
     [self addSubview:self.deleteBtn];
     [self.deleteBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerY.equalTo(self);
-        make.right.mas_offset(kWidth(-10));
+        make.right.mas_offset(kWidth(-20));
         make.width.mas_offset(kWidth(90));
-        make.height.mas_offset(kWidth(36));
+        make.height.mas_offset(kWidth(40));
+    }];
+    
+    UIView *topLine = [[UIView alloc]init];
+    topLine.backgroundColor = [ColorManager ColorCCCCCC];
+    [self addSubview:topLine];
+    [topLine mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.left.width.equalTo(self);
+        make.height.mas_offset(kWidth(0.5));
+    }];
+    
+    UIView *bottomLine = [[UIView alloc]init];
+    bottomLine.backgroundColor = [ColorManager ColorCCCCCC];
+    [self addSubview:bottomLine];
+    [bottomLine mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.bottom.left.width.equalTo(self);
+        make.height.mas_offset(kWidth(0.5));
     }];
 }
 

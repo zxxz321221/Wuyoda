@@ -11,7 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol selectTWProductConditionDelegate <NSObject>
 
--(void)selectCondition:(NSString *)condition;
+-(void)selectCondition:(NSString *)condition Index:(NSString *)index;
 
 @end
 

@@ -33,29 +33,38 @@
 
 -(void)createUI{
     
+    self.backgroundColor = [ColorManager ColorF2F2F2];
+    
+    UIView *bgView = [[UIView alloc]initWithFrame:CGRectMake(kWidth(10), 0, kWidth(355), kWidth(228))];
+    bgView.backgroundColor = [ColorManager WhiteColor];
+    bgView.layer.cornerRadius = kWidth(10);
+    [self.contentView addSubview:bgView];
+    
+    UILabel *titleLab = [[UILabel alloc]init];
+    titleLab.textColor = [ColorManager BlackColor];
+    titleLab.font = kFont(16);
+    titleLab.text = @"我的订单";
+    [bgView addSubview:titleLab];
+    [titleLab mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_offset(kWidth(10));
+        make.top.mas_offset(kWidth(20));
+    }];
+    
     UICollectionViewFlowLayout *fl = [[UICollectionViewFlowLayout alloc]init];
-    fl.itemSize = CGSizeMake(kWidth(80), kWidth(62));
-    fl.sectionInset = UIEdgeInsetsMake(kWidth(16), kWidth(35), kWidth(24), kWidth(40));
-    fl.minimumLineSpacing = kWidth(45);
+    fl.itemSize = CGSizeMake(kWidth(80), kWidth(56));
+    fl.sectionInset = UIEdgeInsetsMake(0, kWidth(30), kWidth(20), kWidth(30));
+    fl.minimumLineSpacing = kWidth(30);
     
     
-    self.collectionV = [[UICollectionView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, kWidth(235)) collectionViewLayout:fl];
+    self.collectionV = [[UICollectionView alloc] initWithFrame:CGRectMake(0, kWidth(66), kWidth(355), kWidth(164)) collectionViewLayout:fl];
     self.collectionV.delegate = self;
     self.collectionV.dataSource = self;
     self.collectionV.backgroundColor = [ColorManager WhiteColor];
+    self.collectionV.layer.cornerRadius = kWidth(10);
     [self.collectionV registerClass:[MineOrderCollectionViewCell class] forCellWithReuseIdentifier:NSStringFromClass([MineOrderCollectionViewCell class])];
-    [self.contentView addSubview:self.collectionV];
+    [bgView addSubview:self.collectionV];
     
     self.titleArr = @[@"全部订单",@"有效订单",@"待支付订单",@"安全中心",@"获取帮助",@"历史足迹"];
-    
-    UIView *bottomLine = [[UIView alloc]init];
-    bottomLine.backgroundColor = [ColorManager ColorF2F2F2];
-    [self addSubview:bottomLine];
-    [bottomLine mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.bottom.centerX.equalTo(self);
-        make.width.mas_offset(kWidth(335));
-        make.height.mas_offset(kWidth(1));
-    }];
     
 }
 

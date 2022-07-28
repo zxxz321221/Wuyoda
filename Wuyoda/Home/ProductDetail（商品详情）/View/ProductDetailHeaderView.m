@@ -31,6 +31,8 @@
 @property (nonatomic, strong) UIView *bannerBGView;
 @property (nonatomic, strong) SDCycleScrollView *banner;
 
+@property (nonatomic , retain)UILabel *priceLab;
+
 @end
 
 @implementation ProductDetailHeaderView
@@ -48,41 +50,46 @@
     
     self.backgroundColor = [ColorManager WhiteColor];
     
-    self.bannerBGView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, kWidth(330))];
+    self.bannerBGView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, kWidth(375))];
+    UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:self.bannerBGView.bounds byRoundingCorners:UIRectCornerTopRight | UIRectCornerTopLeft cornerRadii:CGSizeMake(kWidth(10), kWidth(10))];
+    CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
+    maskLayer.frame =  self.bannerBGView.bounds;
+    maskLayer.path = maskPath.CGPath;
+    self.bannerBGView.layer.mask = maskLayer;
     [self addSubview:self.bannerBGView];
     
     
     
-    UIButton *closeBtn = [[UIButton alloc]init];
-    [closeBtn setImage:kGetImage(@"商品详情_关闭") forState:UIControlStateNormal];
-    [closeBtn addTarget:self action:@selector(closeClicked) forControlEvents:UIControlEventTouchUpInside];
-    [self addSubview:closeBtn];
-    [closeBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_offset(kWidth(20));
-        make.top.mas_offset(kHeight_StatusBar+kWidth(23));
-        make.width.height.mas_offset(kWidth(32));
-    }];
+//    UIButton *closeBtn = [[UIButton alloc]init];
+//    [closeBtn setImage:kGetImage(@"商品详情_关闭") forState:UIControlStateNormal];
+//    [closeBtn addTarget:self action:@selector(closeClicked) forControlEvents:UIControlEventTouchUpInside];
+//    [self addSubview:closeBtn];
+//    [closeBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.left.mas_offset(kWidth(20));
+//        make.top.mas_offset(kHeight_StatusBar+kWidth(23));
+//        make.width.height.mas_offset(kWidth(32));
+//    }];
+//    
+//    self.likeBtn = [[UIButton alloc]init];
+//    [self.likeBtn setImage:kGetImage(@"商品详情_收藏") forState:UIControlStateNormal];
+//    [self.likeBtn setImage:kGetImage(@"商品详情_收藏选中") forState:UIControlStateSelected];
+//    [self.likeBtn addTarget:self action:@selector(likeProductClicked:) forControlEvents:UIControlEventTouchUpInside];
+//    [self addSubview:self.likeBtn];
+//    [self.likeBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.right.mas_offset(kWidth(-20));
+//        make.top.mas_offset(kHeight_StatusBar+kWidth(23));
+//        make.width.height.mas_offset(kWidth(32));
+//    }];
     
-    self.likeBtn = [[UIButton alloc]init];
-    [self.likeBtn setImage:kGetImage(@"商品详情_收藏") forState:UIControlStateNormal];
-    [self.likeBtn setImage:kGetImage(@"商品详情_收藏选中") forState:UIControlStateSelected];
-    [self.likeBtn addTarget:self action:@selector(likeProductClicked:) forControlEvents:UIControlEventTouchUpInside];
-    [self addSubview:self.likeBtn];
-    [self.likeBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.right.mas_offset(kWidth(-20));
-        make.top.mas_offset(kHeight_StatusBar+kWidth(23));
-        make.width.height.mas_offset(kWidth(32));
-    }];
-    
-    UIButton *shareBtn = [[UIButton alloc]init];
-    [shareBtn setImage:kGetImage(@"商品详情_分享") forState:UIControlStateNormal];
-    [shareBtn addTarget:self action:@selector(shareClicked:) forControlEvents:UIControlEventTouchUpInside];
-    [self addSubview:shareBtn];
-    [shareBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.right.equalTo(self.likeBtn.mas_left).mas_offset(kWidth(-12));
-        make.top.mas_offset(kHeight_StatusBar+kWidth(23));
-        make.width.height.mas_offset(kWidth(32));
-    }];
+//    UIButton *shareBtn = [[UIButton alloc]init];
+//    [shareBtn setImage:kGetImage(@"商品详情_分享") forState:UIControlStateNormal];
+//    [shareBtn addTarget:self action:@selector(shareClicked:) forControlEvents:UIControlEventTouchUpInside];
+//    [self addSubview:shareBtn];
+//    [shareBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.right.equalTo(self.likeBtn.mas_left).mas_offset(kWidth(-12));
+//        make.top.mas_offset(kHeight_StatusBar+kWidth(23));
+//        make.width.height.mas_offset(kWidth(32));
+//    }];
     
 //    UIImageView *typeImgV = [[UIImageView alloc]initWithImage:kGetImage(@"商品详情_标签")];
 //    [self addSubview:typeImgV];
@@ -116,7 +123,7 @@
     self.titleLab = [[UILabel alloc]init];
     //self.titleLab.text = @"【酱职人】国产黑豆荫油礼盒组 【Sauce Craftsman】Taiwan Black Bean Sauce Gift Box";
     self.titleLab.textColor = [ColorManager BlackColor];
-    self.titleLab.font = kFont(18);
+    self.titleLab.font = kBoldFont(18);
     self.titleLab.numberOfLines = 0;
     self.titleLab.lineBreakMode = NSLineBreakByWordWrapping;
     [self addSubview:self.titleLab];
@@ -128,12 +135,21 @@
     
     //[self layoutIfNeeded];
     
-    self.labBGView = [[UIView alloc]initWithFrame:CGRectMake(kWidth(20), self.titleLab.frame.origin.y+self.titleLab.frame.size.height+kWidth(16), kWidth(335), 1)];
-    self.labBGView.backgroundColor = [ColorManager WhiteColor];
-    [self addSubview:self.labBGView];
+//    self.labBGView = [[UIView alloc]initWithFrame:CGRectMake(kWidth(20), self.titleLab.frame.origin.y+self.titleLab.frame.size.height+kWidth(16), kWidth(335), 1)];
+//    self.labBGView.backgroundColor = [ColorManager WhiteColor];
+//    [self addSubview:self.labBGView];
+    
+    self.priceLab = [[UILabel alloc]init];
+    self.priceLab.textColor = [ColorManager ColorFE3C3D];
+    self.priceLab.font = kBoldFont(20);
+    [self addSubview:self.priceLab];
+    [self.priceLab mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(self.titleLab.mas_bottom).mas_offset(kWidth(15));
+        make.left.mas_offset(kWidth(28));
+    }];
     
     UIView *lineV = [[UIView alloc]init];
-    lineV.backgroundColor = [ColorManager ColorAAAAAA];
+    lineV.backgroundColor = [ColorManager ColorCCCCCC];
     [self addSubview:lineV];
     [lineV mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.width.equalTo(self);
@@ -229,6 +245,8 @@
     _model = model;
     self.titleLab.text = model.goods_name;
     [self.titleLab layoutIfNeeded];
+    //self.priceLab.text = [NSString stringWithFormat:@"%@%@",[CommonManager getPriceType:model.money_type],model.price];
+    self.priceLab.text = [CommonManager getShowPrice:model.money_type Price:model.price];
     //[self.productImgV sd_setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@",model.goods_file1]]];
     self.labBGView.frame = CGRectMake(kWidth(20), self.titleLab.frame.origin.y+self.titleLab.frame.size.height+kWidth(30), kWidth(335), 1);
     
@@ -280,21 +298,21 @@
     NSMutableArray *picArr = [NSMutableArray array];
 //    [picArr addObjectsFromArray:bannerArr];
     for (BannerModel *model in bannerArr) {
-        [picArr addObject:model.thumb];
+        [picArr addObject:model.imgbig];
     }
     
     self.banner = [SDCycleScrollView cycleScrollViewWithFrame:self.bannerBGView.bounds imageNamesGroup:picArr];
     self.banner.delegate = self;
+    self.banner.infiniteLoop = picArr.count-1;
     self.banner.autoScrollTimeInterval = 3;
-    self.banner.showPageControl = NO;
-//    self.banner.pageControlStyle = SDCycleScrollViewPageContolStyleAnimated;
-//    self.banner.pageControlBottomOffset = kWidth(10);
-//    self.banner.pageControlAliment = SDCycleScrollViewPageContolAlimentRight;
-//    self.banner.pageDotImage = kGetImage(@"Home_pageNoSe");
-//    self.banner.currentPageDotImage = kGetImage(@"Home_pageSe");
+    self.banner.showPageControl = YES;
+    self.banner.pageControlStyle = SDCycleScrollViewPageContolStyleAnimated;
+    self.banner.pageControlBottomOffset = kWidth(12);
+    self.banner.pageControlAliment = SDCycleScrollViewPageContolAlimentCenter;
+    self.banner.pageDotImage = kGetImage(@"banner_normal");
+    self.banner.currentPageDotImage = kGetImage(@"banner_select");
     self.banner.spacingBetweenDots = kWidth(5);
-    self.banner.pageControlDotSize = CGSizeMake(kWidth(10), kWidth(5));
-    self.banner.backgroundColor = [UIColor whiteColor];
+    self.banner.pageControlDotSize = CGSizeMake(kWidth(8), kWidth(8));
     self.banner.placeholderImage = kGetImage(@"发现长条占位图");
     self.banner.bannerImageViewContentMode = UIViewContentModeScaleAspectFill;
     self.banner.clipsToBounds = YES;

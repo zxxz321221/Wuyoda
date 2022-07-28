@@ -37,6 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic , copy)NSString *ddp;
 @property (nonatomic , copy)NSString *down_payment;
 @property (nonatomic , copy)NSString *down_payment_org;
+@property (nonatomic , assign)BOOL favorite;
 @property (nonatomic , copy)NSString *filter_attr;
 @property (nonatomic , copy)NSString *g_uid;
 @property (nonatomic , retain)NSArray *gallery;
@@ -61,6 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic , copy)NSString *goods_stock;
 @property (nonatomic , copy)NSString *is_makeup;
 @property (nonatomic , copy)NSString *isup;
+@property (nonatomic , copy)NSString *istop;
 @property (nonatomic , copy)NSString *money_type;
 @property (nonatomic , copy)NSString *register_date;
 @property (nonatomic , copy)NSString *star_struct;
@@ -74,9 +76,18 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic , copy)NSString *twmp;
 @property (nonatomic , copy)NSString *type;
 @property (nonatomic , copy)NSString *uid;
+@property (nonatomic , copy)NSString *unit;
 @property (nonatomic , copy)NSString *update_date;
 @property (nonatomic , copy)NSString *wholesale_price;
 @property (nonatomic , retain)NSDictionary *detail;
+
+@end
+
+@interface HomeCategoryModel : BaseModel
+
+@property (nonatomic , copy)NSString *category_id;
+@property (nonatomic , copy)NSString *category_name;
+@property (nonatomic , copy)NSString *uid;
 
 @end
 

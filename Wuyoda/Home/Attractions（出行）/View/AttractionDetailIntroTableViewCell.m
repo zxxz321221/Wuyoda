@@ -51,8 +51,7 @@
 -(void)setModel:(AttractionModel *)model{
     _model = model;
     if (model.scenic_content.length) {
-        NSString *headerString = @"<header><meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no'></header>";
-            [self.webView loadHTMLString:[headerString stringByAppendingString:model.scenic_content] baseURL:nil];
+        [self loadHtml:model.scenic_content];
     }
 }
 
@@ -82,6 +81,29 @@
         }
         
     }
+}
+
+-(void)loadHtml:(NSString *)str {
+    NSString *htmlString = [NSString stringWithFormat:@"<html> \n"
+        "<head> \n"
+        "<style type=\"text/css\"> \n"
+        "body {font-size:14px;}\n"
+        "</style> \n"
+        "</head> \n"
+        "<body>"
+        "<script type='text/javascript'>"
+        "window.onload = function(){\n"
+        "var $img = document.getElementsByTagName('img');\n"
+        "for(var p in  $img){\n"
+        " $img[p].style.width = '100%%';\n"
+        "$img[p].style.height ='auto'\n"
+        "}\n"
+        "}"
+        "</script>%@"
+        "</body>"
+        "</html>", str];
+    [self.webView loadHTMLString:htmlString baseURL:nil];
+
 }
 
 

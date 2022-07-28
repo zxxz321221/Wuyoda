@@ -443,7 +443,7 @@ static AFHTTPSessionManager *_sessionManager;
 
     _sessionManager.responseSerializer = [AFHTTPResponseSerializer serializer];
 
-    [_sessionManager.responseSerializer setAcceptableContentTypes:[NSSet setWithObjects:@"application/json", @"text/html", @"text/json", @"text/plain", @"text/javascript", @"text/xml", @"image/*", nil]];
+    [_sessionManager.responseSerializer setAcceptableContentTypes:[NSSet setWithObjects:@"application/json", @"text/html", @"text/json", @"text/plain", @"text/javascript", @"text/xml", @"image/*",@"image/png", nil]];
 
 
    //self.manager.securityPolicy.allowInvalidCertificates = YES;//忽略https证书

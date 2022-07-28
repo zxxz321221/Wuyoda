@@ -110,8 +110,11 @@
 }
 
 -(void)readLogisticsClicked:(UIButton *)sender{
+    OrderListModel *model = [self.ordersArr objectAtIndex:sender.tag];
     LogisticsViewController *vc = [[LogisticsViewController alloc]init];
+    vc.orderNum = model.ordersn;
     [self.navigationController pushViewController:vc animated:YES];
+    
 }
 
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -126,7 +129,7 @@
     
     cell.listModel = model;
     
-    cell.type = @"2";
+    cell.type = model.status_code;
     
     cell.doneTakeBtn.tag = indexPath.row;
     cell.readLogisticsBtn.tag = indexPath.row;
@@ -172,7 +175,7 @@
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     OrderListModel *model = [self.ordersArr objectAtIndex:indexPath.row];
     OrderInfoViewController *vc = [[OrderInfoViewController alloc]init];
-    vc.type = @"2";
+    vc.type = model.status_code;
     vc.ordersn = model.ordersn;
     [self.navigationController pushViewController:vc animated:YES];
 }

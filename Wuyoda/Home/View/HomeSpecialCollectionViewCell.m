@@ -35,7 +35,8 @@
 
 -(void)createUI{
     self.imgV = [[UIImageView alloc]init];
-    self.imgV.backgroundColor = [UIColor lightGrayColor];
+    self.imgV.backgroundColor = [UIColor whiteColor];
+    self.imgV.contentMode = UIViewContentModeScaleAspectFit;
     [self.contentView addSubview:self.imgV];
     [self.imgV mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.top.mas_offset(0);
@@ -118,10 +119,12 @@
 
 -(void)setModel:(HomeShopModel *)model{
     _model = model;
-    [self.imgV sd_setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@",model.goods_file1]]];
+    [self.imgV sd_setImageWithURL:[NSURL URLWithString:model.goods_file1]];
     self.titleLab.text = model.goods_name;
-    self.priceLab.text = [NSString stringWithFormat:@"%@%@",[CommonManager getPriceType:model.money_type],model.price];
-    self.oldPriceLab.text = [NSString stringWithFormat:@"%@%@",[CommonManager getPriceType:model.money_type],model.detail[@"goods_market_price_org"]];
+    //self.priceLab.text = [NSString stringWithFormat:@"%@%@",[CommonManager getPriceType:model.money_type],model.price];
+    self.priceLab.text = [CommonManager getShowPrice:model.money_type Price:model.price];
+    //self.oldPriceLab.text = [NSString stringWithFormat:@"%@%@",[CommonManager getPriceType:model.money_type],model.detail[@"goods_market_price_org"]];
+    self.oldPriceLab.text = [CommonManager getShowPrice:model.money_type Price:model.detail[@"goods_market_price_org"]];
     self.addressLab.text = model.belong_city;
 }
 

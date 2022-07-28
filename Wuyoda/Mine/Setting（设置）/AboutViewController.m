@@ -6,7 +6,7 @@
 //
 
 #import "AboutViewController.h"
-#import "AboutTableViewCell.h"
+#import "SettingTableViewCell.h"
 #import "FJWebViewController.h"
 
 @interface AboutViewController ()<UITableViewDelegate, UITableViewDataSource>
@@ -23,16 +23,18 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    FJNormalNavView *nav = [[FJNormalNavView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kHeight_NavBar) controller:self titleStr:@"关于无忧达"];
+    FJNormalNavView *nav = [[FJNormalNavView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kHeight_NavBar) controller:self titleStr:[NSString stringWithFormat:@"关于%@",[[[NSBundle mainBundle]infoDictionary] objectForKey:@"CFBundleDisplayName"]]];
+    nav.backgroundColor = [ColorManager ColorF2F2F2];
     [self.view addSubview:nav];
+    
     
     self.tableView = [[UITableView alloc]initWithFrame:CGRectMake(0, kHeight_NavBar, kScreenWidth, kScreenHeight-kHeight_NavBar-kHeight_SafeArea) style:UITableViewStyleGrouped];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
-    [self.tableView registerClass:[AboutTableViewCell class] forCellReuseIdentifier:NSStringFromClass([AboutTableViewCell class])];
+    [self.tableView registerClass:[SettingTableViewCell class] forCellReuseIdentifier:NSStringFromClass([SettingTableViewCell class])];
 
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    self.tableView.backgroundColor = [ColorManager WhiteColor];
+    self.tableView.backgroundColor = [ColorManager ColorF2F2F2];
     
     [self.view addSubview:self.tableView];
     
@@ -40,13 +42,24 @@
 }
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     
-    AboutTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:NSStringFromClass([AboutTableViewCell class])];
+    SettingTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:NSStringFromClass([SettingTableViewCell class])];
     if (!cell) {
-        cell = [[AboutTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:NSStringFromClass([AboutTableViewCell class])];
+        cell = [[SettingTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:NSStringFromClass([SettingTableViewCell class])];
     }
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     
     cell.titleLab.text = [self.titleArr objectAtIndex:indexPath.row];
+    
+    if (indexPath.row == 0) {
+        cell.isLast = NO;
+        cell.isFirst = YES;
+    }else if (indexPath.row == self.titleArr.count-1){
+        cell.isFirst = NO;
+        cell.isLast = YES;
+    }else{
+        cell.isFirst = NO;
+        cell.isLast = NO;
+    }
     
     return cell;
     

@@ -420,7 +420,7 @@
         return view;
     }
     FootCollectionReusableView * footerView = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:@"foot" forIndexPath:indexPath];
-    footerView.backgroundColor = [ColorManager ColorF2F2F2];
+    footerView.backgroundColor = [ColorManager WhiteColor];
     
     return footerView;
     

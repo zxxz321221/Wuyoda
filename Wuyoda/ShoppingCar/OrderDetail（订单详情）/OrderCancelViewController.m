@@ -25,21 +25,33 @@
     // Do any additional setup after loading the view.
     
     FJNormalNavView *nav = [[FJNormalNavView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kHeight_NavBar) controller:self titleStr:@"取消订单"];
+    nav.backgroundColor = [ColorManager ColorF2F2F2];
     [self.view addSubview:nav];
     
-    self.tableView = [[UITableView alloc]initWithFrame:CGRectMake(0, kHeight_NavBar, kScreenWidth, kScreenHeight-kHeight_NavBar-kHeight_SafeArea-kWidth(48)-kWidth(60)) style:UITableViewStyleGrouped];
+    self.view.backgroundColor = [ColorManager ColorF2F2F2];
+    
+    UIView *bgView = [[UIView alloc]initWithFrame:CGRectMake(0, kHeight_NavBar+kWidth(20), kScreenWidth, kScreenHeight-kHeight_NavBar-kWidth(20))];
+    bgView.backgroundColor = [ColorManager WhiteColor];
+    [self.view addSubview:bgView];
+    UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:bgView.bounds byRoundingCorners:UIRectCornerTopRight | UIRectCornerTopLeft cornerRadii:CGSizeMake(kWidth(10), kWidth(10))];
+    CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
+    maskLayer.frame =  bgView.bounds;
+    maskLayer.path = maskPath.CGPath;
+    bgView.layer.mask = maskLayer;
+    
+    self.tableView = [[UITableView alloc]initWithFrame:CGRectMake(0, kWidth(10), kScreenWidth, kScreenHeight-kHeight_NavBar-kHeight_SafeArea-kWidth(48)-kWidth(60)-kWidth(30)) style:UITableViewStyleGrouped];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     [self.tableView registerClass:[OrderCancelTableViewCell class] forCellReuseIdentifier:NSStringFromClass([OrderCancelTableViewCell class])];
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.tableView.backgroundColor = [ColorManager WhiteColor];
-    [self.view addSubview:self.tableView];
+    [bgView addSubview:self.tableView];
     
     UIButton *doneBtn = [[UIButton alloc]init];
     [doneBtn setTitle:@"确定" forState:UIControlStateNormal];
     [doneBtn setTitleColor:[ColorManager WhiteColor] forState:UIControlStateNormal];
     doneBtn.titleLabel.font = kFont(14);
-    doneBtn.backgroundColor = [ColorManager MainColor];
+    [doneBtn setBackgroundImage:kGetImage(@"login_按钮") forState:UIControlStateNormal];;
     doneBtn.layer.cornerRadius = kWidth(24);
     [doneBtn addTarget:self action:@selector(doneClicked) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:doneBtn];
@@ -59,6 +71,10 @@
             BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
             if ([baseModel.code isEqualToString:CODE0]) {
                 [self.view showHUDWithText:@"订单取消成功" withYOffSet:0];
+                [[NSNotificationCenter defaultCenter] postNotificationName:@"orderUpdate" object:nil];
+                [[NSNotificationCenter defaultCenter] postNotificationName:@"willPayOrderUpdate" object:nil];
+                [[NSNotificationCenter defaultCenter] postNotificationName:@"orderInfoUpdate" object:nil];
+                [self.navigationController popViewControllerAnimated:YES];
             }
         } failure:^(NSError *error) {
                 

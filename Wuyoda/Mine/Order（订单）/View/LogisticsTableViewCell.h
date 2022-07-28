@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 #import "LogisticsModel.h"
+#import "LogisticsNewModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -15,6 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic , retain)UIView *line;
 
 @property (nonatomic , retain)LogisticsModel *model;
+@property (nonatomic , retain)LogisticsSubModel *model2;
 
 @end
 

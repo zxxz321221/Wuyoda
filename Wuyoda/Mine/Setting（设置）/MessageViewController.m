@@ -12,11 +12,19 @@
 
 @interface MessageViewController ()<UITableViewDelegate, UITableViewDataSource>
 
+@property (nonatomic , retain)UIView *bgView;
+
 @property (nonatomic , retain)UITableView *tableView;
 
 @property (nonatomic , retain)NSMutableArray *messagesArr;
 
 @property (nonatomic , assign)NSInteger page;
+
+@property (nonatomic , retain)UILabel *subLab;
+
+@property (nonatomic , retain)UIView *noLoginV;
+
+@property (nonatomic , retain)UIView *noDataView;
 
 @end
 
@@ -26,30 +34,26 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    FJNormalNavView *nav = [[FJNormalNavView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kHeight_NavBar) controller:self titleStr:@""];
+    FJNormalNavView *nav = [[FJNormalNavView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kHeight_NavBar) controller:self titleStr:@"消息通知"];
     [self.view addSubview:nav];
     
-    UILabel *titleLab = [[UILabel alloc]init];
-    titleLab.text = @"收件箱";
-    titleLab.textColor = [ColorManager BlackColor];
-    titleLab.font = kFont(28);
-    [self.view addSubview:titleLab];
-    [titleLab mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_offset(kWidth(20));
-        make.top.equalTo(nav.mas_bottom).mas_offset(kWidth(15));
-    }];
     
-    UILabel *subLab = [[UILabel alloc]init];
-    subLab.text = @"您没有未读消息";
-    subLab.textColor = [ColorManager Color7F7F7F];
-    subLab.font = kFont(16);
-    [self.view addSubview:subLab];
-    [subLab mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_offset(kWidth(20));
-        make.top.equalTo(titleLab.mas_bottom).mas_offset(kWidth(15));
-    }];
+    nav.backgroundColor = [ColorManager ColorF2F2F2];
+    [self.view addSubview:nav];
     
-    self.tableView = [[UITableView alloc]initWithFrame:CGRectMake(0, kHeight_NavBar+kWidth(110), kScreenWidth, kScreenHeight-kHeight_NavBar-kHeight_SafeArea-kWidth(110)) style:UITableViewStyleGrouped];
+    self.view.backgroundColor = [ColorManager ColorF2F2F2];
+    
+    UIView *bgView = [[UIView alloc]initWithFrame:CGRectMake(0, kHeight_NavBar+kWidth(20), kScreenWidth, kScreenHeight-kHeight_NavBar-kWidth(20))];
+    bgView.backgroundColor = [ColorManager WhiteColor];
+    self.bgView = bgView;
+    [self.view addSubview:bgView];
+    UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:bgView.bounds byRoundingCorners:UIRectCornerTopRight | UIRectCornerTopLeft cornerRadii:CGSizeMake(kWidth(10), kWidth(10))];
+    CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
+    maskLayer.frame =  bgView.bounds;
+    maskLayer.path = maskPath.CGPath;
+    bgView.layer.mask = maskLayer;
+    
+    self.tableView = [[UITableView alloc]initWithFrame:CGRectMake(0, kWidth(10), kScreenWidth, kScreenHeight-kHeight_NavBar-kHeight_SafeArea-kWidth(30)) style:UITableViewStyleGrouped];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     [self.tableView registerClass:[MessageTableViewCell class] forCellReuseIdentifier:NSStringFromClass([MessageTableViewCell class])];
@@ -65,10 +69,91 @@
         [weakSelf getDataFromServer:NO];
     }];
     
+    [bgView addSubview:self.tableView];
+    
+    if ([CommonManager isLogin:self isPush:NO]) {
+        [self noDataUI];
+        [self getDataFromServer:YES];
+    }else{
+        self.tableView .hidden = YES;
+        self.subLab.hidden = YES;
+        [self noLoginUI];
+    }
+    
+    
+}
+
+-(void)noLoginUI{
+    self.noLoginV = [[UIView alloc]init];
+    self.noLoginV.backgroundColor = [ColorManager WhiteColor];
+    [self.bgView addSubview:self.noLoginV];
+    [self.noLoginV mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(self.bgView).mas_offset(kWidth(10));
+        make.left.width.bottom.equalTo(self.view);
+    }];
+    
+    UIImageView *iconImageV = [[UIImageView alloc]initWithImage:kGetImage(@"msg_login")];
+    [self.noLoginV addSubview:iconImageV];
+    [iconImageV mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.equalTo(self.noLoginV);
+        make.top.mas_offset(kWidth(50));
+        make.width.height.mas_offset(kWidth(110));
+    }];
+    
+    UIButton *loginBtn = [[UIButton alloc]init];
+    [loginBtn setTitle:@"请登录" forState:UIControlStateNormal];
+    [loginBtn setTitleColor:[ColorManager Color333333] forState:UIControlStateNormal];
+    loginBtn.titleLabel.font = kFont(14);
+    loginBtn.layer.cornerRadius = kWidth(20);
+    loginBtn.layer.borderColor = [ColorManager Color999999].CGColor;
+    loginBtn.layer.borderWidth = kWidth(1);
+    [loginBtn addTarget:self action:@selector(loginClicked:) forControlEvents:UIControlEventTouchUpInside];
+    [self.noLoginV addSubview:loginBtn];
+    [loginBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.equalTo(self.noLoginV);
+        make.top.equalTo(iconImageV.mas_bottom).mas_offset(kWidth(30));
+        make.width.mas_offset(kWidth(110));
+        make.height.mas_offset(kWidth(40));
+    }];
+}
+
+-(void)noDataUI{
+    self.noDataView = [[UIView alloc]init];
+    self.noDataView.backgroundColor = [ColorManager WhiteColor];
+    [self.view addSubview:self.noDataView];
+    [self.noDataView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(self.bgView).mas_offset(kWidth(10));
+        make.left.width.bottom.equalTo(self.bgView);
+    }];
+    
+    UIImageView *noDataImgV = [[UIImageView alloc]initWithImage:kGetImage(@"msg_noData")];
+    [self.noDataView addSubview:noDataImgV];
+    [noDataImgV mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.equalTo(self.noDataView);
+        make.top.mas_offset(kWidth(59));
+        make.width.mas_offset(kWidth(230));
+        make.width.mas_offset(kWidth(197));
+    }];
+    
+    UILabel *noDataLab = [[UILabel alloc]init];
+    noDataLab.text = @"还没有消息哦～";
+    noDataLab.textColor = [ColorManager Color999999];
+    noDataLab.font = kFont(16);
+    [self.noDataView addSubview:noDataLab];
+    [noDataLab mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.equalTo(self.noDataView);
+        make.top.equalTo(noDataImgV.mas_bottom).mas_offset(kWidth(20));
+    }];
+}
+
+-(void)loginClicked:(id)sender{
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageLogin:) name:@"messageLogin" object:nil];
+    [CommonManager isLogin:self isPush:YES];
+}
+
+-(void)messageLogin:(NSNotification *)notification{
+    [self.noLoginV removeFromSuperview];
     [self getDataFromServer:YES];
-    
-    [self.view addSubview:self.tableView];
-    
 }
 
 -(void)getDataFromServer:(BOOL)isRefresh{
@@ -76,7 +161,7 @@
         self.page = 1;
     }
     
-    NSDictionary *dic = @{@"page":[NSString stringWithFormat:@"%ld",self.page],@"limit":@"10",@"api_token":[RegisterModel getUserInfoModel].user_token};
+    NSDictionary *dic = @{@"page":[NSString stringWithFormat:@"%ld",self.page],@"limit":@"10"};
     
     [FJNetTool postWithParams:dic url:Store_notice loading:YES success:^(id responseObject) {
         BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
@@ -91,6 +176,17 @@
             }else {
                 [self.messagesArr addObjectsFromArray:arr];
             }
+            
+            if (self.messagesArr.count) {
+                self.tableView.hidden = NO;
+                self.subLab.hidden = NO;
+                self.noDataView.hidden = YES;
+            }else{
+                
+            }
+            self.tableView.hidden = YES;
+            self.subLab.hidden = YES;
+            self.noDataView.hidden = NO;
             
             if (isRefresh) {
                 [self.tableView.mj_header endRefreshing];

@@ -27,9 +27,21 @@
     // Do any additional setup after loading the view.
     
     FJNormalNavView *nav = [[FJNormalNavView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kHeight_NavBar) controller:self titleStr:@"修改邮箱"];
+    nav.backgroundColor = [ColorManager ColorF2F2F2];
     [self.view addSubview:nav];
     
-    self.tableView = [[UITableView alloc]initWithFrame:CGRectMake(0, kHeight_NavBar, kScreenWidth, kScreenHeight-kHeight_NavBar-kHeight_SafeArea) style:UITableViewStyleGrouped];
+    self.view.backgroundColor = [ColorManager ColorF2F2F2];
+    
+    UIView *bgView = [[UIView alloc]initWithFrame:CGRectMake(0, kHeight_NavBar+kWidth(20), kScreenWidth, kScreenHeight-kHeight_NavBar-kWidth(20))];
+    bgView.backgroundColor = [ColorManager WhiteColor];
+    [self.view addSubview:bgView];
+    UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:bgView.bounds byRoundingCorners:UIRectCornerTopRight | UIRectCornerTopLeft cornerRadii:CGSizeMake(kWidth(10), kWidth(10))];
+    CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
+    maskLayer.frame =  bgView.bounds;
+    maskLayer.path = maskPath.CGPath;
+    bgView.layer.mask = maskLayer;
+    
+    self.tableView = [[UITableView alloc]initWithFrame:CGRectMake(0, kWidth(10), kScreenWidth, kScreenHeight-kHeight_NavBar-kHeight_SafeArea-kWidth(30)) style:UITableViewStyleGrouped];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     [self.tableView registerClass:[ChangePasswordTableViewCell class] forCellReuseIdentifier:NSStringFromClass([ChangePasswordTableViewCell class])];
@@ -40,10 +52,10 @@
     
     UIView *footerV = [[UIView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kWidth(102))];
     UIButton *saveBtn = [[UIButton alloc]init];
-    [saveBtn setTitle:@"确认" forState:UIControlStateNormal];
+    [saveBtn setTitle:@"确定" forState:UIControlStateNormal];
     [saveBtn setTitleColor:[ColorManager WhiteColor] forState:UIControlStateNormal];
     saveBtn .titleLabel.font = kFont(14);
-    saveBtn.backgroundColor= [ColorManager MainColor];
+    [saveBtn setBackgroundImage:kGetImage(@"login_按钮") forState:UIControlStateNormal];
     saveBtn.layer.cornerRadius = kWidth(24);
     [saveBtn addTarget:self action:@selector(savePhoneClicked:) forControlEvents:UIControlEventTouchUpInside];
     [footerV addSubview:saveBtn];
@@ -54,14 +66,14 @@
     }];
     self.tableView.tableFooterView = footerV;
     
-    [self.view addSubview:self.tableView];
+    [bgView addSubview:self.tableView];
 }
 
 -(void)sendCodeClicked:(id)sender{
     
     if (self.phoneField.text.length) {
         
-        NSDictionary *dic = @{@"phone":self.phoneField.text,@"prefix":@"86",@"api_token":[RegisterModel getUserInfoModel].user_token};
+        NSDictionary *dic = @{@"phone":self.phoneField.text,@"prefix":@"86",@"api_token":[RegisterModel getUserInfoModel].user_token,@"sign":@"password_modifying"};
         
         [FJNetTool postWithParams:dic url:Login_sendVerify loading:YES success:^(id responseObject) {
             BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];

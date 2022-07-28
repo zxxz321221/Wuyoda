@@ -15,6 +15,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic , retain)OrderListModel *model;
 
+@property (nonatomic , retain)UIButton *changeddressBtn;
+
+@property (nonatomic , copy)NSString *type;
+
 @end
 
 NS_ASSUME_NONNULL_END

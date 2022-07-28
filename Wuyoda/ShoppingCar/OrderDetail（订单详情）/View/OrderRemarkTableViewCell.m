@@ -20,6 +20,8 @@
 
 -(void)createUI{
     
+    self.contentView.backgroundColor = [ColorManager ColorF2F2F2];
+    
     UIView *topLine = [[UIView alloc]init];
     topLine.backgroundColor = [ColorManager ColorF2F2F2];
     [self.contentView addSubview:topLine];

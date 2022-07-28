@@ -31,6 +31,7 @@
     // Do any additional setup after loading the view.
     
     FJNormalNavView *nav = [[FJNormalNavView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kHeight_NavBar) controller:self titleStr:@"订单"];
+    nav.backgroundColor = [ColorManager ColorF2F2F2];
     [self.view addSubview:nav];
     
     self.headerTitleArr = [[NSArray alloc]initWithObjects:@"全部订单",@"待付款",@"待收货",@"已完成", nil];
@@ -97,6 +98,7 @@
 -(void)loadUI {
     
     self.headerV = [[UIView alloc]initWithFrame:CGRectMake(0, kHeight_NavBar, kScreenWidth, kWidth(50))];
+    self.headerV.backgroundColor = [ColorManager ColorF2F2F2];
     [self.view addSubview:self.headerV];
     for (int i = 0; i<4; i++) {
         UIButton *btn = [[UIButton alloc]initWithFrame:CGRectMake(kScreenWidth/4*i, 0, kScreenWidth/4, kWidth(40))];

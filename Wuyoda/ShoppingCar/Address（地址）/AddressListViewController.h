@@ -20,6 +20,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic  , weak)id <selectAddressDelegate>delegate;
 
+//order:无地址订单  setting：设置
+@property (nonatomic  , copy)NSString *type;
+
+@property (nonatomic  , retain)AddressModel *addressModel;
+
 @end
 
 NS_ASSUME_NONNULL_END

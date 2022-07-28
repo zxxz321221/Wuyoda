@@ -38,6 +38,7 @@
     }];
     
     UIImageView *arrowImgV = [[UIImageView alloc]initWithImage:kGetImage(@"")];
+    arrowImgV.contentMode = UIViewContentModeScaleAspectFit;
     [self.contentView addSubview:arrowImgV];
     [arrowImgV mas_makeConstraints:^(MASConstraintMaker *make) {
         make.right.mas_offset(kWidth(-19));

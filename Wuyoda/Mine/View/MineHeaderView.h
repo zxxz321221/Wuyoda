@@ -15,6 +15,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic , retain)UIImageView *iconImgV;
 
+@property (nonatomic , retain)UILabel *signLab;
+
 @property (nonatomic , assign)BOOL isLogin;
 
 @end

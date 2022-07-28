@@ -27,9 +27,12 @@
         [self.window setWindowScene:windowScene];
         [self.window setBackgroundColor:[UIColor whiteColor]];
         //[self.window setRootViewController:[FJTabBarViewController new]];
-        BOOL isFirst = [[NSUserDefaults standardUserDefaults]objectForKey:@"isFirst"];
+        if ([UserInfoModel getUserInfoModel].member_id) {
+            [[NSUserDefaults standardUserDefaults] setValue:@"none" forKey:@"firstOpen"];
+        }
+        NSString *openStatus = [[NSUserDefaults standardUserDefaults]objectForKey:@"firstOpen"];
         
-        if (isFirst) {
+        if ([openStatus isEqualToString:@"none"]) {
             self.window.rootViewController = [[FJTabBarViewController alloc]init];
         }else{
             WelcomeViewController *vc = [[WelcomeViewController alloc]init];
@@ -91,8 +94,27 @@
             } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
                     
             }];
+    }else if ([resp isKindOfClass:[PayResp class]]){
+        PayResp*response=(PayResp*)resp;
 
+        switch(response.errCode){
+            case WXSuccess:
+            {
+                [[NSNotificationCenter defaultCenter] postNotificationName:@"payResultCallBack" object:nil];
+            }
 
+                break;
+            default:
+                NSLog(@"支付失败，retcode=%d",resp.errCode);
+                UIView *view = [[UIApplication sharedApplication].delegate window];
+                if (resp.errStr.length) {
+                    [view showHUDWithText:resp.errStr withYOffSet:0];
+                }else{
+                    [view showHUDWithText:@"支付失败" withYOffSet:0];
+                }
+                
+                break;
+        }
     }
 }
 

@@ -11,6 +11,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface ChangePasswordTableViewCell : UITableViewCell
 
+@property (nonatomic , retain)UIView *bgView;
+
 @property (nonatomic , retain)UILabel *titleLab;
 
 @property (nonatomic , retain)UITextField *infoTextField;
@@ -18,6 +20,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic , retain)UIButton *getCodeBtn;
 
 @property (nonatomic , retain)UIButton *disAppearBtn;
+
+@property (nonatomic , retain)UIView *bottomLine;
+
+@property (nonatomic , assign)BOOL isLast;
 
 @end
 

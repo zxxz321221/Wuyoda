@@ -15,6 +15,8 @@
 
 @property (nonatomic ,copy)NSString *condition;
 
+@property (nonatomic ,assign)NSInteger index;
+
 @end
 
 @implementation TWProductConditionView
@@ -66,14 +68,15 @@
 
 -(void)selectExpressClicked:(id)sender{
     if (self.condition) {
-        if (self.delegate && [self.delegate respondsToSelector:@selector(selectCondition:)]) {
-            [self.delegate selectCondition:self.condition];
+        if (self.delegate && [self.delegate respondsToSelector:@selector(selectCondition:Index:)]) {
+            [self.delegate selectCondition:self.condition Index:[NSString stringWithFormat:@"%ld",self.index+6]];
         }
     }
 }
 
 - (void)show{
     self.hidden = NO;
+    [self.pickerView selectRow:0 inComponent:0 animated:NO];
     [UIView animateWithDuration:0.5 animations:^{
         self.bgView.frame = CGRectMake(0, self.bounds.size.height-kWidth(200), kScreenWidth, kWidth(210));
     }];
@@ -96,6 +99,7 @@
 
 - (void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component{
     self.condition = [self.dataArr objectAtIndex:row];
+    self.index = row;
 }
 
 //-(NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component{
@@ -116,6 +120,7 @@
 -(void)setDataArr:(NSArray *)dataArr{
     _dataArr = dataArr;
     self.condition = [dataArr firstObject];
+    self.index = 0;
     [self.pickerView reloadComponent:0];
 }
 

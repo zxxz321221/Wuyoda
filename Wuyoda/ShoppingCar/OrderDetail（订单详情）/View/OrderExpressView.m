@@ -6,12 +6,13 @@
 //
 
 #import "OrderExpressView.h"
+#import "OrderExpressTableViewCell.h"
 
-@interface OrderExpressView ()<UIPickerViewDelegate,UIPickerViewDataSource>
+@interface OrderExpressView ()<UITableViewDelegate,UITableViewDataSource>
 
 @property (nonatomic ,retain)UIView *bgView;
 
-@property (nonatomic ,retain)UIPickerView *pickerView;
+@property (nonatomic ,retain)UITableView *tableView;
 
 @property (nonatomic ,retain)NSDictionary *shipDic;
 
@@ -37,31 +38,44 @@
     [shadowView addGestureRecognizer:tap];
     [self addSubview:shadowView];
     
-    self.bgView = [[UIView alloc]initWithFrame:CGRectMake(0, self.bounds.size.height, kScreenWidth, kWidth(210))];
+    self.bgView = [[UIView alloc]initWithFrame:CGRectMake(0, self.bounds.size.height, kScreenWidth, kWidth(392))];
     self.bgView.cornerRadius = kWidth(10);
-    self.bgView.backgroundColor = [ColorManager WhiteColor];
+    self.bgView.backgroundColor = [ColorManager ColorF7F7F7];
     [self addSubview:self.bgView];
+    
+    UILabel *titleLab = [[UILabel alloc]init];
+    titleLab.text = @"运输方式";
+    titleLab.textColor = [ColorManager BlackColor];
+    titleLab.font = kFont(16);
+    [self.bgView addSubview:titleLab];
+    [titleLab mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.equalTo(self.bgView);
+        make.top.mas_offset(kWidth(20));
+    }];
+    
+    self.tableView = [[UITableView alloc]initWithFrame:CGRectMake(0, kWidth(60), kScreenWidth, self.bgView.bounds.size.height-kWidth(60)-kWidth(70)-kHeight_SafeArea) style:UITableViewStyleGrouped];
+    self.tableView.backgroundColor = [ColorManager ColorF7F7F7];
+    self.tableView.delegate = self;
+    self.tableView.dataSource = self;
+    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    [self.tableView registerClass:[OrderExpressTableViewCell class] forCellReuseIdentifier:NSStringFromClass([OrderExpressTableViewCell class])];
+    [self.bgView addSubview:self.tableView];
+    
     
     UIButton *doneBtn = [[UIButton alloc]init];
     [doneBtn setTitle:@"确定" forState:UIControlStateNormal];
-    [doneBtn setTitleColor:[ColorManager Color7F7F7F] forState:UIControlStateNormal];
-    doneBtn.titleLabel.font = kFont(14);
+    [doneBtn setTitleColor:[ColorManager WhiteColor] forState:UIControlStateNormal];
+    [doneBtn setBackgroundImage:kGetImage(@"login_按钮") forState:UIControlStateNormal];
+    doneBtn.titleLabel.font = kFont(16);
     [doneBtn addTarget:self action:@selector(selectExpressClicked:) forControlEvents:UIControlEventTouchUpInside];
     [self.bgView addSubview:doneBtn];
     [doneBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.right.mas_offset(kWidth(-15));
-        make.top.mas_offset(0);
-        make.width.height.mas_offset(kWidth(40));
+        make.centerX.equalTo(self.bgView);
+        make.bottom.mas_offset(kWidth(-20)-kHeight_SafeArea);
+        make.width.mas_offset(kWidth(335));
+        make.height.mas_offset(kWidth(48));
     }];
     
-    UIView *line = [[UIView alloc]initWithFrame:CGRectMake(0, kWidth(40), kScreenWidth, kWidth(1))];
-    line.backgroundColor = [ColorManager ColorF2F2F2];
-    [self.bgView addSubview:line];
-    
-    self.pickerView = [[UIPickerView alloc]initWithFrame:CGRectMake(0, kWidth(40), kScreenWidth, self.bgView.bounds.size.height-kWidth(50))];
-    self.pickerView.delegate = self;
-    self.pickerView.dataSource = self;
-    [self.bgView addSubview:self.pickerView];
 }
 
 -(void)selectExpressClicked:(id)sender{
@@ -74,49 +88,65 @@
 
 - (void)show{
     [UIView animateWithDuration:0.5 animations:^{
-        self.bgView.frame = CGRectMake(0, self.bounds.size.height-kWidth(200), kScreenWidth, kWidth(210));
+        self.bgView.frame = CGRectMake(0, self.bounds.size.height-kWidth(382), kScreenWidth, kWidth(392));
     }];
 }
 
 -(void)close{
     [UIView animateWithDuration:0.5 animations:^{
-            self.bgView.frame = CGRectMake(0, self.bounds.size.height, kScreenWidth, kWidth(210));
+            self.bgView.frame = CGRectMake(0, self.bounds.size.height, kScreenWidth, kWidth(392));
         } completion:^(BOOL finished) {
             [self removeFromSuperview];
         }];
 }
 
--(NSInteger)numberOfComponentsInPickerView:(UIPickerView *)pickerView{
+
+-(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
+    OrderExpressTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:NSStringFromClass([OrderExpressTableViewCell class]) forIndexPath:indexPath];
+    if (!cell) {
+        cell = [[OrderExpressTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:NSStringFromClass([OrderExpressTableViewCell class])];
+    }
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    cell.backgroundColor = [ColorManager ColorF7F7F7];
+    
+    cell.shipDic = [self.shipList objectAtIndex:indexPath.row];
+    
+    
+    return cell;
+}
+
+-(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
     return 1;
 }
--(NSInteger)pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component{
+
+-(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
     return self.shipList.count;
 }
 
-//-(NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component{
-//    NSDictionary *shipDic = [self.shipList objectAtIndex:row];
-//    return [shipDic valueForKey:@"name"];
-//}
-
-- (UIView *)pickerView:(UIPickerView *)pickerView viewForRow:(NSInteger)row forComponent:(NSInteger)component reusingView:(UIView *)view{
-    NSDictionary *shipDic = [self.shipList objectAtIndex:row];
-    UILabel *titleLab = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kWidth(30))];
-    titleLab.text = [shipDic valueForKey:@"name"];
-    titleLab.textColor = [ColorManager MainColor];
-    titleLab.font = kBoldFont(16);
-    titleLab.textAlignment = NSTextAlignmentCenter;
-    
-    return titleLab;
+-(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
+    return kWidth(35);
 }
-
--(void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component{
-    self.shipDic = [self.shipList objectAtIndex:row];
+-(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
+    return 0.001;
+}
+-(CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section{
+    return 0.001;
+}
+-(UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
+    return [UIView new];
+}
+-(UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section{
+    return [UIView new];
+}
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    self.shipDic = [self.shipList objectAtIndex:indexPath.row];
 }
 
 -(void)setShipList:(NSArray *)shipList{
     _shipList = shipList;
     self.shipDic = [shipList firstObject];
-    [self.pickerView reloadComponent:0];
+    [self.tableView reloadData];
+    [self.tableView selectRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] animated:YES scrollPosition:UITableViewScrollPositionNone];
 }
 
 //-(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{

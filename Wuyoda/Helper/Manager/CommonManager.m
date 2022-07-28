@@ -182,7 +182,7 @@
     UserInfoModel *model = [UserInfoModel getUserInfoModel];
     if (!model) {
         if (isPush) {
-            LoginViewController *VC = [[LoginViewController alloc] init];
+            NewLoginViewController *VC = [[NewLoginViewController alloc] init];
             VC.modalPresentationStyle = UIModalPresentationFullScreen;
             //[viewCotroller.navigationController pushViewController:VC animated:YES];
             FJBaseNavigationController *nav = [[FJBaseNavigationController alloc]initWithRootViewController:VC];
@@ -230,6 +230,17 @@
         return @"₩";
     }else{
         return @"￥";
+    }
+}
+
++ (NSString *)getShowPrice:(NSString *)type Price:(NSString *)price{
+    NSString *typeStr = [self getPriceType:type];
+    if ([type isEqualToString:@"2"]) {
+        CGFloat priceF = [price floatValue];
+        NSString *showPrice = [NSString stringWithFormat:@"%@%.0lf",typeStr,ceilf(priceF)];
+        return showPrice;
+    }else{
+        return [NSString stringWithFormat:@"%@%@",typeStr,price];
     }
 }
 

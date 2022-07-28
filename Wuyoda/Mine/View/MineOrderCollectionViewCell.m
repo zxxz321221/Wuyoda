@@ -20,11 +20,11 @@
 
 -(void)createUI{
     self.imgV = [[UIImageView alloc]init];
-    self.imgV.contentMode = UIViewContentModeScaleAspectFill;
+    self.imgV.contentMode = UIViewContentModeScaleAspectFit;
     [self.contentView addSubview:self.imgV];
     [self.imgV mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.centerX.equalTo(self.contentView);
-        make.width.mas_offset(kWidth(18));
+        make.width.mas_offset(kWidth(24));
         make.height.mas_offset(kWidth(24));
     }];
     

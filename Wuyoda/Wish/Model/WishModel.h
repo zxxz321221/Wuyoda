@@ -26,6 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic , copy)NSString *t;
 @property (nonatomic , copy)NSString *isup;
 @property (nonatomic , copy)NSString *isSelect;
+@property (nonatomic , copy)NSString *goods_advance;
 
 @end
 

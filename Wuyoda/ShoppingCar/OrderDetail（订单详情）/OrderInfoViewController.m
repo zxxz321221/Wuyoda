@@ -21,6 +21,8 @@
 #import "EvaluateViewController.h"
 #import "PayInfoModel.h"
 #import "PayInfoViewController.h"
+#import "PayModel.h"
+#import "PayViewController.h"
 #import "ShopCartModel.h"
 
 @interface OrderInfoViewController ()<UITableViewDelegate,UITableViewDataSource,ChangeOrderAddressDelegate>
@@ -50,6 +52,7 @@
     // Do any additional setup after loading the view.
     
     FJNormalNavView *nav = [[FJNormalNavView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kHeight_NavBar) controller:self titleStr:@"订单详情"];
+    nav.backgroundColor = [ColorManager ColorF2F2F2];
     [self.view addSubview:nav];
     
     self.tableView = [[UITableView alloc]initWithFrame:CGRectMake(0, kHeight_NavBar, kScreenWidth, kScreenHeight-kHeight_NavBar-kHeight_SafeArea-kWidth(48)) style:UITableViewStyleGrouped];
@@ -61,20 +64,25 @@
     [self.tableView registerClass:[OrderInfoInvoiceTableViewCell class] forCellReuseIdentifier:NSStringFromClass([OrderInfoInvoiceTableViewCell class])];
     [self.tableView registerClass:[OrderInfoTableViewCell class] forCellReuseIdentifier:NSStringFromClass([OrderInfoTableViewCell class])];
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    self.tableView.backgroundColor = [ColorManager WhiteColor];
+    self.tableView.backgroundColor = [ColorManager ColorF2F2F2];
     [self.view addSubview:self.tableView];
     [self createBottomView];
     
     self.goodsArr = [[NSMutableArray alloc]init];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orderInfoUpdate) name:@"orderInfoUpdate" object:nil];
+    [self getOrderInfoFromServer];
+}
+
+-(void)orderInfoUpdate{
     [self getOrderInfoFromServer];
 }
 
 -(void)createBottomView{
-    if (self.type) {
-        self.headerV = [[OrderInfoHeaderView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kWidth(94))];
-        self.headerV.type = self.type;
-
-        self.tableView.tableHeaderView = self.headerV;
+    self.headerV = [[OrderInfoHeaderView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kWidth(94))];
+    self.headerV.type = self.type;
+    self.headerV.ordersn = self.ordersn;
+    self.tableView.tableHeaderView = self.headerV;
+    if ([self.type isEqualToString:@"1"] || [self.type isEqualToString:@"3"] || [self.type isEqualToString:@"4"] || [self.type isEqualToString:@"5"]) {
         if (self.bottomV) {
             [self.bottomV removeFromSuperview];
         }
@@ -89,6 +97,11 @@
         self.bottomV.type = self.type;
         [self.view addSubview:self.bottomV];
         self.tableView.frame = CGRectMake(0, kHeight_NavBar, kScreenWidth, kScreenHeight-kHeight_NavBar-kHeight_SafeArea-kWidth(49));
+    }else{
+        if (self.bottomV) {
+            [self.bottomV removeFromSuperview];
+        }
+        self.tableView.frame = CGRectMake(0, kHeight_NavBar, kScreenWidth, kScreenHeight-kHeight_NavBar-kHeight_SafeArea);
     }
 }
 
@@ -98,8 +111,10 @@
     [FJNetTool postWithParams:dic url:Special_orders_list loading:YES success:^(id responseObject) {
         BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
         if ([baseModel.code isEqualToString:CODE0]) {
+             
             [self.goodsArr removeAllObjects];
             self.orderInfoModel = [OrderListModel mj_objectWithKeyValues:responseObject[@"data"]];
+            self.type = self.orderInfoModel.status;
             NSDictionary *goodsDic = self.orderInfoModel.order_goods;
             NSArray *allKey = [goodsDic allKeys];
             for (int i = 0; i<allKey.count; i++) {
@@ -111,12 +126,13 @@
             if ([self.type isEqualToString:@"1"]) {
                 self.surplusTime = self.orderInfoModel.endtime-self.orderInfoModel.time;
                 if (self.surplusTime < 0) {
-                    self.type = @"4";
-                    [self createBottomView];
+                    self.type = @"2";
                 }else{
                     self.timer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(surplusPayTime) userInfo:nil repeats:YES];
                     
                 }
+            }else{
+                [self.timer invalidate];
             }
 //            if ([self.orderInfoModel.status_code isEqualToString:@"1"]) {
 //                self.type = @"1";
@@ -129,7 +145,7 @@
 //            }else{
 //                self.type = @"4";
 //            }
-//            [self createBottomView];
+            [self createBottomView];
             [self.tableView reloadData];
         }
     } failure:^(NSError *error) {
@@ -139,7 +155,7 @@
 
 -(void)surplusPayTime{
     self.surplusTime -= 1;
-    if (self.surplusTime > 550) {
+    if (self.surplusTime > 0) {
         self.headerV.surplus = self.surplusTime;
     }else{
         [self.timer invalidate];
@@ -152,11 +168,12 @@
     [FJNetTool postWithParams:dic url:Special_cancel_order loading:YES success:^(id responseObject) {
         BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
         if ([baseModel.code isEqualToString:CODE0]) {
-            self.type = @"4";
+            self.type = @"2";
             [[NSNotificationCenter defaultCenter] postNotificationName:@"orderUpdate" object:nil];
             [[NSNotificationCenter defaultCenter] postNotificationName:@"willPayOrderUpdate" object:nil];
             
             [self createBottomView];
+            [self.tableView reloadData];
         }
     } failure:^(NSError *error) {
             
@@ -164,12 +181,19 @@
 }
 
 -(void)payOrderClicked:(UIButton *)sender{
-    PayInfoModel *payModel = [[PayInfoModel alloc]init];
+//    PayInfoModel *payModel = [[PayInfoModel alloc]init];
+//    payModel.ordersn = self.orderInfoModel.ordersn;
+//    payModel.order_amount = self.orderInfoModel.total_price;
+//    payModel.uid = self.orderInfoModel.uid;
+//    PayInfoViewController *vc = [[PayInfoViewController alloc]init];
+//    vc.payInfoModel = payModel;
+//    [self.navigationController pushViewController:vc animated:YES];
+    
+    PayModel *payModel = [[PayModel alloc]init];
     payModel.ordersn = self.orderInfoModel.ordersn;
-    payModel.original_price = self.orderInfoModel.original_price;
-    payModel.uid = self.orderInfoModel.uid;
-    PayInfoViewController *vc = [[PayInfoViewController alloc]init];
-    vc.payInfoModel = payModel;
+    payModel.total_price = self.orderInfoModel.total_price;
+    PayViewController *vc = [[PayViewController alloc]init];
+    vc.payModel = payModel;
     [self.navigationController pushViewController:vc animated:YES];
 }
 
@@ -202,7 +226,7 @@
         BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
         if ([baseModel.code isEqualToString:CODE0]) {
             [self.view showHUDWithText:baseModel.msg withYOffSet:0];
-            self.type = @"4";
+            self.type = @"5";
             [self createBottomView];
             [self getOrderInfoFromServer];
         }
@@ -214,6 +238,7 @@
 
 -(void)readLogisticsClicked:(UIButton *)sender{
     LogisticsViewController *vc = [[LogisticsViewController alloc]init];
+    vc.orderNum = self.ordersn;
     [self.navigationController pushViewController:vc animated:YES];
 }
 
@@ -254,7 +279,9 @@
             cell = [[OrderInfoAddressTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:NSStringFromClass([OrderInfoAddressTableViewCell class])];
         }
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        cell.type = self.type;
         cell.model = self.orderInfoModel;
+        [cell.changeddressBtn addTarget:self action:@selector(changeAddressClicked:) forControlEvents:UIControlEventTouchUpInside];
         
         return cell;
     }
@@ -274,26 +301,28 @@
         }
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         //cell.model = [self.goodsArr objectAtIndex:indexPath.row];
-        cell.priceTitleLab.hidden = YES;
-        cell.priceLab.hidden = YES;
-        cell.allPriceTitleLab.hidden = YES;
-        cell.allPriceLab.hidden = YES;
         if (indexPath.row == 0) {
-            cell.priceTitleLab.hidden = NO;
-            cell.priceLab.hidden = NO;
-            cell.priceTitleLab.text = @"商品总价";
+            cell.isLast = NO;
+            cell.isFirst = NO;
+            cell.priceTitleLab.text = @"小计";
             cell.priceLab.text = [NSString stringWithFormat:@"￥%.2f",[self.orderInfoModel.goods_amount floatValue]];
+            cell.priceLab.textColor = [ColorManager Color333333];
         }
-        if (indexPath.row == 1) {
-            cell.priceTitleLab.hidden = NO;
-            cell.priceLab.hidden = NO;
-            cell.priceTitleLab.text = @"运费";
-            cell.priceLab.text = [NSString stringWithFormat:@"%@%.2f",[CommonManager getPriceType:self.orderInfoModel.sh_type],[self.orderInfoModel.sh_price floatValue]];
+        else if (indexPath.row == 1) {
+            cell.isFirst = NO;
+            cell.isLast = NO;
+            cell.priceTitleLab.text = @"运费合计";
+            cell.priceLab.text = [CommonManager getShowPrice:self.orderInfoModel.sh_type Price:self.orderInfoModel.sh_price];
+            //cell.priceLab.text = [NSString stringWithFormat:@"%@%.2f",[CommonManager getPriceType:self.orderInfoModel.sh_type],[self.orderInfoModel.sh_price floatValue]];
+            cell.priceLab.textColor = [ColorManager Color333333];
         }
-        if (indexPath.row == 2) {
-            cell.allPriceTitleLab.hidden = NO;
-            cell.allPriceLab.hidden = NO;
-            cell.allPriceLab.text = [NSString stringWithFormat:@"￥%.2f",[self.orderInfoModel.total_price floatValue]];
+        else if (indexPath.row == 2) {
+            cell.isFirst = NO;
+            cell.isLast = YES;
+            cell.priceTitleLab.text = @"合计";
+            cell.priceLab.text = [NSString stringWithFormat:@"￥%.2f",[self.orderInfoModel.total_price floatValue]];
+            cell.priceLab.textColor = [ColorManager MainColor];
+            
         }
         
         return cell;
@@ -312,7 +341,7 @@
             cell = [[OrderInfoTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:NSStringFromClass([OrderInfoTableViewCell class])];
         }
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        
+        cell.isLast = NO;
         if (indexPath.row != 1) {
             cell.orderNumLab.hidden = YES;
             cell.orderCopyBtn.hidden = YES;
@@ -329,6 +358,7 @@
             if (indexPath.row == 3) {
                 cell.titleLab.text = @"配送方式";
                 cell.infoLab.text = @"快递";
+                cell.isLast = YES;
             }
         }else{
             cell.orderNumLab.hidden = NO;
@@ -362,25 +392,21 @@
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
     if (indexPath.section == 0) {
-        return kWidth(70);
+        return kWidth(84);
     }else if (indexPath.section == 1){
-        return kWidth(150);
-    }else if (indexPath.section == 2) {
-        return kWidth(30);
-    }else if (indexPath.section == 3){
-        return kWidth(46);
+        return kWidth(140);
     }
-    return kWidth(26);
+    return kWidth(44);
 }
 
 -(CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section{
     return 0.001;
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
-    if (section < 3) {
-        return 0.001;
+    if (section == 3) {
+        return kWidth(20);
     }
-    return kWidth(15);
+    return 0.001;
 }
 
 -(UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section{
@@ -388,12 +414,7 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
-    if (section < 3) {
-        return [UIView new];
-    }
-    UIView *headerV = [[UIView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kWidth(15))];
-    headerV.backgroundColor = [ColorManager WhiteColor];
-    return headerV;
+    return [UIView new];
 }
 
 

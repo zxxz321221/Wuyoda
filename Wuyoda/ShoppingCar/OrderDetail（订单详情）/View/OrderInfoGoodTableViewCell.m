@@ -48,6 +48,7 @@
     self.goodImgV = [[UIImageView alloc]init];
     self.goodImgV.backgroundColor = [ColorManager ColorF2F2F2];
     self.goodImgV.layer.cornerRadius = kWidth(10);
+    self.goodImgV.layer.masksToBounds = YES;
     [goodBGV addSubview:self.goodImgV];
     [self.goodImgV mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.top.mas_offset(kWidth(10));

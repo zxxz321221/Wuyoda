@@ -151,9 +151,19 @@
         make.width.height.mas_offset(kWidth(47));
     }];
     
+    if (![WXApi isWXAppInstalled]) {
+        wxBtn.hidden = YES;
+        
+        [appleBtn mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.centerX.equalTo(self.view);
+            make.top.equalTo(otherLoginLab.mas_bottom).mas_offset(kWidth(24));
+            make.width.height.mas_offset(kWidth(47));
+        }];
+    }
+    
     self.agreementBtn = [[UIButton alloc]init];
-    [self.agreementBtn setImage:kGetImage(@"登录页-未选中") forState:UIControlStateNormal];
-    [self.agreementBtn setImage:kGetImage(@"登录页-选中") forState:UIControlStateSelected];
+    [self.agreementBtn setImage:kGetImage(@"未选中") forState:UIControlStateNormal];
+    [self.agreementBtn setImage:kGetImage(@"选中") forState:UIControlStateSelected];
     [self.agreementBtn addTarget:self action:@selector(agreementClicked:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:self.agreementBtn];
     [self.agreementBtn mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -181,6 +191,24 @@
     }];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(checkWeiXinAccount:) name:@"weixinLoginSuccess" object:nil];
+    
+    NSInteger appleStatus = [[[NSUserDefaults standardUserDefaults] objectForKey:@"appleLogin"] integerValue];
+    if (appleStatus == 1) {
+        appleBtn.hidden = NO;
+    }else{
+        appleBtn.hidden = YES;
+        [wxBtn mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.centerX.equalTo(self.view);
+            make.top.equalTo(otherLoginLab.mas_bottom).mas_offset(kWidth(24));
+            make.width.height.mas_offset(kWidth(47));
+        }];
+    }
+    
+    if (appleBtn.isHidden && wxBtn.isHidden) {
+        otherLoginLab.hidden = YES;
+    }else{
+        otherLoginLab.hidden = NO;
+    }
 }
 
 - (void)inputChanged:(UITextField *)textfield{
@@ -193,7 +221,7 @@
     if (self.agreementBtn.isSelected) {
         if (self.phoneField.text.length) {
             
-            NSDictionary *dic = @{@"phone":self.phoneField.text,@"prefix":@"86",@"api_token":[RegisterModel getUserInfoModel].user_token};
+            NSDictionary *dic = @{@"phone":self.phoneField.text,@"prefix":@"86"};
             
             [FJNetTool postWithParams:dic url:Login_sendVerify loading:YES success:^(id responseObject) {
                 BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
@@ -240,19 +268,19 @@
     NSDictionary *responseDic = notification.object;
     NSString *unionid = responseDic[@"unionid"];
     
-    NSDictionary *dic = @{@"unionid":unionid,@"api_token":[RegisterModel getUserInfoModel].user_token};
+    NSDictionary *dic = @{@"unionid":unionid};
     
     [FJNetTool postWithParams:dic url:Login_weixinLogin loading:YES success:^(id responseObject) {
         BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
         if ([baseModel.code isEqualToString:CODE0]) {
             UserInfoModel *userModel = [UserInfoModel mj_objectWithKeyValues:responseObject[@"data"]];
             [UserInfoModel saveUserInfoModel:userModel];
-            RegisterModel *registerModel = [RegisterModel getUserInfoModel];
+            RegisterModel *registerModel = [[RegisterModel alloc]init];
             registerModel.user_id = userModel.member_id;
             registerModel.user_token = userModel.token;
             [RegisterModel saveUserInfoModel:registerModel];
             [LoginUsersModel saveLoginUsers:userModel];
-            
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"messageLogin" object:nil];
             [self dismissViewControllerAnimated:YES completion:nil];
         }else{
             //未绑定手机号
@@ -298,7 +326,7 @@
 }
 
 -(void)appleLoginWithServer:(NSString *)appleUser{
-    NSDictionary *dic = @{@"appleid":appleUser,@"api_token":[RegisterModel getUserInfoModel].user_token};
+    NSDictionary *dic = @{@"appleid":appleUser};
     
     [FJNetTool postWithParams:dic url:Login_appleLogin loading:YES success:^(id responseObject) {
         BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
@@ -310,7 +338,7 @@
             registerModel.user_token = userModel.token;
             [RegisterModel saveUserInfoModel:registerModel];
             [LoginUsersModel saveLoginUsers:userModel];
-            
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"messageLogin" object:nil];
             [self dismissViewControllerAnimated:YES completion:nil];
         }else{
             [self.view showHUDWithText:baseModel.msg withYOffSet:0];

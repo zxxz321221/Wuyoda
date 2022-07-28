@@ -37,26 +37,47 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    self.tableView = [[UITableView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kScreenHeight-kHeight_SafeArea-kWidth(96)) style:UITableViewStyleGrouped];
+    FJNormalNavView *nav = [[FJNormalNavView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kHeight_NavBar) controller:self titleStr:@"商品详情"];
+    nav.backgroundColor = [ColorManager ColorF2F2F2];
+    [self.view addSubview:nav];
+    
+    
+    UIButton *shopCartBtn = [[UIButton alloc]init];
+    [shopCartBtn setImage:kGetImage(@"首页顶部购物车") forState:UIControlStateNormal];
+    [shopCartBtn addTarget:self action:@selector(shopCartClicked) forControlEvents:UIControlEventTouchUpInside];
+    [nav addSubview:shopCartBtn];
+    [shopCartBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.bottom.mas_offset(kWidth(-13));
+        make.right.mas_offset(kWidth(-20));
+        make.width.height.mas_offset(kWidth(20));
+    }];
+    
+    self.view.backgroundColor = [ColorManager ColorF2F2F2];
+    
+    UIView *bgView = [[UIView alloc]initWithFrame:CGRectMake(0, kHeight_NavBar+kWidth(20), kScreenWidth, kScreenHeight-kHeight_NavBar-kWidth(20))];
+    bgView.backgroundColor = [ColorManager WhiteColor];
+    [self.view addSubview:bgView];
+    UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:bgView.bounds byRoundingCorners:UIRectCornerTopRight | UIRectCornerTopLeft cornerRadii:CGSizeMake(kWidth(10), kWidth(10))];
+    CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
+    maskLayer.frame =  bgView.bounds;
+    maskLayer.path = maskPath.CGPath;
+    bgView.layer.mask = maskLayer;
+    
+    self.tableView = [[UITableView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kScreenHeight-kHeight_NavBar-kHeight_SafeArea-kWidth(83)-kWidth(20)) style:UITableViewStyleGrouped];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
-    if (@available(iOS 11.0, *)) {
-        self.tableView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
-    } else {
-        // Fallback on earlier versions
-    }
+    self.tableView.backgroundColor = [ColorManager WhiteColor];
     [self.tableView registerClass:[ProductDetailIntroduceTableViewCell class] forCellReuseIdentifier:NSStringFromClass([ProductDetailIntroduceTableViewCell class])];
     [self.tableView registerClass:[ProductDetailEvaluateTableViewCell class] forCellReuseIdentifier:NSStringFromClass([ProductDetailEvaluateTableViewCell class])];
     [self.tableView registerClass:[ProductDetailServerTableViewCell class] forCellReuseIdentifier:NSStringFromClass([ProductDetailServerTableViewCell class])];
     [self.tableView registerClass:[ProductDetailRecommendTableViewCell class] forCellReuseIdentifier:NSStringFromClass([ProductDetailRecommendTableViewCell class])];
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    self.tableView.backgroundColor = [ColorManager ColorF7F7F7];
-    self.tableHeaderV = [[ProductDetailHeaderView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kWidth(453))];
+    self.tableHeaderV = [[ProductDetailHeaderView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kWidth(493))];
     self.tableView.tableHeaderView = self.tableHeaderV;
     
-    [self.view addSubview:self.tableView];
+    [bgView addSubview:self.tableView];
     
-    self.tableFooterV = [[ProductDetailFooterView alloc]initWithFrame:CGRectMake(0, kScreenHeight-kWidth(96)-kHeight_SafeArea, kScreenWidth, kWidth(96)+kHeight_SafeArea)];
+    self.tableFooterV = [[ProductDetailFooterView alloc]initWithFrame:CGRectMake(0, kScreenHeight-kWidth(83)-kHeight_SafeArea, kScreenWidth, kWidth(83)+kHeight_SafeArea)];
     [self.view addSubview:self.tableFooterV];
     
 //    self.labArr = [[NSMutableArray alloc]initWithObjects:@"5.0评分 · 好极了 · 172条评论",@"超赞商品",@"低价优势",@"安心购",@"传统工艺",@"上选品质",@"礼盒系列", nil];
@@ -70,7 +91,7 @@
 }
 
 -(void)getDataFromServer{
-    NSDictionary *dic = @{@"uid":self.uid,@"supplier_id":self.supplier_id,@"api_token":[RegisterModel getUserInfoModel].user_token};
+    NSDictionary *dic = @{@"uid":self.uid,@"supplier_id":self.supplier_id};
     if ([CommonManager isLogin:self isPush:NO]) {
         dic = @{@"uid":self.uid,@"supplier_id":self.supplier_id,@"m_uid":[UserInfoModel getUserInfoModel].uid,@"api_token":[RegisterModel getUserInfoModel].user_token};
     }
@@ -90,6 +111,15 @@
     }];
 }
 
+-(void)shopCartClicked{
+    if ([CommonManager isLogin:self isPush:YES]) {
+        [self.tabBarController setSelectedIndex:2];
+        [self.navigationController popToViewController:self.navigationController.viewControllers.firstObject animated:NO];
+    }
+    
+    
+}
+
 -(void)updateProductInftoduceHeight:(CGFloat)height{
     self.webH = height;
     NSLog(@"webHHHHH:%f",height);
@@ -100,7 +130,7 @@
 }
 
 -(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
-    return 2;
+    return 1;
 }
 
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
@@ -187,7 +217,7 @@
         UILabel *titleLab = [[UILabel alloc]init];
         titleLab.text = [self.sectionArr objectAtIndex:section];
         titleLab.textColor = [ColorManager BlackColor];
-        titleLab.font = kFont(20);
+        titleLab.font = kBoldFont(16);
         [bgView addSubview:titleLab];
         [titleLab mas_makeConstraints:^(MASConstraintMaker *make) {
             make.left.mas_offset(kWidth(20));

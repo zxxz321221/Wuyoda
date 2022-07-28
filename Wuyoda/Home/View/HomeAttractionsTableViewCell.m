@@ -29,13 +29,13 @@
 
 -(void)createUI{
     UICollectionViewFlowLayout *fl = [[UICollectionViewFlowLayout alloc]init];
-    fl.itemSize = CGSizeMake(kWidth(138), kWidth(168));
+    fl.itemSize = CGSizeMake(kWidth(320), kWidth(210));
     fl.sectionInset = UIEdgeInsetsMake(0, kWidth(20), 0, kWidth(20));
-    fl.minimumLineSpacing = kWidth(12);
+    fl.minimumLineSpacing = kWidth(20);
     fl.scrollDirection = UICollectionViewScrollDirectionHorizontal;
     
     
-    self.collectionV = [[UICollectionView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, kWidth(168)) collectionViewLayout:fl];
+    self.collectionV = [[UICollectionView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, kWidth(230)) collectionViewLayout:fl];
     self.collectionV.delegate = self;
     self.collectionV.dataSource = self;
     self.collectionV.backgroundColor = [ColorManager WhiteColor];

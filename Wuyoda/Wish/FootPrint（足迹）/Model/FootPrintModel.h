@@ -19,6 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic , copy)NSString *m_uid;
 @property (nonatomic , copy)NSString *module;
 @property (nonatomic , copy)NSString *isSelect;
+@property (nonatomic , copy)NSString *unit;
 
 @end
 

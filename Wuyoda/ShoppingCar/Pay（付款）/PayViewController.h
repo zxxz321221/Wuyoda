@@ -6,6 +6,7 @@
 //
 
 #import "FJBaseViewController.h"
+#import "PayModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -18,6 +19,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic , copy)NSString *fare;
 
 @property (nonatomic , copy)NSString *addressid;
+
+@property (nonatomic , retain)PayModel *payModel;
 
 @end
 

@@ -20,6 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic , copy)NSString *g_type;
 @property (nonatomic , copy)NSString *g_uid;
 @property (nonatomic , copy)NSString *goods_file1;
+@property (nonatomic , copy)NSString *goods_kg;
 @property (nonatomic , copy)NSString *goods_name;
 @property (nonatomic , copy)NSString *goods_table;
 @property (nonatomic , copy)NSString *goods_stock;

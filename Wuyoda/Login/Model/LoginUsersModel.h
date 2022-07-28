@@ -17,6 +17,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)deleteLoginUsers:(UserInfoModel *)user;
 
+
++(void)savePasswordSetting:(UserInfoModel *)user;
++ (NSMutableArray *)getPasswordSettingUsers;
++(BOOL)userSetting:(UserInfoModel *)user;
+
 @end
 
 NS_ASSUME_NONNULL_END

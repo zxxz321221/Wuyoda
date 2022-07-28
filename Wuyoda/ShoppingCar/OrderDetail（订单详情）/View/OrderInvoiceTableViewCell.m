@@ -25,6 +25,9 @@
 }
 
 -(void)createUI{
+    
+    self.contentView.backgroundColor = [ColorManager ColorF2F2F2];
+    
     UIView *topLine = [[UIView alloc]init];
     topLine.backgroundColor = [ColorManager ColorF2F2F2];
     [self.contentView addSubview:topLine];
@@ -44,7 +47,8 @@
     }];
     
     
-    UIImageView *arrowImgV = [[UIImageView alloc]initWithImage:kGetImage(@"")];
+    UIImageView *arrowImgV = [[UIImageView alloc]initWithImage:kGetImage(@"箭头_浅")];
+    arrowImgV.contentMode = UIViewContentModeScaleAspectFit;
     [self.contentView addSubview:arrowImgV];
     [arrowImgV mas_makeConstraints:^(MASConstraintMaker *make) {
         make.right.mas_offset(kWidth(-10));

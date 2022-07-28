@@ -11,6 +11,7 @@
 #import "PayYearOrMonthView.h"
 #import "BankModel.h"
 #import "PaySuccessViewController.h"
+#import "BankInfoModel.h"
 
 @interface PayInfoViewController ()<UITableViewDelegate,UITableViewDataSource,PayInfoTableViewCellDelegate,selectPayBankDelegate,selectPayDateDelegate>
 
@@ -39,6 +40,8 @@
 //@property (nonatomic , retain)BankCardListView *bankListView;
 //@property (nonatomic , retain)PayYearOrMonthView *dateView;
 
+@property (nonatomic , retain)BankInfoModel *bankInfoModel;
+
 @end
 
 @implementation PayInfoViewController
@@ -64,6 +67,37 @@
 //    self.yearStr = @"21";
 //    self.monthStr = @"01";
 //    [self getBankListFromServer];
+    [self getNormalInfo];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(payResultCallBack) name:@"payResultCallBack" object:nil];
+    
+}
+
+-(void)getNormalInfo{
+    NSDictionary *dic = @{@"m_uid":[UserInfoModel getUserInfoModel].uid,@"api_token":[RegisterModel getUserInfoModel].user_token};
+    
+    [FJNetTool postWithParams:dic url:Special_bank_list loading:YES success:^(id responseObject) {
+        BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
+        if ([baseModel.code isEqualToString:CODE0]) {
+            NSLog(@"normal:%@",responseObject);
+            self.bankInfoModel = [BankInfoModel mj_objectWithKeyValues:responseObject[@"data"]];
+//            self.nameField.text = self.bankInfoModel.name;
+//            self.phoneField.text = self.bankInfoModel.mobile;
+//            self.idCardField.text = self.bankInfoModel.card;
+//            self.bankField.text = self.bankInfoModel.bank;
+            [self.tableView reloadData];
+            
+        }
+    } failure:^(NSError *error) {
+        
+    }];
+}
+
+-(void)payResultCallBack{
+    
+    PaySuccessViewController *vc = [[PaySuccessViewController alloc]init];
+    vc.type = @"1";
+    vc.ordersn = self.payInfoModel.ordersn;
+    [self.navigationController pushViewController:vc animated:YES];
 }
 
 //-(void)getBankListFromServer{
@@ -125,31 +159,88 @@
 //}
 
 -(void)payOrderClicked:(UIButton *)sender{
+    
     if ([self checkInfoEmpty]) {
         NSMutableDictionary *dic = [[NSMutableDictionary alloc]init];
         [dic setValue:[UserInfoModel getUserInfoModel].uid forKey:@"m_uid"];
         [dic setValue:self.payInfoModel.ordersn forKey:@"ordersn"];
-        [dic setValue:self.payInfoModel.original_price forKey:@"total_price"];
+        [dic setValue:self.payInfoModel.order_amount forKey:@"total_price"];
         [dic setValue:self.nameField.text forKey:@"payer_name"];
         [dic setValue:self.idCardField.text forKey:@"citizen_id"];
         [dic setValue:self.phoneField.text forKey:@"payer_phone"];
         [dic setValue:self.bankField.text forKey:@"bank_number"];
         [dic setValue:[RegisterModel getUserInfoModel].user_token forKey:@"api_token"];
+        //[dic setValue:self.payType forKey:@"pay_type"];
+        if ([self.payType isEqualToString:@"7"]) {
+            [dic setValue:self.openId forKey:@"openid"];
+        }
         
         [FJNetTool postWithParams:dic url:Special_juhe_pay loading:YES success:^(id responseObject) {
+            NSLog(@"payingo:%@",responseObject);
             BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
             if ([baseModel.code isEqualToString:CODE0]) {
-                FJWebViewController *vc = [[FJWebViewController alloc]init];
-                vc.url = baseModel.msg;
-                vc.ordersn = self.payInfoModel.ordersn;
-                [self.navigationController pushViewController:vc animated:YES];
+                if ([self.payType isEqualToString:@"7"]) {
+                    NSString *payInfo = responseObject[@"msg"];
+                    payInfo = [payInfo substringFromIndex:8];
+
+                    NSLog(@"payInfo:::%@",payInfo);
+                    NSData *payInfoData = [payInfo dataUsingEncoding:NSUTF8StringEncoding];
+                    NSDictionary *payInfoDic = [NSJSONSerialization JSONObjectWithData:payInfoData
+                                                                        options:NSJSONReadingMutableContainers
+                                                                          error:nil];
+                    NSString *packageStr = payInfoDic[@"package"];
+                    NSString *prepayId = [packageStr substringFromIndex:10];
+                    NSLog(@"payinfoDic::%@",payInfoDic);
+                    NSLog(@"packageStr:%@----partnerId:%@",packageStr,prepayId);
+                    
+//                    PayReq *req   = [[PayReq alloc] init];
+//                    req.nonceStr  = payInfoDic[@"nonceStr"];
+//                    req.timeStamp = [payInfoDic[@"timeStamp"] intValue];
+//                    req.package   = packageStr;
+//                    req.partnerId = payInfoDic[@"appId"];
+//                    req.prepayId  = prepayId;
+//                    req.sign      = payInfoDic[@"paySign"];
+//                    [WXApi sendReq:req completion:^(BOOL success) {
+//
+//                    }];
+                    
+//                    WXLaunchMiniProgramReq *launchMiniProgramReq = [WXLaunchMiniProgramReq object];
+//                    launchMiniProgramReq.userName = @"gh_0d3efb38c382";  //拉起的小程序的username
+////                    launchMiniProgramReq.path = path;    ////拉起小程序页面的可带参路径，不填默认拉起小程序首页，对于小游戏，可以只传入 query 部分，来实现传参效果，如：传入 "?foo=bar"。
+//                    launchMiniProgramReq.miniProgramType = 0; //拉起小程序的类型
+//                    [WXApi sendReq:launchMiniProgramReq completion:^(BOOL success) {
+//
+//                    }];
+                    
+                }else{
+                    FJWebViewController *vc = [[FJWebViewController alloc]init];
+                    vc.url = baseModel.msg;
+                    vc.ordersn = self.payInfoModel.ordersn;
+                    [self.navigationController pushViewController:vc animated:YES];
+                }
+                
             }else{
+                [[NSNotificationCenter defaultCenter] postNotificationName:@"orderUpdate" object:nil];
+                [[NSNotificationCenter defaultCenter] postNotificationName:@"willPayOrderUpdate" object:nil];
                 [self.view showHUDWithText:baseModel.msg withYOffSet:0];
+                [self.navigationController popViewControllerAnimated:YES];
+            }
+        } failure:^(NSError *error) {
+            
+        }];
+        
+        NSDictionary *bankInfo = @{@"m_uid":[UserInfoModel getUserInfoModel].uid,@"is_buy":@"1",@"name":self.nameField.text,@"card":self.idCardField.text,@"mobile":self.phoneField.text,@"remarks":@"",@"bank":self.bankField.text,@"bankname":@"",@"api_token":[RegisterModel getUserInfoModel].user_token};
+        NSLog(@"bankInf::%@",bankInfo);
+        [FJNetTool postWithParams:bankInfo url:Special_bank_add loading:NO success:^(id responseObject) {
+            BaseModel *baseModel = [BaseModel mj_objectWithKeyValues:responseObject];
+            if ([baseModel.code isEqualToString:CODE0]) {
+                NSLog(@"添加银行卡成功");
             }
         } failure:^(NSError *error) {
             
         }];
     }
+    
 }
 //{
 //    "api_token" = 11a0c5ce1fe5d77ec30aa361b338da49;
@@ -327,14 +418,23 @@
     else if (indexPath.row == 1) {
         cell.infoTextField.hidden = NO;
         cell.infoTextField.text = self.nameField.text;
+        if (self.bankInfoModel) {
+            cell.infoTextField.text = self.bankInfoModel.name;
+        }
         self.nameField = cell.infoTextField;
     }else if (indexPath.row == 2) {
         cell.infoTextField.hidden = NO;
         cell.infoTextField.text = self.phoneField.text;
+        if (self.bankInfoModel) {
+            cell.infoTextField.text = self.bankInfoModel.mobile;
+        }
         self.phoneField = cell.infoTextField;
     }else if (indexPath.row == 3) {
         cell.infoTextField.hidden = NO;
         cell.infoTextField.text = self.idCardField.text;
+        if (self.bankInfoModel) {
+            cell.infoTextField.text = self.bankInfoModel.card;
+        }
         self.idCardField = cell.infoTextField;
     }
 //    else if (indexPath.row == 4) {
@@ -344,7 +444,12 @@
     else if (indexPath.row == 4) {
         cell.infoTextField.hidden = NO;
         cell.infoTextField.text = self.bankField.text;
+        if (self.bankInfoModel) {
+            cell.infoTextField.text = self.bankInfoModel.bank;
+        }
         self.bankField = cell.infoTextField;
+        
+        self.bankInfoModel = nil;
     }
 //    else{
 //        //cell.infoTextField.text = @"";
@@ -417,7 +522,7 @@
     [payBtn setTitleColor:[ColorManager WhiteColor] forState:UIControlStateNormal];
     payBtn.titleLabel.font = kFont(16);
     payBtn.layer.cornerRadius = kWidth(24);
-    payBtn.backgroundColor = [ColorManager MainColor];
+    [payBtn setBackgroundImage:kGetImage(@"login_按钮") forState:UIControlStateNormal];
     [payBtn addTarget:self action:@selector(payOrderClicked:) forControlEvents:UIControlEventTouchUpInside];
     [footerView addSubview:payBtn];
     return footerView;

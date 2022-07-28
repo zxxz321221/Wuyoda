@@ -62,7 +62,7 @@
 }
 
 -(void)setModel:(BannerModel *)model{
-    [self.imageV sd_setImageWithURL:[NSURL URLWithString:model.thumb]];
+    [self.imageV sd_setImageWithURL:[NSURL URLWithString:model.imgbig]];
 }
 
 @end

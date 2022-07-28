@@ -52,7 +52,7 @@
     }];
     
     self.statusLab = [[UILabel alloc]init];
-    self.statusLab.text = @"运输中";
+    self.statusLab.text = @"";
     self.statusLab.textColor = [ColorManager Color999999];
     self.statusLab.font = kBoldFont(16);
     [self.contentView addSubview:self.statusLab];
@@ -75,16 +75,26 @@
     //self.infoLab.text = @"快件离开武汉已发往沈阳";
     self.infoLab.textColor = [ColorManager Color999999];
     self.infoLab.font = kFont(12);
+    self.infoLab.numberOfLines = 0;
+    self.infoLab.lineBreakMode = NSLineBreakByCharWrapping;
     [self.contentView addSubview:self.infoLab];
     [self.infoLab mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(self.pointV.mas_right).mas_offset(kWidth(20));
         make.top.equalTo(self.timeLab.mas_bottom).mas_offset(kWidth(5));
+        make.right.mas_offset(kWidth(-20));
     }];
 }
 
 -(void)setModel:(LogisticsModel *)model{
     self.timeLab.text = model.updateTime;
     self.infoLab.text = model.action;
+}
+
+-(void)setModel2:(LogisticsSubModel *)model2{
+    _model2 = model2;
+    self.statusLab.text = model2.status;
+    self.timeLab.text = model2.ftime;
+    self.infoLab.text = model2.context;
 }
 
 - (void)awakeFromNib {

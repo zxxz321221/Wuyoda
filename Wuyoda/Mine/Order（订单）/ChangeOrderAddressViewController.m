@@ -29,9 +29,25 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     FJNormalNavView *nav = [[FJNormalNavView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kHeight_NavBar) controller:self titleStr:@"修改地址"];
+    nav.backgroundColor = [ColorManager ColorF2F2F2];
     [self.view addSubview:nav];
     
-    self.tableView = [[UITableView alloc]initWithFrame:CGRectMake(0, kHeight_NavBar, kScreenWidth, kScreenHeight-kHeight_NavBar-kWidth(78)-kHeight_SafeArea) style:UITableViewStyleGrouped];
+    self.view.backgroundColor = [ColorManager ColorF2F2F2];
+    
+    
+    
+    self.headerV = [[ChangeOrderAddressHeaderView alloc]initWithFrame:CGRectMake(0, kHeight_NavBar+kWidth(10), kScreenWidth, kWidth(200))];
+    [self.headerV.addBtn addTarget:self action:@selector(addressAddClicked:) forControlEvents:UIControlEventTouchUpInside];
+    self.headerV.orderListModel = self.orderListModel;
+    [self.view addSubview:self.headerV];
+    UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:self.headerV.bounds byRoundingCorners:UIRectCornerTopRight | UIRectCornerTopLeft cornerRadii:CGSizeMake(kWidth(10), kWidth(10))];
+    CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
+    maskLayer.frame =  self.headerV.bounds;
+    maskLayer.path = maskPath.CGPath;
+    self.headerV.layer.mask = maskLayer;
+    
+    
+    self.tableView = [[UITableView alloc]initWithFrame:CGRectMake(0, kHeight_NavBar+kWidth(210), kScreenWidth, kScreenHeight-kHeight_NavBar-kWidth(210)) style:UITableViewStyleGrouped];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     [self.tableView registerClass:[ChangeOrderAddressTableViewCell class] forCellReuseIdentifier:NSStringFromClass([ChangeOrderAddressTableViewCell class])];
@@ -39,27 +55,22 @@
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.tableView.backgroundColor = [ColorManager WhiteColor];
     
-    self.headerV = [[ChangeOrderAddressHeaderView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kWidth(220))];
-    [self.headerV.addBtn addTarget:self action:@selector(addressAddClicked:) forControlEvents:UIControlEventTouchUpInside];
-    self.headerV.orderListModel = self.orderListModel;
-    self.tableView.tableHeaderView = self.headerV;
-    
     [self.view addSubview:self.tableView];
     
-    UIButton *saveBtn = [[UIButton alloc]init];
-    [saveBtn setTitle:@"提交修改" forState:UIControlStateNormal];
-    [saveBtn setTitleColor:[ColorManager WhiteColor] forState:UIControlStateNormal];
-    saveBtn .titleLabel.font = kFont(14);
-    saveBtn.backgroundColor= [ColorManager MainColor];
-    saveBtn.layer.cornerRadius = kWidth(24);
-    [saveBtn addTarget:self action:@selector(changeAddressClicked:) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:saveBtn];
-    [saveBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.centerX.equalTo(self.view);
-        make.width.mas_offset(kWidth(321));
-        make.height.mas_offset(kWidth(48));
-        make.bottom.mas_offset(-kHeight_SafeArea-kWidth(15));
-    }];
+//    UIButton *saveBtn = [[UIButton alloc]init];
+//    [saveBtn setTitle:@"提交修改" forState:UIControlStateNormal];
+//    [saveBtn setTitleColor:[ColorManager WhiteColor] forState:UIControlStateNormal];
+//    saveBtn .titleLabel.font = kFont(14);
+//    saveBtn.backgroundColor= [ColorManager MainColor];
+//    saveBtn.layer.cornerRadius = kWidth(24);
+//    [saveBtn addTarget:self action:@selector(changeAddressClicked:) forControlEvents:UIControlEventTouchUpInside];
+//    [self.view addSubview:saveBtn];
+//    [saveBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.centerX.equalTo(self.view);
+//        make.width.mas_offset(kWidth(321));
+//        make.height.mas_offset(kWidth(48));
+//        make.bottom.mas_offset(-kHeight_SafeArea-kWidth(15));
+//    }];
     
     [self getAddressListFromServer];
 }
@@ -87,7 +98,7 @@
     [self.navigationController pushViewController:vc animated:YES];
 }
 
--(void)changeAddressClicked:(id)sender{
+-(void)changeAddressClicked{
     if (self.selectModel) {
         NSDictionary *dic = @{@"m_id":[UserInfoModel getUserInfoModel].member_id,@"ordersn":self.orderListModel.ordersn,@"addressid":self.selectModel.uid,@"api_token":[RegisterModel getUserInfoModel].user_token};
         
@@ -123,6 +134,9 @@
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     
     AddressModel *model = [self.addressArr objectAtIndex:indexPath.row];
+    if ([model.uid isEqualToString:self.orderListModel.addressid]) {
+        [tableView selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
+    }
     cell.model = model;
 //    if ([model.uid isEqualToString:self.orderListModel.addressid]) {
 //        cell.selected = YES;
@@ -164,6 +178,10 @@
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     self.selectModel = [self.addressArr objectAtIndex:indexPath.row];
+    if (![self.selectModel.uid isEqualToString:self.orderListModel.addressid]) {
+        [self changeAddressClicked];
+    }
+    
 }
 
 /*

@@ -35,13 +35,26 @@
 }
 
 -(void)createUI{
-    self.backgroundColor = [ColorManager WhiteColor];
+    self.backgroundColor = [ColorManager ColorF2F2F2];
     
 //    self.scrollV = [[UIScrollView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kWidth(330))];
 //    self.scrollV.pagingEnabled = YES;
 //    [self addSubview:self.scrollV];
     
-    self.bannerBGView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, kWidth(330))];
+    UIView *bgView = [[UIView alloc]initWithFrame:self.bounds];
+    bgView.backgroundColor = [ColorManager WhiteColor];
+    [self addSubview:bgView];
+    
+    UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:bgView.bounds byRoundingCorners:UIRectCornerTopLeft | UIRectCornerTopRight cornerRadii:CGSizeMake(kWidth(10), kWidth(10))];
+    CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
+    maskLayer.frame =  bgView.bounds;
+    maskLayer.path = maskPath.CGPath;
+    bgView.layer.mask = maskLayer;
+    
+    self.bannerBGView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, kWidth(375))];
+    self.bannerBGView.backgroundColor = [ColorManager WhiteColor];
+    self.bannerBGView.layer.cornerRadius = kWidth(10);
+    self.bannerBGView.layer.masksToBounds = YES;
     [self addSubview:self.bannerBGView];
     
 
@@ -54,25 +67,25 @@
 //        make.height.mas_offset(kWidth(330));
 //    }];
     
-    UIButton *closeBtn = [[UIButton alloc]init];
-    [closeBtn setImage:kGetImage(@"商品详情_关闭") forState:UIControlStateNormal];
-    [closeBtn addTarget:self action:@selector(closeClicked) forControlEvents:UIControlEventTouchUpInside];
-    [self addSubview:closeBtn];
-    [closeBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_offset(kWidth(20));
-        make.top.mas_offset(kHeight_StatusBar+kWidth(23));
-        make.width.height.mas_offset(kWidth(32));
-    }];
+//    UIButton *closeBtn = [[UIButton alloc]init];
+//    [closeBtn setImage:kGetImage(@"商品详情_关闭") forState:UIControlStateNormal];
+//    [closeBtn addTarget:self action:@selector(closeClicked) forControlEvents:UIControlEventTouchUpInside];
+//    [self addSubview:closeBtn];
+//    [closeBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.left.mas_offset(kWidth(20));
+//        make.top.mas_offset(kHeight_StatusBar+kWidth(23));
+//        make.width.height.mas_offset(kWidth(32));
+//    }];
     
-    UIButton *shareBtn = [[UIButton alloc]init];
-    [shareBtn setImage:kGetImage(@"商品详情_分享") forState:UIControlStateNormal];
-    [shareBtn addTarget:self action:@selector(shareClicked:) forControlEvents:UIControlEventTouchUpInside];
-    [self addSubview:shareBtn];
-    [shareBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.right.mas_offset(kWidth(-20));
-        make.top.mas_offset(kHeight_StatusBar+kWidth(23));
-        make.width.height.mas_offset(kWidth(32));
-    }];
+//    UIButton *shareBtn = [[UIButton alloc]init];
+//    [shareBtn setImage:kGetImage(@"商品详情_分享") forState:UIControlStateNormal];
+//    [shareBtn addTarget:self action:@selector(shareClicked:) forControlEvents:UIControlEventTouchUpInside];
+//    [self addSubview:shareBtn];
+//    [shareBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.right.mas_offset(kWidth(-20));
+//        make.top.mas_offset(kHeight_StatusBar+kWidth(23));
+//        make.width.height.mas_offset(kWidth(32));
+//    }];
     
     self.titleLab = [[UILabel alloc]init];
     //self.titleLab.text = @"旗津海水浴场周边3日游";
@@ -82,7 +95,7 @@
     [self.titleLab mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_offset(kWidth(20));
         make.right.mas_offset(kWidth(-20));
-        make.top.mas_offset(kWidth(347));
+        make.top.mas_offset(kWidth(395));
     }];
     
 //    self.priceLab = [[UILabel alloc]init];
@@ -181,16 +194,17 @@
     }
     self.banner = [SDCycleScrollView cycleScrollViewWithFrame:self.bannerBGView.bounds imageNamesGroup:picArr];
     self.banner.delegate = self;
+    self.banner.infiniteLoop = picArr.count-1;
     self.banner.autoScrollTimeInterval = 3;
-    self.banner.showPageControl = NO;
-//    self.banner.pageControlStyle = SDCycleScrollViewPageContolStyleAnimated;
-//    self.banner.pageControlBottomOffset = kWidth(10);
-//    self.banner.pageControlAliment = SDCycleScrollViewPageContolAlimentRight;
-//    self.banner.pageDotImage = kGetImage(@"Home_pageNoSe");
-//    self.banner.currentPageDotImage = kGetImage(@"Home_pageSe");
+    self.banner.showPageControl = YES;
+    self.banner.pageControlStyle = SDCycleScrollViewPageContolStyleAnimated;
+    self.banner.pageControlBottomOffset = kWidth(12);
+    self.banner.pageControlAliment = SDCycleScrollViewPageContolAlimentCenter;
+    self.banner.pageDotImage = kGetImage(@"banner_normal");
+    self.banner.currentPageDotImage = kGetImage(@"banner_select");
     self.banner.spacingBetweenDots = kWidth(5);
-    self.banner.pageControlDotSize = CGSizeMake(kWidth(10), kWidth(5));
-    self.banner.backgroundColor = [UIColor whiteColor];
+    self.banner.pageControlDotSize = CGSizeMake(kWidth(8), kWidth(8));
+    self.banner.backgroundColor = [ColorManager WhiteColor];
     self.banner.placeholderImage = kGetImage(@"发现长条占位图");
     self.banner.bannerImageViewContentMode = UIViewContentModeScaleAspectFill;
     self.banner.clipsToBounds = YES;

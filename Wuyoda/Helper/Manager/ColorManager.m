@@ -10,7 +10,7 @@
 
 @implementation ColorManager
 +(UIColor *)MainColor {
-  return [self whiteColor:[UIColor colorWithHexString:@"#008A85"] blackColor:[UIColor colorWithHexString:@"#008A85"]];
+  return [self whiteColor:[UIColor colorWithHexString:@"#FD462D"] blackColor:[UIColor colorWithHexString:@"#FD462D"]];
 }
 +(UIColor *)WhiteColor {
     return [self whiteColor:[UIColor whiteColor] blackColor:[UIColor whiteColor]];
@@ -92,6 +92,21 @@
 }
 +(UIColor *)Color990900{
     return [self whiteColor:[UIColor colorWithHexString:@"#990900"] blackColor:[UIColor colorWithHexString:@"#990900"]];
+}
++(UIColor *)ColorFA8B18{
+    return [self whiteColor:[UIColor colorWithHexString:@"#FA8B18"] blackColor:[UIColor colorWithHexString:@"#FA8B18"]];
+}
++(UIColor *)ColorFFF1F0{
+    return [self whiteColor:[UIColor colorWithHexString:@"#FFF1F0"] blackColor:[UIColor colorWithHexString:@"#FFF1F0"]];
+}
++(UIColor *)ColorFE3C3D{
+    return [self whiteColor:[UIColor colorWithHexString:@"#FE3C3D"] blackColor:[UIColor colorWithHexString:@"#FE3C3D"]];
+}
++(UIColor *)ColorFB9A3A{
+    return [self whiteColor:[UIColor colorWithHexString:@"#FB9A3A"] blackColor:[UIColor colorWithHexString:@"#FB9A3A"]];
+}
++(UIColor *)ColorFD817C{
+    return [self whiteColor:[UIColor colorWithHexString:@"#FD817C"] blackColor:[UIColor colorWithHexString:@"#FD817C"]];
 }
 
 +(UIColor *)RandomColor {

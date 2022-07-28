@@ -28,7 +28,8 @@
         make.left.mas_offset(kWidth(24));
     }];
     
-    UIImageView *arrowImgV = [[UIImageView alloc]initWithImage:kGetImage(@"")];
+    UIImageView *arrowImgV = [[UIImageView alloc]initWithImage:kGetImage(@"箭头_深")];
+    arrowImgV.contentMode = UIViewContentModeScaleAspectFit;
     [self.contentView addSubview:arrowImgV];
     [arrowImgV mas_makeConstraints:^(MASConstraintMaker *make) {
         make.right.mas_offset(kWidth(-24));

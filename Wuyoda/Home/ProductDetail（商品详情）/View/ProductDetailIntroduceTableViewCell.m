@@ -81,8 +81,7 @@
 -(void)setModel:(HomeShopModel *)model{
 
     if (model.goods_main.length) {
-        NSString *headerString = @"<header><meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no'></header>";
-            [self.webView loadHTMLString:[headerString stringByAppendingString:model.goods_main] baseURL:nil];
+        [self loadHtml:model.goods_main];
     }
     
 
@@ -96,6 +95,12 @@
         
     //self.webFinish = YES;
         //    document.body.scrollHeight（不准）   document.body.offsetHeight;(好)
+//    NSString *injectionJSString = @"var script = document.createElement('meta');"
+//                                       "script.name = 'viewport';"
+//                                       "script.content=\"width=device-width, user-scalable=no\";"
+//                                       "document.getElementsByTagName('head')[0].appendChild(script);";
+//    [webView evaluateJavaScript:injectionJSString completionHandler:nil];
+    
         [webView evaluateJavaScript:@"document.body.offsetHeight;" completionHandler:^(id Result, NSError * error) {
           //NSString *heightStr = [NSString stringWithFormat:@"%@",Result];
 
@@ -141,6 +146,29 @@
         }
         
     }
+}
+
+-(void)loadHtml:(NSString *)str {
+    NSString *htmlString = [NSString stringWithFormat:@"<html> \n"
+        "<head> \n"
+        "<style type=\"text/css\"> \n"
+        "body {font-size:14px;}\n"
+        "</style> \n"
+        "</head> \n"
+        "<body>"
+        "<script type='text/javascript'>"
+        "window.onload = function(){\n"
+        "var $img = document.getElementsByTagName('img');\n"
+        "for(var p in  $img){\n"
+        " $img[p].style.width = '100%%';\n"
+        "$img[p].style.height ='auto'\n"
+        "}\n"
+        "}"
+        "</script>%@"
+        "</body>"
+        "</html>", str];
+    [self.webView loadHTMLString:htmlString baseURL:nil];
+
 }
 
 

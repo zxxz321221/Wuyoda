@@ -178,6 +178,7 @@
                 }else{
                     [LoginUsersModel saveLoginUsers:userModel];
                     [UserInfoModel saveUserInfoModel:userModel];
+                    [[NSNotificationCenter defaultCenter] postNotificationName:@"messageLogin" object:nil];
                     [self dismissViewControllerAnimated:YES completion:nil];
                 }
                 
