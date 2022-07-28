@@ -838,6 +838,8 @@
 //    else if ([self.agreemType isEqualToString:@"apple"]){
 //        [self appleLogin];
 //    }
+    
+    
     self.agreementBtn.selected = YES;
 }
 
